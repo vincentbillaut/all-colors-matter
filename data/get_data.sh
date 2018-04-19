@@ -4,7 +4,7 @@ export ALL=false;
 while true ; do
   case "$1" in
     --db) export DB="$2" ;export ALL=false; shift 2 ;;
-    --all) export ALL=true ; shift 2 ;;
+    --all) export ALL=true ; shift 1 ;;
     *) break ;;
   esac
 done
@@ -41,5 +41,5 @@ fi
 if [[ ( "$ALL" == true ) || ( "$DB" == 'cal256' ) ]];
 then
     	wget "http://www.vision.caltech.edu/Image_Datasets/Caltech256/256_ObjectCategories.tar"
-	tar 256_ObjectCategories.tar
+	    tar 256_ObjectCategories.tar
 fi
