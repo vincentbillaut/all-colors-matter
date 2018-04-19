@@ -102,6 +102,3 @@ ENV/
 
 #Pycharm project
 .idea/
-
-#Data
-data/*.*
