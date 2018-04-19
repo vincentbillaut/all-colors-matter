@@ -37,7 +37,7 @@ then
 
 	while IFS= read -r col1 col2
 	do
-	    wget -O pubfig/$col1 $col2
+	    wget -t 2 -T 4 -O pubfig/$col1 $col2
 	done < pubfig/dev_urls_parsed.txt
 	rm pubfig/dev_urls.txt
 	rm pubfig/dev_urls_parsed.txt
