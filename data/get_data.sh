@@ -49,3 +49,12 @@ then
     	wget "http://www.vision.caltech.edu/Image_Datasets/Caltech256/256_ObjectCategories.tar"
 	    tar 256_ObjectCategories.tar
 fi
+
+#SiftFlow
+
+if [[ ( "$ALL" == true ) || ( "$DB" == 'siftflow' ) ]];
+then
+    	wget "http://www.cs.unc.edu/~jtighe/Papers/ECCV10/siftflow/SiftFlowDataset.zip"
+	    unzip SiftFlowDataset.zip
+      rm SiftFlowDataset.zip
+fi
