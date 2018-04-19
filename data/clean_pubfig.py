@@ -1,4 +1,5 @@
 import os
+from collections import Counter
 FOLDER = 'pubfig/'
 list_files = sorted(os.listdir(FOLDER))
 
@@ -13,7 +14,11 @@ for file in list_files:
                 if "<!doctype" in f.read()[:1000].lower():
                     os.remove(FOLDER + file)
         except:
-            print(file)
-#Remove a specific file
-
+            pass
 #Rename the files
+
+counter_perso = Counter()
+for file in os.listdir(FOLDER):
+    person = file.split("_")[1]
+    os.rename(FOLDER+file,FOLDER+"{}_{}".format(person,counter_perso[person]))
+    counter_perso[person]+=1
