@@ -41,6 +41,7 @@ then
 	done < pubfig/dev_urls_parsed.txt
 	rm pubfig/dev_urls.txt
 	rm pubfig/dev_urls_parsed.txt
+	python3 clean_pubfig.py
 fi
 
 #CAL256

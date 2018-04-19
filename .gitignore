@@ -102,3 +102,7 @@ ENV/
 
 #Pycharm project
 .idea/
+
+#data
+
+data/pubfig/*
