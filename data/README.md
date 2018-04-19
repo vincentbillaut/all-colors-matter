@@ -20,7 +20,8 @@ To get all datasets
 
 ### SUN database
 
-**Flag** : `sun`
+**Flag** (reduced version, 7GB) : `sun`
+**Flag** (full version, 37GB) : `sun_full`
 
 **Status** : To be DL + tested
 

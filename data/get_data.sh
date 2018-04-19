@@ -21,6 +21,12 @@ then
     wget "http://groups.csail.mit.edu/vision/SUN/releases/SUN2012.tar.gz"
 fi
 
+#SUN DB (FULL)
+
+if [[ ( "$ALL" == true ) || ( "$DB" == 'sun_full' ) ]];
+then
+    wget "http://vision.princeton.edu/projects/2010/SUN/SUN397.tar.gz"
+fi
 
 #PUBFIG DB
 if [[ ( "$ALL" == true ) || ( "$DB" == 'pubfig' ) ]];
