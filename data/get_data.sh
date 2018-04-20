@@ -59,3 +59,13 @@ then
 	    unzip SiftFlowDataset.zip
       rm SiftFlowDataset.zip
 fi
+
+#LFW
+
+if [[ ( "$ALL" == true ) || ( "$DB" == 'lfw' ) ]];
+then
+    	wget "http://vis-www.cs.umass.edu/lfw/lfw.tgz"
+	    tar xzf lfw.tgz
+        rm lfw.tgz
+        python3 clean_lfw.py
+fi

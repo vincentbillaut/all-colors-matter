@@ -106,3 +106,4 @@ ENV/
 #data
 
 data/pubfig/*
+data/lfw/*

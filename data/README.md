@@ -18,6 +18,12 @@ To get all datasets
 
 **Status** : OK
 
+### Labeled Faces in The Wild
+
+**Flag** : `lfw`
+
+**Status** : OK
+
 ### SUN database
 
 **Flag** (reduced version, 7GB) : `sun`
@@ -32,6 +38,8 @@ To get all datasets
 
 **Status** : needs cleaning
 
+Note: processing is log, prefer LFW
+
 ### CAL256
 
 **Flag** : `cal256`
@@ -43,6 +51,7 @@ To get all datasets
 **Flag** : `siftflow`
 
 **Status** : To be DL + tested
+
 
 ### WiderFace
 
