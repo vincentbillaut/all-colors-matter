@@ -30,7 +30,7 @@ To get all datasets
 
 **Flag** (full version, 37GB) : `sun_full`
 
-**Status** : To be DL + tested
+**Status** : OK
 
 ### Pubfig dataset
 

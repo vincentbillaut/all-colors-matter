@@ -19,6 +19,9 @@ fi
 if [[ ( "$ALL" == true ) || ( "$DB" == 'sun' ) ]];
 then
     wget "http://groups.csail.mit.edu/vision/SUN/releases/SUN2012.tar.gz"
+    rm SUN2012.tar.gz
+    rm SUN2012/SUN2012.tar
+    python3 clean_sun.py
 fi
 
 #SUN DB (FULL)

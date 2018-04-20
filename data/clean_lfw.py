@@ -1,5 +1,4 @@
 import os
-from collections import Counter
 FOLDER = 'lfw/'
 list_subfolder = os.listdir(FOLDER)
 for subfold in list_subfolder:
