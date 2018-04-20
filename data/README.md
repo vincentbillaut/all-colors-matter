@@ -28,9 +28,11 @@ To get all datasets
 
 **Flag** (reduced version, 7GB) : `sun`
 
+**Status** : OK
+
 **Flag** (full version, 37GB) : `sun_full`
 
-**Status** : OK
+**Status** : TBD
 
 ### Pubfig dataset
 
