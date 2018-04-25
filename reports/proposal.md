@@ -6,7 +6,7 @@ Our goal is to tackle the problem of **colorization**, that
  is taking a gray scale photograph and translating it to its colorized
 version. This problem is particularly appealing to us, because it
 involves some kind of generative, creative work which is easily
-visualizable and even fun. Our implementation will feature GANs.  Several articles tackle this problem. One of them is [Zhang et al. 2016 ([1])](https://arxiv.org/abs/1603.08511).  
+visualizable and even fun. Our implementation will feature GANs.  Several articles tackle this problem. One of them is Zhang et al. 2016 ([[1]](https://arxiv.org/abs/1603.08511)).  
 
 One of the advantages of this project is that any dataset of colored images that is available can be used, since  we only have to generate the corresponding grayscale dataset. We will begin by using the [SUN  dataset](https://groups.csail.mit.edu/vision/SUN/), restricted to scenes of ocean, coasts, beaches and lagoons. Depending on the first results, we will increase the variety of scenes included in the database and include human beings and faces to the dataset, and potentially  include other datasets if more variety is needed.
 
