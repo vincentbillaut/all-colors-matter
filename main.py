@@ -1,9 +1,10 @@
 import tensorflow as tf
 from models.model import Model, Config
+from models.naive_convnet import NaiveConvConfig, NaiveConvModel
 
 if __name__ == "__main__":
-    config = Config()
-    model = Model(config)
+    config = NaiveConvConfig()
+    model = NaiveConvModel(config)
 
     conf = tf.ConfigProto()
     conf.gpu_options.allow_growth = True

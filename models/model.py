@@ -8,13 +8,14 @@ class Config(object):
         # param_dict = input
         self.train_path = "data/iccv09Data/images"
         self.val_path = "data/iccv09Data/images"
-        self.batch_size = 8
+        self.batch_size = 16
         self.image_shape = (320, 320, 3)
 
 
 class Model(object):
     def __init__(self, config):
         self.config = config
+        self.params = {}
 
         self.load_data()
         self.add_dataset()
@@ -32,9 +33,10 @@ class Model(object):
         train_dataset = get_dataset_batched(self.config.train_path, False, self.config)
         val_dataset = get_dataset_batched(self.config.val_path, True, self.config)
         # iterator just needs to know the output types and shapes of the datasets
-        self.iterator = tf.contrib.data.Iterator.from_structure(output_types=tf.uint8,
-                                                                output_shapes=[None, 240, 320, 3])
-        self.image = self.iterator.get_next()
+        self.iterator = tf.contrib.data.Iterator.from_structure(output_types=(tf.float32, tf.float32),
+                                                                output_shapes=([None, 240, 320, 1],
+                                                                               [None, 240, 320, 3]))
+        self.image_greyscale, self.image = self.iterator.get_next()
         self.train_init_op = self.iterator.make_initializer(train_dataset)
         self.test_init_op = self.iterator.make_initializer(val_dataset)
 
@@ -65,7 +67,6 @@ class Model(object):
 
     def run_epoch(self, sess):
         nbatches = len(self.train_ex_paths)
-        print(nbatches)
         prog = Progbar(target=nbatches)
         batch = 0
 
@@ -76,8 +77,8 @@ class Model(object):
                 #         self.lr_placeholder: lr_schedule.lr,
                 #         self.is_training: self.config.use_batch_norm}
 
-                loss, image = sess.run([self.loss, self.image],
-                                       )  # feed_dict=feed)
+                loss, _ = sess.run([self.loss, self.train_op],
+                                   )  # feed_dict=feed)
                 batch += self.config.batch_size
 
             except tf.errors.OutOfRangeError:
