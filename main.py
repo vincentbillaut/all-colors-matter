@@ -12,4 +12,4 @@ if __name__ == "__main__":
     conf.gpu_options.allow_growth = True
     with tf.Session(config=conf) as sess:
         sess.run(tf.global_variables_initializer())
-        model.run_epoch(sess)
+        model.train_model(sess)

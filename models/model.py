@@ -80,3 +80,9 @@ class Model(object):
                 break
 
             prog.update(batch, values=[("loss", loss)])
+
+    def train_model(self, sess):
+        for ii in range(self.config.n_epochs):
+            i = ii + 1
+            print("\nRunning epoch {}:".format(i))
+            self.run_epoch(sess)
