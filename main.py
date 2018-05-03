@@ -1,10 +1,10 @@
 import tensorflow as tf
-from models.model import Model, Config
-from models.naive_convnet import NaiveConvConfig, NaiveConvModel
+from models.model import Config
+from models.naive_convnet import NaiveConvModel
 from utils.dataset import Dataset
 
 if __name__ == "__main__":
-    config = NaiveConvConfig()
+    config = Config("configs/config.json")
     dataset = Dataset(config.train_path, config.val_path)
     model = NaiveConvModel(config, dataset=dataset)
 

@@ -1,15 +1,12 @@
 import tensorflow as tf
-
+import json
 from utils.progbar import Progbar
 
 
 class Config(object):
-    def __init__(self):
-        # param_dict = input
-        self.train_path = "data/iccv09Data/images"
-        self.val_path = "data/iccv09Data/images"
-        self.batch_size = 16
-        self.image_shape = (320, 320, 3)
+    def __init__(self, config_path):
+        input_dict = json.load(open(config_path))
+        self.__dict__.update(input_dict)
 
 
 class Model(object):

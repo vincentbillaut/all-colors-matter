@@ -1,10 +1,6 @@
 import tensorflow as tf
-from models.model import Config, Model
 
-
-class NaiveConvConfig(Config):
-    def __init__(self):
-        super().__init__()
+from models.model import Model
 
 
 class NaiveConvModel(Model):
