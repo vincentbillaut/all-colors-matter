@@ -1,10 +1,12 @@
 import tensorflow as tf
 from models.model import Model, Config
 from models.naive_convnet import NaiveConvConfig, NaiveConvModel
+from utils.dataset import Dataset
 
 if __name__ == "__main__":
     config = NaiveConvConfig()
-    model = NaiveConvModel(config)
+    dataset = Dataset(config.train_path, config.val_path)
+    model = NaiveConvModel(config, dataset=dataset)
 
     conf = tf.ConfigProto()
     conf.gpu_options.allow_growth = True

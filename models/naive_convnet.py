@@ -1,6 +1,5 @@
 import tensorflow as tf
 from models.model import Config, Model
-import numpy as np
 
 
 class NaiveConvConfig(Config):
@@ -9,8 +8,8 @@ class NaiveConvConfig(Config):
 
 
 class NaiveConvModel(Model):
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, config, dataset):
+        super().__init__(config, dataset)
 
     def add_placeholders(self):
         """ Create placeholder variables.
@@ -23,20 +22,20 @@ class NaiveConvModel(Model):
         init = tf.contrib.layers.xavier_initializer()
 
         W1 = tf.Variable(init(shape=(3, 3, 1, 10)), dtype=tf.float32)
-        conv1 = tf.nn.conv2d(input=self.image_greyscale, filter=W1, strides=(1, 1, 1, 1), padding="SAME")
+        conv1 = tf.nn.conv2d(input=self.image_Yscale, filter=W1, strides=(1, 1, 1, 1), padding="SAME")
         a1 = tf.nn.relu(conv1)
 
         W2 = tf.Variable(init(shape=(3, 3, 10, 10)), dtype=tf.float32)
         conv2 = tf.nn.conv2d(input=a1, filter=W2, strides=(1, 1, 1, 1), padding="SAME")
         a2 = tf.nn.relu(conv2)
 
-        W3 = tf.Variable(init(shape=(3, 3, 10, 3)), dtype=tf.float32)
+        W3 = tf.Variable(init(shape=(3, 3, 10, 2)), dtype=tf.float32)
         self.conv3 = tf.nn.conv2d(input=a2, filter=W3, strides=(1, 1, 1, 1), padding="SAME")
 
     def add_loss_op(self):
         """ Add Tensorflow op to compute loss.
         """
-        self.loss = tf.nn.l2_loss(self.pred_color_image - self.image)
+        self.loss = tf.nn.l2_loss(self.pred_color_image - self.image_UVscale)
 
     def add_train_op(self):
         """ Add Tensorflow op to run one iteration of SGD.

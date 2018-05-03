@@ -1,5 +1,5 @@
 import tensorflow as tf
-from utils.data_utils import get_dataset_batched, get_im_paths
+
 from utils.progbar import Progbar
 
 
@@ -13,11 +13,11 @@ class Config(object):
 
 
 class Model(object):
-    def __init__(self, config):
+    def __init__(self, config, dataset):
         self.config = config
         self.params = {}
+        self.dataset = dataset
 
-        self.load_data()
         self.add_dataset()
         self.add_placeholders()
         self.add_model()
@@ -25,18 +25,14 @@ class Model(object):
         self.add_loss_op()
         self.add_train_op()
 
-    def load_data(self):
-        self.train_ex_paths = get_im_paths(self.config.train_path)
-        self.val_ex_paths = get_im_paths(self.config.val_path)
-
     def add_dataset(self):
-        train_dataset = get_dataset_batched(self.config.train_path, False, self.config)
-        val_dataset = get_dataset_batched(self.config.val_path, True, self.config)
+        train_dataset = self.dataset.get_dataset_batched(False, self.config)
+        val_dataset = self.dataset.get_dataset_batched(True, self.config)
         # iterator just needs to know the output types and shapes of the datasets
-        self.iterator = tf.contrib.data.Iterator.from_structure(output_types=(tf.float32, tf.float32),
-                                                                output_shapes=([None, 240, 320, 1],
-                                                                               [None, 240, 320, 3]))
-        self.image_greyscale, self.image = self.iterator.get_next()
+        self.iterator = tf.data.Iterator.from_structure(output_types=(tf.float32, tf.float32),
+                                                        output_shapes=([None, 240, 320, 1],
+                                                                       [None, 240, 320, 2]))
+        self.image_Yscale, self.image_UVscale = self.iterator.get_next()
         self.train_init_op = self.iterator.make_initializer(train_dataset)
         self.test_init_op = self.iterator.make_initializer(val_dataset)
 
@@ -54,11 +50,13 @@ class Model(object):
         """ Add Tensorflow op to compute loss.
         """
         self.loss = tf.Variable(1.)
+        raise NotImplementedError
 
     def add_train_op(self):
         """ Add Tensorflow op to run one iteration of SGD.
         """
-        pass
+        self.train_op = None
+        raise NotImplementedError
 
     def add_pred_op(self):
         """ Add Tensorflow op to generate predictions.
@@ -66,7 +64,7 @@ class Model(object):
         pass
 
     def run_epoch(self, sess):
-        nbatches = len(self.train_ex_paths)
+        nbatches = len(self.dataset.train_ex_paths)
         prog = Progbar(target=nbatches)
         batch = 0
 
