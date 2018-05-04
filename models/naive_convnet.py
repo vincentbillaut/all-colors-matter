@@ -16,9 +16,8 @@ class NaiveConvModel(Model):
         """ Add Tensorflow ops to get scores from inputs.
         """
         init = tf.contrib.layers.xavier_initializer()
-
-        W1 = tf.Variable(init(shape=(3, 3, 1, 10)), dtype=tf.float32)
-        conv1 = tf.nn.conv2d(input=self.image_Yscale, filter=W1, strides=(1, 1, 1, 1), padding="SAME")
+        print()
+        conv1 = tf.layers.conv2d(self.image_Yscale, filters=10, kernel_size=3, strides=(1, 1), padding="SAME")
         a1 = tf.nn.relu(conv1)
 
         W2 = tf.Variable(init(shape=(3, 3, 10, 10)), dtype=tf.float32)
