@@ -31,11 +31,11 @@ class ColoringModel(object):
     def add_dataset(self):
         train_dataset = self.dataset.get_dataset_batched(False, self.config)
         val_dataset = self.dataset.get_dataset_batched(True, self.config)
-        image_shape = self.config.image_shape
+
         # iterator just needs to know the output types and shapes of the datasets
         self.iterator = tf.data.Iterator.from_structure(output_types=(tf.float32, tf.float32),
-                                                        output_shapes=([None, image_shape, image_shape, 1],
-                                                                       [None, image_shape, image_shape, 2]))
+                                                        output_shapes=([None, self.config.image_shape[0], self.config.image_shape[1], 1],
+                                                                       [None, self.config.image_shape[0], self.config.image_shape[1], 2]))
         self.image_Yscale, self.image_UVscale = self.iterator.get_next()
         self.train_init_op = self.iterator.make_initializer(train_dataset)
         self.test_init_op = self.iterator.make_initializer(val_dataset)
