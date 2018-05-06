@@ -108,3 +108,5 @@ ENV/
 data/pubfig/*
 data/lfw/*
 data/SUN2012/*
+
+outputs/*s
