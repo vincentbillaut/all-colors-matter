@@ -1,4 +1,4 @@
-from models.coloringmodel import ColoringModel
+from models.coloringmodelforgan import ColoringModelForGAN
 from models.discriminative_net import DiscriminativeModel
 import tensorflow as tf
 
@@ -10,7 +10,7 @@ class GAN(object):
         self.config = config
         self.dataset = dataset
         self.coloring_model = coloring_model
-        self.coloring_model = ColoringModel(config)
+        self.coloring_model = ColoringModelForGAN(config)
         self.discriminative_model = discriminative_model
         self.discriminative_model = DiscriminativeModel(config)
 
