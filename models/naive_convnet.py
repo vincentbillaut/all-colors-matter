@@ -10,7 +10,7 @@ class NaiveConvColoringModel(ColoringModel):
     def add_model(self):
         """ Add Tensorflow ops to get scores from inputs.
         """
-        init = tf.contrib.layers.xavier_initializer(seed=3)
+        init = tf.contrib.layers.xavier_initializer(seed=4)
         conv1 = tf.layers.conv2d(self.image_Yscale, filters=50, kernel_size=3, strides=(1, 1), padding="SAME",
                                  kernel_initializer=init)
         a1 = tf.nn.relu(conv1)

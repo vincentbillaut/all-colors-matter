@@ -3,7 +3,6 @@ import json
 import numpy as np
 import tensorflow as tf
 
-from utils.color_utils import variance_UV_channels
 from utils.data_utils import dump_YUV_image_to_jpg, load_image_jpg_to_YUV
 from utils.progbar import Progbar
 

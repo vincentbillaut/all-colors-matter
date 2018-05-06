@@ -1,12 +1,12 @@
 {
   "train_path": "data/iccv09Data/images",
   "val_path": "data/iccv09Data/images",
-  "batch_size": 8,
-  "n_epochs": 70,
+  "batch_size": 2,
+  "n_epochs": 8,
   "image_shape": [
     320,
     320,
     3
   ],
-  "max_batch": 15
+  "max_batch": 6
 }
