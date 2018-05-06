@@ -1,5 +1,5 @@
-from models.coloringmodelforgan import ColoringModelForGAN
-from models.discriminative_net import DiscriminativeModel
+from models.gan.coloringmodelforgan import ColoringModelForGAN
+from models.gan.discriminative_net import DiscriminativeModel
 import tensorflow as tf
 
 from utils.progbar import Progbar

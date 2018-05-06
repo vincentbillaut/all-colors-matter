@@ -1,7 +1,6 @@
 import tensorflow as tf
 
-from models.discriminative_net import DiscriminativeModel
-from models.coloringmodel import ColoringModel
+from models.gan.discriminative_net import DiscriminativeModel
 
 
 class NaiveDiscriminativeNet(DiscriminativeModel):
