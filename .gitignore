@@ -103,8 +103,12 @@ ENV/
 #Pycharm project
 .idea/
 
-#data
-
+# data
 data/pubfig/*
 data/lfw/*
 data/SUN2012/*
+data/iccv09Data/*
+data/imagenet/*
+
+# model runs
+outputs/*
