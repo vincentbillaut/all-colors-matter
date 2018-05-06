@@ -33,4 +33,9 @@ def YUV_to_RGB(yuv):
     rgb[:, :, 2] -= 226.8183044444304
     assert (rgb.shape == yuv.shape)
     return rgb
+
+
 ################################################################################
+
+def variance_UV_channels(yuv):
+    return np.var(yuv[:, :, 1:])
