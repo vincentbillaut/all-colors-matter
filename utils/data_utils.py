@@ -16,15 +16,17 @@ def load_image_jpg_to_YUV(impath, is_test, config):
     """
     if impath is bytes:
         impath = impath.decode('utf-8')
-    image = RGB_to_YUV(imread(impath)).astype(np.dtype("float32"))
+    image = imread(impath).astype(np.dtype("float32"))
 
     if not is_test:
         flip = np.random.random()
         if flip < 0.5:
             image = image[:, ::-1, :]
             # pass
+
     padded_image = pad_image_to_size(image, config.image_shape)
-    return padded_image[:, :, :1], padded_image[:, :, 1:]
+    YUV_padded_image = RGB_to_YUV(padded_image)
+    return YUV_padded_image[:, :, :1], YUV_padded_image[:, :, 1:]
 
 
 def dump_YUV_image_to_jpg(YUV_image, path):

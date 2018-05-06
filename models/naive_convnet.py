@@ -1,9 +1,9 @@
 import tensorflow as tf
 
-from models.model import Model
+from models.coloringmodel import ColoringModel
 
 
-class NaiveConvModel(Model):
+class NaiveConvColoringModel(ColoringModel):
     def __init__(self, config, dataset):
         super().__init__(config, dataset)
 
@@ -16,16 +16,15 @@ class NaiveConvModel(Model):
         """ Add Tensorflow ops to get scores from inputs.
         """
         init = tf.contrib.layers.xavier_initializer()
-        print()
-        conv1 = tf.layers.conv2d(self.image_Yscale, filters=10, kernel_size=3, strides=(1, 1), padding="SAME")
+        conv1 = tf.layers.conv2d(self.image_Yscale, filters=10, kernel_size=3, strides=(1, 1), padding="SAME",
+                                 kernel_initializer=init)
         a1 = tf.nn.relu(conv1)
 
-        W2 = tf.Variable(init(shape=(3, 3, 10, 10)), dtype=tf.float32)
-        conv2 = tf.nn.conv2d(input=a1, filter=W2, strides=(1, 1, 1, 1), padding="SAME")
+        conv2 = tf.layers.conv2d(a1, filters=10, kernel_size=3, strides=(1, 1), padding="SAME", kernel_initializer=init)
         a2 = tf.nn.relu(conv2)
 
-        W3 = tf.Variable(init(shape=(3, 3, 10, 2)), dtype=tf.float32)
-        self.conv3 = tf.nn.conv2d(input=a2, filter=W3, strides=(1, 1, 1, 1), padding="SAME")
+        self.conv3 = tf.layers.conv2d(a2, filters=2, kernel_size=3, strides=(1, 1), padding="SAME",
+                                      kernel_initializer=init)
 
     def add_loss_op(self):
         """ Add Tensorflow op to compute loss.
