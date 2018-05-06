@@ -49,14 +49,16 @@ class ColorDiscretizer(object):
 
         self.n_categories = index
 
-        self.categories_mean_pixels = np.zeros([self.n_categories, 2])
+        self.categories_mean_pixels = np.zeros([self.n_categories, 2]) + 128.
         for index in range(1, self.n_categories):
             xcategory, ycategory = self.indices_to_xycategories_map[index]
             self.categories_mean_pixels[index, :] = [(self.xedges[xcategory] + self.xedges[xcategory + 1]) / 2,
                                                      (self.yedges[ycategory] + self.yedges[ycategory + 1]) / 2]
 
     def plot_heatmap(self):
-        logheatmap = np.log10(self.heatmap)
+        hm = np.copy(self.heatmap)
+        hm[hm < self.threshold] = 0
+        logheatmap = np.log10(hm)
         extent = [self.xedges[0], self.xedges[-1], self.yedges[0], self.yedges[-1]]
 
         plt.imshow(logheatmap.T, extent=extent, origin='lower')
@@ -75,10 +77,11 @@ class ColorDiscretizer(object):
         return [self.xycategories_to_indices_map[xycategories] for xycategories in
                 zip(Upixels_categories, Vpixels_categories)]
 
-    def UVpixels_from_distribution(self, distribution):
+    def UVpixels_from_distribution(self, distribution, temperature=1):
         """
         Returns mean pixels from Npixels distributions over the color categories.
         :param distribution: matrix of size Npixels * n_categories.
         """
-        distribution /= np.sum(distribution, axis=1).reshape([-1, 1])
-        return np.dot(distribution, self.categories_mean_pixels)
+        temp_distribution = np.exp(np.log(distribution) / temperature)
+        temp_distribution /= np.sum(temp_distribution, axis=1).reshape([-1, 1])
+        return np.dot(temp_distribution, self.categories_mean_pixels)
