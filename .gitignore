@@ -112,3 +112,6 @@ data/imagenet/*
 
 # model runs
 outputs/*
+
+#Checkpoints
+checkpoints/*

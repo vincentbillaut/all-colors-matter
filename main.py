@@ -10,6 +10,10 @@ if __name__ == "__main__":
 
     conf = tf.ConfigProto()
     conf.gpu_options.allow_growth = True
-    with tf.Session(config=conf) as sess:
-        sess.run(tf.global_variables_initializer())
-        model.train_model(sess)
+    model.train_model()
+    model.save("test_save")
+    # model.load("test_save")
+    # model.pred_color_one_image("data/iccv09Data/images/0000382.jpg",
+    #                           "outputs/0000382_epoch{}".format("loaded"))
+    # print("Training from loaded")
+    # model.train_model(warm_start=True)
