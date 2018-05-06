@@ -8,9 +8,10 @@ from utils.color_utils import RGB_to_YUV
 
 
 class ColorDiscretizer(object):
-    def __init__(self, nbins=30, threshold=.000001):
+    def __init__(self, nbins=30, threshold=.000001, weighting_lambda=.5):
         self.nbins = nbins
         self.threshold = threshold
+        self.weighting_lambda = weighting_lambda
 
         self.xedges = np.linspace(0, 255., self.nbins + 1)
         self.yedges = np.linspace(0, 255., self.nbins + 1)
@@ -33,7 +34,7 @@ class ColorDiscretizer(object):
 
         bins = np.linspace(0, 255., self.nbins + 1)
         self.heatmap, _, _ = np.histogram2d(Us, Vs, bins=[bins, bins])
-        self.heatmap /= np.sum(self.heatmap)  # TODO normalize after filtering
+        self.heatmap /= np.sum(self.heatmap)
 
         self.xycategories_to_indices_map = {}
         self.indices_to_xycategories_map = {}
@@ -50,6 +51,14 @@ class ColorDiscretizer(object):
 
         self.n_categories = index
 
+        # compute the weights associated with every pixel class
+        self.weights = {k: 1. / (proba * (1. - self.weighting_lambda) + self.weighting_lambda / self.n_categories) for
+                        k, (index, proba) in self.xycategories_to_indices_map.items()}
+        normalization_factor = sum(
+            [self.weights[k] * self.xycategories_to_indices_map[k][1] for k in self.weights])
+        self.weights = {k: weight / normalization_factor for k, weight in self.weights.items()}
+
+        # TODO (128., 128.) as a default UV pixel might not be the best choice.
         self.categories_mean_pixels = np.zeros([self.n_categories, 2]) + 128.
         for index in range(1, self.n_categories):
             xcategory, ycategory = self.indices_to_xycategories_map[index]
@@ -86,7 +95,7 @@ class ColorDiscretizer(object):
         if return_weights:
             return np.reshape(np.array([self.xycategories_to_indices_map[xycategories][0] for xycategories in
                                         zip(Upixels_categories, Vpixels_categories)]), Upixels.shape), \
-                   np.reshape(np.array([self.xycategories_to_indices_map[xycategories][1] for xycategories in
+                   np.reshape(np.array([self.weights[xycategories] for xycategories in
                                         zip(Upixels_categories, Vpixels_categories)]), Upixels.shape)
         else:
             return np.reshape(np.array([self.xycategories_to_indices_map[xycategories][0] for xycategories in

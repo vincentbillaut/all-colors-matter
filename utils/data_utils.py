@@ -24,9 +24,9 @@ def load_image_jpg_to_YUV(impath, is_test, config):
             image = image[:, ::-1, :]
             # pass
 
-    padded_image = pad_image_to_size(image, config.image_shape)
+    padded_image, mask = pad_image_to_size(image, config.image_shape)
     YUV_padded_image = RGB_to_YUV(padded_image)
-    return YUV_padded_image[:, :, :1], YUV_padded_image[:, :, 1:]
+    return YUV_padded_image[:, :, :1], YUV_padded_image[:, :, 1:], mask
 
 
 def dump_YUV_image_to_jpg(YUV_image, path):
@@ -44,5 +44,7 @@ def get_im_paths(path):
 
 def pad_image_to_size(image, shape):
     new_image = np.zeros(shape=shape)
+    mask = np.zeros(shape=[shape[0], shape[1]])
     new_image[:image.shape[0], :image.shape[1], :] = image
-    return new_image
+    mask[:image.shape[0], :image.shape[1]] = 1
+    return new_image, mask
