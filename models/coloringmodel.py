@@ -14,6 +14,9 @@ class Config(object):
         self.__dict__.update(input_dict)
         self.config_name = config_path.split('/')[-1]
 
+        if self.max_batch == -1:
+            self.max_batch = np.inf
+
 
 class ColoringModel(object):
     def __init__(self, config, dataset):
@@ -45,7 +48,7 @@ class ColoringModel(object):
         """
         pass
 
-    def add_model(self, images):
+    def add_model(self):
         """ Add Tensorflow ops to get scores from inputs.
         """
         pass

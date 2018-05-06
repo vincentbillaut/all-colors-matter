@@ -8,7 +8,7 @@ from utils.color_utils import RGB_to_YUV
 
 
 class ColorDiscretizer(object):
-    def __init__(self, nbins=30, threshold=5):
+    def __init__(self, nbins=30, threshold=.000001):
         self.nbins = nbins
         self.threshold = threshold
 
@@ -33,6 +33,7 @@ class ColorDiscretizer(object):
 
         bins = np.linspace(0, 255., self.nbins + 1)
         self.heatmap, _, _ = np.histogram2d(Us, Vs, bins=[bins, bins])
+        self.heatmap /= np.sum(self.heatmap)  # TODO normalize after filtering
 
         self.xycategories_to_indices_map = {}
         self.indices_to_xycategories_map = {}
@@ -40,11 +41,11 @@ class ColorDiscretizer(object):
         for xcategory in range(self.nbins):
             for (ycategory, heatscore) in enumerate(self.heatmap[xcategory, :]):
                 if heatscore > self.threshold:
-                    self.xycategories_to_indices_map[(xcategory, ycategory)] = index
+                    self.xycategories_to_indices_map[(xcategory, ycategory)] = (index, heatscore)
                     self.indices_to_xycategories_map[index] = (xcategory, ycategory)
                     index += 1
                 else:
-                    self.xycategories_to_indices_map[(xcategory, ycategory)] = 0
+                    self.xycategories_to_indices_map[(xcategory, ycategory)] = (0, 0)
                     self.indices_to_xycategories_map[0] = (xcategory, ycategory)
 
         self.n_categories = index
@@ -67,21 +68,39 @@ class ColorDiscretizer(object):
         plt.ylim([0, 255])
         plt.show()
 
-    def categorize(self, UVpixels):
-        Upixels = UVpixels[:, 0]
-        Vpixels = UVpixels[:, 1]
+    def categorize(self, UVpixels, return_weights=False):
+        """
+        From a list of UV pixels, returns the indices of the categories they fall in. If asked, returns a list of the
+        associated categories frequencies.
+        :param UVpixels:
+        :return:
+        """
+        Upixels = UVpixels[..., 0]
+        flatUpixels = Upixels.reshape([-1])
+        Vpixels = UVpixels[..., 1]
+        flatVpixels = Vpixels.reshape([-1])
 
-        Upixels_categories = np.searchsorted(self.xedges[:-1], Upixels) - 1
-        Vpixels_categories = np.searchsorted(self.yedges[:-1], Vpixels) - 1
+        Upixels_categories = np.searchsorted(self.xedges[:-1], flatUpixels) - 1
+        Vpixels_categories = np.searchsorted(self.yedges[:-1], flatVpixels) - 1
 
-        return [self.xycategories_to_indices_map[xycategories] for xycategories in
-                zip(Upixels_categories, Vpixels_categories)]
+        if return_weights:
+            return np.reshape(np.array([self.xycategories_to_indices_map[xycategories][0] for xycategories in
+                                        zip(Upixels_categories, Vpixels_categories)]), Upixels.shape), \
+                   np.reshape(np.array([self.xycategories_to_indices_map[xycategories][1] for xycategories in
+                                        zip(Upixels_categories, Vpixels_categories)]), Upixels.shape)
+        else:
+            return np.reshape(np.array([self.xycategories_to_indices_map[xycategories][0] for xycategories in
+                                        zip(Upixels_categories, Vpixels_categories)]), Upixels.shape)
 
     def UVpixels_from_distribution(self, distribution, temperature=1):
         """
         Returns mean pixels from Npixels distributions over the color categories.
-        :param distribution: matrix of size Npixels * n_categories.
+        :param temperature: temperature of the annealed probability distribution.
+        :param distribution: matrix of size Npixels * Mpixels * n_categories.
         """
         temp_distribution = np.exp(np.log(distribution) / temperature)
-        temp_distribution /= np.sum(temp_distribution, axis=1).reshape([-1, 1])
+        newshape = list(distribution.shape)
+        newshape[-1] = 1
+        temp_distribution /= np.sum(temp_distribution, axis=-1).reshape(newshape)
+
         return np.dot(temp_distribution, self.categories_mean_pixels)
