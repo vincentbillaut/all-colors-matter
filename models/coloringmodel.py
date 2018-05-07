@@ -122,16 +122,13 @@ class ColoringModel(object):
                 except tf.errors.OutOfRangeError:
                     break
 
-                if self.config.max_batch > 0 and batch >= self.config.max_batch:
+                if self.config.max_batch > 0 and batch > self.config.max_batch:
                     break
 
-            prog.update(batch, values=[("loss", loss)])
-
-            if batch >= self.config.max_batch:
-                break
+                prog.update(batch, values=[("loss", loss)])
 
             self.pred_color_one_image("data/iccv09Data/images/0000382.jpg",
-                                  "outputs/0000382_epoch{}".format(epoch_number))
+                                  "outputs/0000382_epoch{}".format(epoch_number),epoch_number)
 
     def train_model(self, warm_start=False):
         if not warm_start:
@@ -143,10 +140,9 @@ class ColoringModel(object):
             print("\nRunning epoch {}:".format(i))
             self.run_epoch(i)
 
-    def pred_color_one_image(self, image_path, out_jpg_path, epoch_number):
-        image_Yscale, image_UVscale = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
-        image_Yscale = image_Yscale.reshape([1] + self.config.image_shape[:2] + [1])
-        image_UVscale = image_UVscale.reshape([1] + self.config.image_shape[:2] + [2])
+    def pred_color_one_image(self,image_path, out_jpg_path, epoch_number):
+        image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
+
         feed = {self.image_Yscale: image_Yscale.reshape([1] + self.config.image_shape[:2] + [1]),
                 }
 
