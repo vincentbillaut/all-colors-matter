@@ -9,28 +9,30 @@ import numpy as np
 # input is a RGB numpy array with shape (height,width,3), can be uint,int,float
 # or double, values expected in the range 0..255
 # output is a double YUV numpy array with shape (height,width,3), values in the
-# range 0..255
+# ranges [0,1], [-0.436,.436], [-.615,.615]
 def RGB_to_YUV(rgb):
-    m = np.array([[0.29900, -0.16874, 0.50000],
-                  [0.58700, -0.33126, -0.41869],
-                  [0.11400, 0.50000, -0.08131]])
+    m = np.array([[0.29900, -0.14713333333333333333, 0.615],
+                  [0.58700, -0.28886666666666666666, -0.51498888888888888888888],
+                  [0.11400, 0.436, -0.10001111111111105]])
 
     yuv = np.dot(rgb, m)
-    yuv[:, :, 1:] += 128.0
+    yuv /= 255
     assert (rgb.shape == yuv.shape)
     return yuv
 
 
-# input is an YUV numpy array with shape (height,width,3) can be uint,int, float or double, values expected in the range 0..255
+# input is an YUV numpy array with shape (height,width,3) of floats expected in the range
+#  [0,1],[−0,436 ; 0,436], [−0,615 ; 0,615]
 # output is a double RGB numpy array with shape (height,width,3), values in the range 0..255
-def YUV_to_RGB(yuv):
-    m = np.array([[1.0, 1.0, 1.0],
-                  [-0.000007154783816076815, -0.3441331386566162, 1.7720025777816772],
-                  [1.4019975662231445, -0.7141380310058594, 0.00001542569043522235]])
+def YUV_to_RGB(yuv,correction = True):
+    m = np.array([[ 1.0,  1.0, 1.0],
+                   [-8.7249120380940816e-06, -3.9464658045574741e-01, 2.0321065918966941],
+                   [1.1398353110156241, -5.8059458027813926e-01, -1.5257635121515506e-05]])
     rgb = np.dot(yuv, m)
-    rgb[:, :, 0] -= 179.45477266423404
-    rgb[:, :, 1] += 135.45870971679688
-    rgb[:, :, 2] -= 226.8183044444304
+    rgb*=255.
+    if correction:
+        rgb[rgb>255]=255
+        rgb[rgb<0]=0
     assert (rgb.shape == yuv.shape)
     return rgb
 

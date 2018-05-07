@@ -8,14 +8,11 @@ if __name__ == "__main__":
     config = Config("configs/config.json")
 
     cd = ColorDiscretizer()
-    imdir = "data/iccv09Data/images/"
-    cd.train(imdir, 30)
+    cd.train(config.cd_train_path, 30)
 
     dataset = Dataset(config.train_path, config.val_path, cd)
     model = NaiveConvColoringModel(config, dataset=dataset)
 
-    conf = tf.ConfigProto()
-    conf.gpu_options.allow_growth = True
     model.train_model()
     model.save("test_save")
     # model.load("test_save")

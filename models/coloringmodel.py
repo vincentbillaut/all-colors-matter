@@ -152,7 +152,7 @@ class ColoringModel(object):
         print('\nprediction loss = {}'.format(loss))
         pred_UVimage = self.dataset.color_discretizer.UVpixels_from_distribution(pred_image_categories)
         pred_UVimage = np.reshape(pred_UVimage, newshape=pred_UVimage.shape[1:])
-        predicted_YUV_image = np.concatenate([image_Yscale, pred_UVimage], axis=2)
+        predicted_YUV_image = np.concatenate([image_Yscale, pred_UVimage], axis=2)*np.reshape(mask,(mask.shape[0],mask.shape[1],1))
         dump_YUV_image_to_jpg(predicted_YUV_image, out_jpg_path + "_pred.png")
 
         if epoch_number == 1:

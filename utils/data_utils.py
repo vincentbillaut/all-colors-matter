@@ -1,7 +1,7 @@
 import os
 
 import numpy as np
-from scipy.ndimage import imread
+from matplotlib.pyplot import imread
 from scipy.misc import imsave
 from utils.color_utils import RGB_to_YUV, YUV_to_RGB
 
@@ -14,7 +14,7 @@ def load_image_jpg_to_YUV(impath, is_test, config):
     :param config: contains the target image shape.
     :return: A tuple of the image in YUV format and the Y channel of the image.
     """
-    if impath is bytes:
+    if isinstance(impath,bytes):
         impath = impath.decode('utf-8')
     image = imread(impath).astype(np.dtype("float32"))
 

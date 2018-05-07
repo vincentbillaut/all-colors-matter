@@ -13,8 +13,8 @@ class ColorDiscretizer(object):
         self.threshold = threshold
         self.weighting_lambda = weighting_lambda
 
-        self.xedges = np.linspace(0, 255., self.nbins + 1)
-        self.yedges = np.linspace(0, 255., self.nbins + 1)
+        self.xedges = np.linspace(-.436,.436, self.nbins + 1)
+        self.yedges = np.linspace(-.615,.615, self.nbins + 1)
 
     def train(self, imdir="data/iccv09Data/images/", n_images=None):
         Us = []
@@ -32,8 +32,8 @@ class ColorDiscretizer(object):
             Us.extend(UVpixels[:, 0])
             Vs.extend(UVpixels[:, 1])
 
-        bins = np.linspace(0, 255., self.nbins + 1)
-        self.heatmap, _, _ = np.histogram2d(Us, Vs, bins=[bins, bins])
+
+        self.heatmap, _, _ = np.histogram2d(Us, Vs, bins=[self.xedges, self.yedges])
         self.heatmap /= np.sum(self.heatmap)
 
         self.xycategories_to_indices_map = {}
@@ -59,7 +59,7 @@ class ColorDiscretizer(object):
         self.weights = {k: weight / normalization_factor for k, weight in self.weights.items()}
 
         # TODO (128., 128.) as a default UV pixel might not be the best choice.
-        self.categories_mean_pixels = np.zeros([self.n_categories, 2]) + 128.
+        self.categories_mean_pixels = np.zeros([self.n_categories, 2])
         for index in range(1, self.n_categories):
             xcategory, ycategory = self.indices_to_xycategories_map[index]
             self.categories_mean_pixels[index, :] = [(self.xedges[xcategory] + self.xedges[xcategory + 1]) / 2,
@@ -73,8 +73,8 @@ class ColorDiscretizer(object):
 
         plt.imshow(logheatmap.T, extent=extent, origin='lower')
         plt.colorbar()
-        plt.xlim([0, 255])
-        plt.ylim([0, 255])
+        plt.xlim([-.436,.436])
+        plt.ylim([-.615,.615])
         plt.show()
 
     def categorize(self, UVpixels, return_weights=False):
@@ -107,7 +107,7 @@ class ColorDiscretizer(object):
         :param temperature: temperature of the annealed probability distribution.
         :param distribution: matrix of size Npixels * Mpixels * n_categories.
         """
-        temp_distribution = np.exp(np.log(distribution) / temperature)
+        temp_distribution = np.exp(np.log(distribution+1e-8) / temperature)
         newshape = list(distribution.shape)
         newshape[-1] = 1
         temp_distribution /= np.sum(temp_distribution, axis=-1).reshape(newshape)

@@ -11,11 +11,11 @@ class NaiveConvColoringModel(ColoringModel):
         """ Add Tensorflow ops to get scores from inputs.
         """
         init = tf.contrib.layers.xavier_initializer(seed=4)
-        conv1 = tf.layers.conv2d(self.image_Yscale, filters=50, kernel_size=3, strides=(1, 1), padding="SAME",
+        conv1 = tf.layers.conv2d(self.image_Yscale, filters=64, kernel_size=3, strides=(1, 1), padding="SAME",
                                  kernel_initializer=init)
         a1 = tf.nn.relu(conv1)
 
-        conv2 = tf.layers.conv2d(a1, filters=50, kernel_size=3, strides=(1, 1), padding="SAME", kernel_initializer=init)
+        conv2 = tf.layers.conv2d(a1, filters=32, kernel_size=3, strides=(1, 1), padding="SAME", kernel_initializer=init)
         a2 = tf.nn.relu(conv2)
 
         conv3 = tf.layers.conv2d(a2, filters=self.n_categories, kernel_size=3, strides=(1, 1), padding="SAME",
@@ -26,7 +26,7 @@ class NaiveConvColoringModel(ColoringModel):
     def add_train_op(self):
         """ Add Tensorflow op to run one iteration of SGD.
         """
-        opt = tf.train.AdamOptimizer(learning_rate=1e-4)
+        opt = tf.train.AdamOptimizer(learning_rate=self.config.lr)
         self.train_op = opt.minimize(self.loss)
 
     def add_pred_op(self):
