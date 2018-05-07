@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 from matplotlib.pyplot import imread
-from scipy.misc import imsave
+from imageio import imwrite
 from utils.color_utils import RGB_to_YUV, YUV_to_RGB
 
 
@@ -30,8 +30,8 @@ def load_image_jpg_to_YUV(impath, is_test, config):
 
 
 def dump_YUV_image_to_jpg(YUV_image, path):
-    RGB_image = YUV_to_RGB(YUV_image)
-    imsave(path, RGB_image, 'png')
+    RGB_image = YUV_to_RGB(YUV_image).astype("uint8")
+    imwrite(uri=path, im=RGB_image,format = 'png')
 
 
 def get_im_paths(path):
