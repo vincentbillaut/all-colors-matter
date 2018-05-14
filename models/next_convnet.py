@@ -12,7 +12,7 @@ class NextConvColoringModel(ColoringModel):
         """
         init = tf.contrib.layers.xavier_initializer(seed=4)
 
-        conv11 = tf.layers.conv2d(self.image_Yscale, filters=32, kernel_size=3, strides=(1, 1), padding="SAME",
+        conv11 = tf.layers.conv2d(self.image_Yscale, filters=32, kernel_size=3, strides=2, padding="SAME",
                                   kernel_initializer=init)
         a11 = tf.nn.relu(conv11)
         conv12 = tf.layers.conv2d(a11, filters=32, kernel_size=3, strides=(1, 1), padding="SAME",
@@ -54,8 +54,18 @@ class NextConvColoringModel(ColoringModel):
 
         upconv51 = tf.layers.conv2d_transpose(a43, filters=16, kernel_size=3, strides=2, padding="SAME",
                                               kernel_initializer=init)
+        a51 = tf.nn.relu(upconv51)
+        conv52 = tf.layers.conv2d(a51, filters=32, kernel_size=3, strides=(1, 1), padding="SAME",
+                                  kernel_initializer=init)
+        a52 = tf.nn.relu(conv52)
+        conv53 = tf.layers.conv2d(a52, filters=32, kernel_size=3, strides=(1, 1), padding="SAME",
+                                  kernel_initializer=init)
+        a53 = tf.nn.relu(conv53)
 
-        self.scores = tf.layers.conv2d(upconv51, filters=self.n_categories, kernel_size=1, strides=(1, 1), padding="SAME",
+        upconv61 = tf.layers.conv2d_transpose(a53, filters=16, kernel_size=3, strides=2, padding="SAME",
+                                              kernel_initializer=init)
+
+        self.scores = tf.layers.conv2d(upconv61, filters=self.n_categories, kernel_size=1, strides=(1, 1), padding="SAME",
                                   kernel_initializer=init)
 
 
