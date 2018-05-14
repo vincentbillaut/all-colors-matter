@@ -104,7 +104,7 @@ def plot_dataset_stats(ds_path, fignum=0):
 if __name__ == "__main__":
     resize_params = {
         "method": "lanczos",
-        "output_max": (500, 500)
+        "output_max": (512, 512)
     }
     argparser = argparse.ArgumentParser(description='Resize and prepare a dataset.')
     argparser.add_argument('--inpath', type=str, default=None)
