@@ -1,14 +1,15 @@
 {
-  "train_path": "data/sun_full_train",
-  "val_path": "data/sun_full_val",
-  "cd_train_path": "data/sun_full_train",
-  "batch_size": 16,
+  "train_path": "data/sun_inet_train",
+  "val_path": "data/sun_inet_val",
+  "cd_train_path": "data/sun_inet_train",
+  "batch_size": 2,
   "n_epochs": 20,
   "image_shape": [
-    500,
-    500,
+    512,
+    512,
     3
   ],
-  "max_batch": -1,
+  "max_batch": 50,
   "lr":1e-3
 }
+
