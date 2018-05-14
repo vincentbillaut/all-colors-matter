@@ -19,6 +19,7 @@ fi
 if [[ ( "$ALL" == true ) || ( "$DB" == 'sun' ) ]];
 then
     wget "http://groups.csail.mit.edu/vision/SUN/releases/SUN2012.tar.gz"
+    tar -xgz SUN2012.tar.gz
     rm SUN2012.tar.gz
     rm SUN2012/SUN2012.tar
     python3 clean_sun.py
@@ -29,6 +30,8 @@ fi
 if [[ ( "$ALL" == true ) || ( "$DB" == 'sun_full' ) ]];
 then
     wget "http://vision.princeton.edu/projects/2010/SUN/SUN397.tar.gz"
+    tar -xgz SUN397.tar.gz
+    rm SUN397.tar.gz
 fi
 
 #PUBFIG DB
