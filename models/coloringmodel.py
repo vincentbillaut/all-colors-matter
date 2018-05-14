@@ -143,8 +143,11 @@ class ColoringModel(object):
 
     def pred_color_one_image(self, image_path, out_jpg_path, epoch_number):
         image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
-
+        categorized_image, weights = self.dataset.color_discretizer.categorize(image_UVscale, return_weights=True)
         feed = {self.image_Yscale: image_Yscale.reshape([1] + self.config.image_shape[:2] + [1]),
+                self.categorized_image:categorized_image,
+                self.weights:weights,
+                self.mask:mask
                 }
 
         loss, pred_image_categories = self.session.run([self.loss, self.pred_image_categories],
