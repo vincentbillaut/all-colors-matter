@@ -4,8 +4,8 @@ from models.coloringmodel import ColoringModel
 
 
 class NaiveConvColoringModel(ColoringModel):
-    def __init__(self, config, dataset,name="NaiveConvNet",seed = 42):
-        super().__init__(config, dataset,name,seed)
+    def __init__(self, config, dataset, name="NaiveConvNet", seed=42):
+        super().__init__(config, dataset, name, seed)
 
     def add_model(self):
         """ Add Tensorflow ops to get scores from inputs.

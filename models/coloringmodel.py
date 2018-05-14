@@ -87,7 +87,8 @@ class ColoringModel(object):
         self.reshaped_mask_weights = tf.reshape(self.mask_weights,
                                                 shape=[-1, self.config.image_shape[0], self.config.image_shape[1], 1])
 
-        self.loss = - tf.reduce_mean(tf.log(tf.nn.softmax(self.scores)) * self.ytrue_onehot * self.reshaped_mask_weights)
+        self.loss = - tf.reduce_mean(
+            tf.log(tf.nn.softmax(self.scores)) * self.ytrue_onehot * self.reshaped_mask_weights)
 
     def add_train_op(self):
         """ Add Tensorflow op to run one iteration of SGD, stores it in self.train_op.
@@ -125,7 +126,7 @@ class ColoringModel(object):
                 prog.update(batch, values=[("loss", loss)])
 
             self.pred_color_one_image("data/iccv09Data/images/0000382.jpg",
-                                  "outputs/0000382_epoch{}".format(epoch_number),epoch_number)
+                                      "outputs/0000382_epoch{}".format(epoch_number), epoch_number)
 
     def train_model(self, warm_start=False):
         if not warm_start:
@@ -137,14 +138,14 @@ class ColoringModel(object):
             print("\nRunning epoch {}:".format(i))
             self.run_epoch(i)
 
-    def pred_color_one_image(self,image_path, out_jpg_path, epoch_number):
+    def pred_color_one_image(self, image_path, out_jpg_path, epoch_number):
         image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
 
         feed = {self.image_Yscale: image_Yscale.reshape([1] + self.config.image_shape[:2] + [1]),
                 }
 
         loss, pred_image_categories = self.session.run([self.loss, self.pred_image_categories],
-                                               feed_dict=feed)
+                                                       feed_dict=feed)
 
         print('\nprediction loss = {}'.format(loss))
         pred_UVimage = self.dataset.color_discretizer.UVpixels_from_distribution(pred_image_categories)

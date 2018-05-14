@@ -1,3 +1,5 @@
+import argparse
+
 import tensorflow as tf
 from models.coloringmodel import Config
 from models.naive_convnet import NaiveConvColoringModel
@@ -6,7 +8,11 @@ from utils.color_discretizer import ColorDiscretizer
 from utils.dataset import Dataset
 
 if __name__ == "__main__":
-    config = Config("configs/config.json")
+    argparser = argparse.ArgumentParser(description='Run a model from a given config file.')
+    argparser.add_argument('--config', type=str, default="configs/config.json")
+    args = argparser.parse_args()
+
+    config = Config(args.config)
 
     cd = ColorDiscretizer()
     cd.train(config.cd_train_path, 30)

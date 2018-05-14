@@ -8,7 +8,7 @@ from utils.color_utils import RGB_to_YUV
 
 
 class ColorDiscretizer(object):
-    def __init__(self, nbins=30, threshold=.000001, weighting_lambda=.5):
+    def __init__(self, nbins=30, threshold=.000001, weighting_lambda=.2):
         self.nbins = nbins
         self.threshold = threshold
         self.weighting_lambda = weighting_lambda
