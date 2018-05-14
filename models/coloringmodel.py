@@ -128,7 +128,7 @@ class ColoringModel(object):
 
             # self.pred_color_one_image("data/iccv09Data/images/0000382.jpg",
             #                           "outputs/0000382_epoch{}".format(epoch_number), epoch_number)
-            self.pred_color_one_image("data/test_pic.jpg",
+            self.pred_color_one_image("data/test_pic.jpeg",
                                       "outputs/samplepic_epoch{}".format(epoch_number), epoch_number)
 
     def train_model(self, warm_start=False):
