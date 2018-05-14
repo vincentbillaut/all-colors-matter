@@ -1,6 +1,7 @@
 import tensorflow as tf
 from models.coloringmodel import Config
 from models.naive_convnet import NaiveConvColoringModel
+from models.next_convnet import NextConvColoringModel
 from utils.color_discretizer import ColorDiscretizer
 from utils.dataset import Dataset
 
@@ -11,7 +12,7 @@ if __name__ == "__main__":
     cd.train(config.cd_train_path, 30)
 
     dataset = Dataset(config.train_path, config.val_path, cd)
-    model = NaiveConvColoringModel(config, dataset=dataset)
+    model = NextConvColoringModel(config, dataset=dataset)
 
     model.train_model()
     model.save("test_save")
