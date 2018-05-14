@@ -13,8 +13,8 @@ class ColorDiscretizer(object):
         self.threshold = threshold
         self.weighting_lambda = weighting_lambda
 
-        self.xedges = np.linspace(-.436,.436, self.nbins + 1)
-        self.yedges = np.linspace(-.615,.615, self.nbins + 1)
+        self.xedges = np.linspace(-.450, .450, self.nbins + 1)
+        self.yedges = np.linspace(-.650, .650, self.nbins + 1)
 
     def train(self, imdir="data/iccv09Data/images/", n_images=None):
         Us = []
@@ -31,7 +31,6 @@ class ColorDiscretizer(object):
             UVpixels = np.reshape(UVimage, newshape=[-1, 2])
             Us.extend(UVpixels[:, 0])
             Vs.extend(UVpixels[:, 1])
-
 
         self.heatmap, _, _ = np.histogram2d(Us, Vs, bins=[self.xedges, self.yedges])
         self.heatmap /= np.sum(self.heatmap)
@@ -73,8 +72,8 @@ class ColorDiscretizer(object):
 
         plt.imshow(logheatmap.T, extent=extent, origin='lower')
         plt.colorbar()
-        plt.xlim([-.436,.436])
-        plt.ylim([-.615,.615])
+        plt.xlim([-.450, .450])
+        plt.ylim([-.650, .650])
         plt.show()
 
     def categorize(self, UVpixels, return_weights=False):
@@ -107,7 +106,7 @@ class ColorDiscretizer(object):
         :param temperature: temperature of the annealed probability distribution.
         :param distribution: matrix of size Npixels * Mpixels * n_categories.
         """
-        temp_distribution = np.exp(np.log(distribution+1e-8) / temperature)
+        temp_distribution = np.exp(np.log(distribution + 1e-8) / temperature)
         newshape = list(distribution.shape)
         newshape[-1] = 1
         temp_distribution /= np.sum(temp_distribution, axis=-1).reshape(newshape)
