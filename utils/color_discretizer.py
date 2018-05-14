@@ -8,13 +8,14 @@ from utils.color_utils import RGB_to_YUV
 
 
 class ColorDiscretizer(object):
-    def __init__(self, nbins=30, threshold=.000001, weighting_lambda=.2):
+    def __init__(self, nbins=30, threshold=.000001, weighting_lambda=.2,max_categories = None):
         self.nbins = nbins
         self.threshold = threshold
         self.weighting_lambda = weighting_lambda
 
         self.xedges = np.linspace(-.450, .450, self.nbins + 1)
         self.yedges = np.linspace(-.650, .650, self.nbins + 1)
+        self.max_categories = max_categories
 
     def train(self, imdir="data/iccv09Data/images/", n_images=None):
         Us = []
@@ -38,6 +39,12 @@ class ColorDiscretizer(object):
         self.xycategories_to_indices_map = {}
         self.indices_to_xycategories_map = {}
         index = 1
+        if self.max_categories is not None:
+            sorted_values = np.sort(np.ravel(self.heatmap))[::-1]
+            num_categ = sorted_values.shape[0]-np.searchsorted(sorted_values[::-1],self.threshold)
+            if num_categ>self.max_categories:
+                self.threshold = (sorted_values[self.max_categories-1]+sorted_values[self.max_categories])*0.5
+
         for xcategory in range(self.nbins):
             for (ycategory, heatscore) in enumerate(self.heatmap[xcategory, :]):
                 if heatscore > self.threshold:
