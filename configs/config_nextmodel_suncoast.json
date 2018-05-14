@@ -9,7 +9,7 @@
     256,
     3
   ],
-  "max_batch": 50,
+  "max_batch": -1,
   "lr":1e-3,
   "max_categories":64
 }
