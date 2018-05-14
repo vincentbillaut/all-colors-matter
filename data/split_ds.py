@@ -1,3 +1,4 @@
+import argparse
 import os
 import shutil
 from matplotlib.pyplot import imread
@@ -105,17 +106,18 @@ if __name__ == "__main__":
         "method": "lanczos",
         "output_max": (500, 500)
     }
+    argparser = argparse.ArgumentParser(description='Resize and prepare a dataset.')
+    argparser.add_argument('--inpath', type=str, default=None)
+    argparser.add_argument('--outprefix', type=str, default=None)
+    args = argparser.parse_args()
     if os.path.isdir("SUN2012/Images"):
         prepare_dataset("SUN2012/Images", "sun_inet", begin_filter=["b_beach_sun", "c_coast", "s_sandbar"],
                         resize_params=resize_params)
     if os.path.isdir("imagenet"):
         for i, subinet in enumerate(os.listdir("imagenet")):
             prepare_dataset(os.path.join("imagenet", subinet), "sun_inet", resize_params=resize_params, overwrite_dir=False)
-    # for i, subinet in enumerate(os.listdir("imagenet")):
-    #     plot_dataset_stats(os.path.join("imagenet", subinet), i)
-    #
-    # plot_dataset_stats("SUN2012/Images", 5)
-    # plt.show()
 
-    plot_dataset_stats("sun_inet_train", 0)
-    plt.show()
+    if args.inpath is not None:
+        if args.outprefix is not None:
+            if os.path.isdir(args.inpath):
+                prepare_dataset(args.inpath, args.outprefix, resize_params=resize_params)
