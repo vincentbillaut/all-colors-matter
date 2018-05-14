@@ -29,6 +29,9 @@ fi
 if [[ ( "$ALL" == true ) || ( "$DB" == 'sun_full' ) ]];
 then
     wget "http://vision.princeton.edu/projects/2010/SUN/SUN397.tar.gz"
+    tar -xzf SUN397.tar.gz
+    rm SUN397.tar.gz
+    python3 clean_sun.py --full
 fi
 
 #PUBFIG DB
