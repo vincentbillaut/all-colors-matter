@@ -102,7 +102,8 @@ class ColoringModel(object):
 
     def run_epoch(self, epoch_number=0):
         nbatches = len(self.dataset.train_ex_paths)
-        prog = Progbar(target=min(nbatches, self.config.max_batch))
+        target_progbar = nbatches if self.config.max_batch<=0 else min(nbatches, self.config.max_batch)
+        prog = Progbar(target=target_progbar)
         batch = 0
 
         with self.graph.as_default():
