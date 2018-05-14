@@ -126,8 +126,10 @@ class ColoringModel(object):
 
                 prog.update(batch, values=[("loss", loss)])
 
-            self.pred_color_one_image("data/iccv09Data/images/0000382.jpg",
-                                      "outputs/0000382_epoch{}".format(epoch_number), epoch_number)
+            # self.pred_color_one_image("data/iccv09Data/images/0000382.jpg",
+            #                           "outputs/0000382_epoch{}".format(epoch_number), epoch_number)
+            self.pred_color_one_image("data/pred_pic.jpg",
+                                      "outputs/samplepic_epoch{}".format(epoch_number), epoch_number)
 
     def train_model(self, warm_start=False):
         if not warm_start:

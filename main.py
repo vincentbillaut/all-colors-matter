@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     config = Config(args.config)
 
-    cd = ColorDiscretizer()
+    cd = ColorDiscretizer(max_categories=config.max_categories)
     cd.train(config.cd_train_path, 30)
 
     dataset = Dataset(config.train_path, config.val_path, cd)
