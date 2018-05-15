@@ -18,7 +18,7 @@ class Config(object):
         self.__dict__.update(input_dict)
         self.config_name = config_path.split('/')[-1]
 
-        self.output_path = "outputs/" + "/{:%Y%m%d_%H%M%S}-".format(datetime.now()) + \
+        self.output_path = "outputs/" + "{:%Y%m%d_%H%M%S}-".format(datetime.now()) + \
                            hex(random.getrandbits(16))[2:].zfill(4) + "/"
         os.mkdir(self.output_path)
         copyfile(config_path, os.path.join(self.output_path, self.config_name))
