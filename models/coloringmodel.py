@@ -142,12 +142,12 @@ class ColoringModel(object):
                                       epoch_number)
 
     def train_model(self, warm_start=False):
-        self.writer = tf.summary.FileWriter(self.config.output_path, graph=tf.get_default_graph())
 
         if not warm_start:
             self._build_new_graph_session()
             with self.graph.as_default():
                 self.session.run(tf.global_variables_initializer())
+        self.writer = tf.summary.FileWriter(self.config.output_path, graph=self.graph)
         for ii in range(self.config.n_epochs):
             i = ii + 1
             print("\nRunning epoch {}:".format(i))
