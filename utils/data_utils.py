@@ -1,7 +1,10 @@
 import os
 
 import numpy as np
-from matplotlib.pyplot import imread,imsave
+import matplotlib
+
+matplotlib.use("agg")
+from matplotlib.pyplot import imread, imsave
 from utils.color_utils import RGB_to_YUV, YUV_to_RGB
 
 

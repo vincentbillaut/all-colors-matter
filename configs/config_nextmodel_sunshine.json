@@ -2,15 +2,16 @@
   "train_path": "data/sun_full_train",
   "val_path": "data/sun_full_val",
   "cd_train_path": "data/sun_full_train",
-  "batch_size": 2,
+  "batch_size": 32,
   "n_epochs": 20,
   "image_shape": [
-    512,
-    512,
+    256,
+    256,
     3
   ],
-  "max_batch": 50,
-  "lr":1e-3,
-  "max_categories":null
+  "max_batch": -1,
+  "lr": 1e-3,
+  "max_categories": 32,
+  "model": "NextConvColoringModel"
 }
 
