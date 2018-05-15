@@ -26,7 +26,7 @@ class NextConvColoringModel(ColoringModel):
                                   kernel_initializer=init,name="CONV_2_1")
         a21 = tf.nn.relu(conv21,name="RELU_2_1")
         conv22 = tf.layers.conv2d(a21, filters=64, kernel_size=3, strides=(1, 1), padding="SAME",
-                                  kernel_initializer=init,name="CONV_1_2")
+                                  kernel_initializer=init,name="CONV_2_2")
         a22 = tf.nn.relu(conv22,name="RELU_2_2")
         maxpool2 = tf.layers.max_pooling2d(a22, 2, 2,name = "MAXPOOL_2")
         bn2 = tf.layers.batch_normalization(maxpool2,name = "BATCHNORM_2")
