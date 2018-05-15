@@ -11,6 +11,7 @@
   ],
   "max_batch": 50,
   "lr":1e-3,
-  "max_categories":null
+  "max_categories":null,
+  "model": "NextConvColoringModel",
 }
 

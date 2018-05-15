@@ -4,6 +4,9 @@ import pickle
 
 import numpy as np
 import tensorflow as tf
+import random
+from datetime import datetime
+from shutil import copyfile
 
 from utils.data_utils import dump_YUV_image_to_jpg, load_image_jpg_to_YUV
 from utils.progbar import Progbar
@@ -14,6 +17,12 @@ class Config(object):
         input_dict = json.load(open(config_path))
         self.__dict__.update(input_dict)
         self.config_name = config_path.split('/')[-1]
+
+        self.output_path = "outputs/" + "/{:%Y%m%d_%H%M%S}-".format(datetime.now()) + \
+                           hex(random.getrandbits(16))[2:].zfill(4) + "/"
+        os.mkdir(self.output_path)
+        copyfile(config_path, os.path.join(self.output_path, self.config_name))
+        print("Saving model outputs to", self.output_path)
 
 
 class ColoringModel(object):
@@ -31,6 +40,7 @@ class ColoringModel(object):
         self.add_pred_op()
         self.add_loss_op()
         self.add_train_op()
+        self.add_tensorboard_op()
 
     def _build_new_graph_session(self):
 
@@ -100,9 +110,13 @@ class ColoringModel(object):
         """
         raise NotImplementedError
 
+    def add_tensorboard_op(self):
+        tf.summary.scalar("loss", self.loss)
+        self.summary_op = tf.summary.merge_all()
+
     def run_epoch(self, epoch_number=0):
         nbatches = len(self.dataset.train_ex_paths)
-        target_progbar = nbatches if self.config.max_batch<=0 else min(nbatches, self.config.max_batch)
+        target_progbar = nbatches if self.config.max_batch <= 0 else min(nbatches, self.config.max_batch)
         prog = Progbar(target=target_progbar)
         batch = 0
 
@@ -110,28 +124,26 @@ class ColoringModel(object):
             self.session.run(self.train_init_op)
             while True:
                 try:
-                    # feed = {self.dropout_placeholder: self.config.dropout,
-                    #         self.lr_placeholder: lr_schedule.lr,
-                    #         self.is_training: self.config.use_batch_norm}
-
-                    loss, _ = self.session.run([self.loss, self.train_op],
-                                               )  # feed_dict=feed)
+                    loss, summary, _ = self.session.run([self.loss, self.summary_op, self.train_op],
+                                                        )  # feed_dict=feed)
+                    self.writer.add_summary(summary, epoch_number * target_progbar + batch)
                     batch += self.config.batch_size
 
                 except tf.errors.OutOfRangeError:
                     break
 
-                if self.config.max_batch > 0 and batch > self.config.max_batch:
+                if 0 < self.config.max_batch < batch:
                     break
 
                 prog.update(batch, values=[("loss", loss)])
 
-            # self.pred_color_one_image("data/iccv09Data/images/0000382.jpg",
-            #                           "outputs/0000382_epoch{}".format(epoch_number), epoch_number)
             self.pred_color_one_image("data/test_pic.jpeg",
-                                      "outputs/samplepic_epoch{}".format(epoch_number), epoch_number)
+                                      os.path.join(self.config.output_path, "samplepic_epoch{}".format(epoch_number)),
+                                      epoch_number)
 
     def train_model(self, warm_start=False):
+        self.writer = tf.summary.FileWriter(self.config.output_path, graph=tf.get_default_graph())
+
         if not warm_start:
             self._build_new_graph_session()
             with self.graph.as_default():
@@ -145,9 +157,9 @@ class ColoringModel(object):
         image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
         categorized_image, weights = self.dataset.color_discretizer.categorize(image_UVscale, return_weights=True)
         feed = {self.image_Yscale: image_Yscale.reshape([1] + self.config.image_shape[:2] + [1]),
-                self.categorized_image:categorized_image.reshape([1] + self.config.image_shape[:2]),
-                self.weights:weights.reshape([1] + self.config.image_shape[:2]),
-                self.mask:mask.reshape([1] + self.config.image_shape[:2])
+                self.categorized_image: categorized_image.reshape([1] + self.config.image_shape[:2]),
+                self.weights: weights.reshape([1] + self.config.image_shape[:2]),
+                self.mask: mask.reshape([1] + self.config.image_shape[:2])
                 }
 
         loss, pred_image_categories = self.session.run([self.loss, self.pred_image_categories],
@@ -156,7 +168,8 @@ class ColoringModel(object):
         print('\nprediction loss = {}'.format(loss))
         pred_UVimage = self.dataset.color_discretizer.UVpixels_from_distribution(pred_image_categories)
         pred_UVimage = np.reshape(pred_UVimage, newshape=pred_UVimage.shape[1:])
-        predicted_YUV_image = np.concatenate([image_Yscale, pred_UVimage], axis=2)*np.reshape(mask,(mask.shape[0],mask.shape[1],1))
+        predicted_YUV_image = np.concatenate([image_Yscale, pred_UVimage], axis=2) * np.reshape(mask, (
+            mask.shape[0], mask.shape[1], 1))
         dump_YUV_image_to_jpg(predicted_YUV_image, out_jpg_path + "_pred.png")
 
         if epoch_number == 1:

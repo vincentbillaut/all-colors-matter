@@ -1,6 +1,5 @@
 import argparse
 
-import tensorflow as tf
 from models.coloringmodel import Config
 from models.naive_convnet import NaiveConvColoringModel
 from models.next_convnet import NextConvColoringModel
@@ -18,7 +17,16 @@ if __name__ == "__main__":
     cd.train(config.cd_train_path, 30)
 
     dataset = Dataset(config.train_path, config.val_path, cd)
-    model = NextConvColoringModel(config, dataset=dataset)
+
+    if hasattr(config, "model"):
+        if config.model == "NextConvColoringModel":
+            model = NextConvColoringModel(config, dataset=dataset)
+        elif config.model == "NaiveConvColoringModel":
+            model = NaiveConvColoringModel(config, dataset=dataset)
+        else:
+            model = NaiveConvColoringModel(config, dataset=dataset)
+    else:
+        model = NaiveConvColoringModel(config, dataset=dataset)
 
     model.train_model()
     model.save("test_save")
