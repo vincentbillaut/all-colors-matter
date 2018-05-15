@@ -38,33 +38,42 @@ class ColorDiscretizer(object):
 
         self.xycategories_to_indices_map = {}
         self.indices_to_xycategories_map = {}
-        index = 1
+        self.category_frequency = {}
+        index = 0
+
         if self.max_categories is not None:
             sorted_values = np.sort(np.ravel(self.heatmap))[::-1]
             num_categ = sorted_values.shape[0] - np.searchsorted(sorted_values[::-1], self.threshold)
             if num_categ > self.max_categories:
                 self.threshold = (sorted_values[self.max_categories - 1] + sorted_values[self.max_categories]) * 0.5
 
+        # First pass; giving unique ids to colors above threshold
         for xcategory in range(self.nbins):
             for (ycategory, heatscore) in enumerate(self.heatmap[xcategory, :]):
                 if heatscore > self.threshold:
-                    self.xycategories_to_indices_map[(xcategory, ycategory)] = (index, heatscore)
+                    self.xycategories_to_indices_map[(xcategory, ycategory)] = index
                     self.indices_to_xycategories_map[index] = (xcategory, ycategory)
+                    self.category_frequency[index] = heatscore
                     index += 1
-                else:
-                    self.xycategories_to_indices_map[(xcategory, ycategory)] = (0, 0)
-                    self.indices_to_xycategories_map[0] = (xcategory, ycategory)
+        # Second pass, mapping rare colors to frequent ones; updating frequencies
+        for xcategory in range(self.nbins):
+            for (ycategory, heatscore) in enumerate(self.heatmap[xcategory, :]):
+                if not heatscore > self.threshold:
+                    closest_class = min(range(self.max_categories),
+                                        key=lambda k: (self.indices_to_xycategories_map[k][0] - xcategory) ** 2 +
+                                                      (self.indices_to_xycategories_map[k][1] - ycategory) ** 2)
+                    self.category_frequency[closest_class] += heatscore
+                    self.xycategories_to_indices_map[(xcategory, ycategory)] = closest_class
 
-        self.n_categories = index
+        self.n_categories = index  # TODO: Revise?
 
         # compute the weights associated with every pixel class
         self.weights = {k: 1. / (proba * (1. - self.weighting_lambda) + self.weighting_lambda / self.n_categories) for
-                        k, (index, proba) in self.xycategories_to_indices_map.items()}
-        normalization_factor = sum(
-            [self.weights[k] * self.xycategories_to_indices_map[k][1] for k in self.weights])
+                        (k, proba) in self.category_frequency.items()}
+
+        normalization_factor = sum([self.weights[k] * self.category_frequency[k] for k in self.weights])
         self.weights = {k: weight / normalization_factor for k, weight in self.weights.items()}
 
-        # TODO (128., 128.) as a default UV pixel might not be the best choice.
         self.categories_mean_pixels = np.zeros([self.n_categories, 2])
         for index in range(1, self.n_categories):
             xcategory, ycategory = self.indices_to_xycategories_map[index]
@@ -99,12 +108,12 @@ class ColorDiscretizer(object):
         Vpixels_categories = np.searchsorted(self.yedges[:-1], flatVpixels) - 1
 
         if return_weights:
-            return np.reshape(np.array([self.xycategories_to_indices_map[xycategories][0] for xycategories in
+            return np.reshape(np.array([self.xycategories_to_indices_map[xycategories] for xycategories in
                                         zip(Upixels_categories, Vpixels_categories)]), Upixels.shape), \
                    np.reshape(np.array([self.weights[xycategories] for xycategories in
                                         zip(Upixels_categories, Vpixels_categories)]), Upixels.shape)
         else:
-            return np.reshape(np.array([self.xycategories_to_indices_map[xycategories][0] for xycategories in
+            return np.reshape(np.array([self.xycategories_to_indices_map[xycategories] for xycategories in
                                         zip(Upixels_categories, Vpixels_categories)]), Upixels.shape)
 
     def UVpixels_from_distribution(self, distribution, temperature=1):
