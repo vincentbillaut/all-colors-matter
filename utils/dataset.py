@@ -16,11 +16,11 @@ class Dataset(object):
         self.filter = filter
         self.train_ex_paths = get_im_paths(self.train_path)
         self.val_ex_paths = get_im_paths(self.val_path)
+        self.iterating_seed = 0
 
     def get_dataset_batched(self, is_test, config):
-       self.iterating_seed = 0
         def gen():
-            return self.gen_images(self.val_path if is_test else self.train_path, is_test, config,seed)
+            return self.gen_images(self.val_path if is_test else self.train_path, is_test, config)
 
         dataset = tf.data.Dataset.from_generator(generator=gen,
                                                  output_types=(tf.float32,
@@ -32,7 +32,7 @@ class Dataset(object):
         batched_dataset = batched_dataset.prefetch(1)
         return batched_dataset
 
-    def gen_images(self, directory, is_test, config,seed = 0):
+    def gen_images(self, directory, is_test, config):
         images_paths = os.listdir(directory)
         if self.filter is None:
             global_images_paths = [os.path.join(directory, impath) for impath in images_paths]
