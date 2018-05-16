@@ -57,7 +57,7 @@ Stanford University\\
 % TODO for final report
 
 %\begin{abstract}
-%   
+%
 %\end{abstract}
 
 %%%%%%%%% BODY TEXT
@@ -124,7 +124,7 @@ Concretely, we want to discretize our colorspace, and for that we simply split o
 Following the approach of \cite{zhang2016colorful}, we want to boost the possibility of a rare color being predicted, and therefore reproduce the following tricks:
 \begin{itemize}
 \item Use \textit{rebalancing} to give larger weights to rare colors in our loss function. Precisely, each pixel value $p$, assigned to its closest bin $b \in \mathbb{R}^n$ is given a weight $w_p$ such that $$w_p \propto \left( (1-\lambda) \widehat{P}(b) + {\lambda \over n} \right)^{-1}$$ where $\widehat{P}(b)$ is the estimated probability of the bin (computed prior to our model's training).
-\item Use an \textit{annealed-mean} to output predictions $y$ from the probability distribution $\textbf{Z}$ over our $n$ bins to the original, full color space. The idea is to find a compromise between taking the color class with the maximum probability (the mode), which gives a rather colorful result but sometimes lacking spatial consistency, and taking the weighted average over the bins, which gives a rather flat, sepia kind of tone. To achieve this we use a temperature parameter $T$ in the following softmax-like formula for one pixel $$y = f_T(\textbf{z}) = {\exp(\log(\textbf{z}) / T) \over \sum_i \exp(\log(\textbf{z}_i) / T)}$$ where $\textbf{z}$ is the $n$-dimensional probability vector of a given pixel over the $n$ bins, and the sum in the denominator is over all the bins. 
+\item Use an \textit{annealed-mean} to output predictions $y$ from the probability distribution $\textbf{Z}$ over our $n$ bins to the original, full color space. The idea is to find a compromise between taking the color class with the maximum probability (the mode), which gives a rather colorful result but sometimes lacking spatial consistency, and taking the weighted average over the bins, which gives a rather flat, sepia kind of tone. To achieve this we use a temperature parameter $T$ in the following softmax-like formula for one pixel $$y = f_T(\textbf{z}) = {\exp(\log(\textbf{z}) / T) \over \sum_i \exp(\log(\textbf{z}_i) / T)}$$ where $\textbf{z}$ is the $n$-dimensional probability vector of a given pixel over the $n$ bins, and the sum in the denominator is over all the bins.
 \end{itemize}
 
 \begin{figure}
@@ -200,6 +200,11 @@ This is summed up in table 1:
 %											 _
 % If ambitious, extend to videos (already	| |
 % mentioned in introduction).				|_|
+These results are encouraging as they show the robustness of the preliminary blocks we built, such as the color discretization and the learning and validating framework.
+
+The next step of this project is to experiment with the network's composition. We want to test the influence of meta-parameters (layer size, regularization rate, dropout rate) on our learning performance. We expect to strengthen our results by optimizing our network this way. Next, we'll want to test new and more fancy network structures, such as U-nets, in order to see if we can reconstruct more information from our images.
+
+Finally, we'll want to expand our analysis to larger datasets. This step is crucial as it provides the perfect testing ground to quantify the ability of our model to generalize. If this performs well, we'll push towards colorizing videos, which should yield the most exciting results.
 
 {\small
 \bibliographystyle{ieee}
