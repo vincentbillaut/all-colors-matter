@@ -17,7 +17,8 @@ class Dataset(object):
         self.train_ex_paths = get_im_paths(self.train_path)
         self.val_ex_paths = get_im_paths(self.val_path)
 
-    def get_dataset_batched(self, is_test, config,seed = 0):
+    def get_dataset_batched(self, is_test, config):
+       self.iterating_seed = 0
         def gen():
             return self.gen_images(self.val_path if is_test else self.train_path, is_test, config,seed)
 
@@ -42,7 +43,7 @@ class Dataset(object):
 
         images_paths_utf.sort()
         if not is_test:
-            np.random.seed(seed)
+            np.random.seed(self.iterating_seed)
             np.random.shuffle(images_paths_utf)
 
         for impath in images_paths_utf:
