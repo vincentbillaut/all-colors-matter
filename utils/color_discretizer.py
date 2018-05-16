@@ -55,17 +55,19 @@ class ColorDiscretizer(object):
                     self.indices_to_xycategories_map[index] = (xcategory, ycategory)
                     self.category_frequency[index] = heatscore
                     index += 1
+
+        self.n_categories = index  # TODO: Revise?
+
         # Second pass, mapping rare colors to frequent ones; updating frequencies
         for xcategory in range(self.nbins):
             for (ycategory, heatscore) in enumerate(self.heatmap[xcategory, :]):
                 if not heatscore > self.threshold:
-                    closest_class = min(range(self.max_categories),
+                    closest_class = min(range(self.n_categories),
                                         key=lambda k: (self.indices_to_xycategories_map[k][0] - xcategory) ** 2 +
                                                       (self.indices_to_xycategories_map[k][1] - ycategory) ** 2)
                     self.category_frequency[closest_class] += heatscore
                     self.xycategories_to_indices_map[(xcategory, ycategory)] = closest_class
 
-        self.n_categories = index  # TODO: Revise?
 
         # compute the weights associated with every pixel class
         self.weights = {k: 1. / (proba * (1. - self.weighting_lambda) + self.weighting_lambda / self.n_categories) for
@@ -110,7 +112,7 @@ class ColorDiscretizer(object):
         if return_weights:
             return np.reshape(np.array([self.xycategories_to_indices_map[xycategories] for xycategories in
                                         zip(Upixels_categories, Vpixels_categories)]), Upixels.shape), \
-                   np.reshape(np.array([self.weights[xycategories] for xycategories in
+                   np.reshape(np.array([self.weights[self.xycategories_to_indices_map[xycategories]] for xycategories in
                                         zip(Upixels_categories, Vpixels_categories)]), Upixels.shape)
         else:
             return np.reshape(np.array([self.xycategories_to_indices_map[xycategories] for xycategories in
