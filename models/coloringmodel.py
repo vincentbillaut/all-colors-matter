@@ -1,12 +1,11 @@
 import json
 import os
-import pickle
-
-import numpy as np
-import tensorflow as tf
 import random
 from datetime import datetime
 from shutil import copyfile
+
+import numpy as np
+import tensorflow as tf
 
 from utils.data_utils import dump_YUV_image_to_jpg, load_image_jpg_to_YUV
 from utils.progbar import Progbar
@@ -21,7 +20,8 @@ class Config(object):
         self.output_path = "outputs/" + "{:%Y%m%d_%H%M%S}-".format(datetime.now()) + \
                            hex(random.getrandbits(16))[2:].zfill(4) + "/"
         os.mkdir(self.output_path)
-        copyfile(config_path, os.path.join(self.output_path, self.config_name))
+
+        copyfile(config_path, os.path.join(self.output_path, "config.json"))
         print("Saving model outputs to", self.output_path)
 
 
@@ -60,7 +60,7 @@ class ColoringModel(object):
         self.session = tf.Session(graph=self.graph, config=conf)
 
     def add_dataset(self):
-        train_dataset = self.dataset.get_dataset_batched(False, self.config,shuffle=True,seed = self.seed)
+        train_dataset = self.dataset.get_dataset_batched(False, self.config)
         val_dataset = self.dataset.get_dataset_batched(True, self.config)
 
         # iterator just needs to know the output types and shapes of the datasets
@@ -114,7 +114,7 @@ class ColoringModel(object):
         tf.summary.scalar("loss", self.loss)
         self.summary_op = tf.summary.merge_all()
 
-    def run_epoch(self, epoch_number=0,val_type = "single"):
+    def run_epoch(self, epoch_number=0, val_type="single"):
         nbatches = len(self.dataset.train_ex_paths)
         target_progbar = nbatches if self.config.max_batch <= 0 else min(nbatches, self.config.max_batch)
         prog = Progbar(target=target_progbar)
@@ -136,26 +136,27 @@ class ColoringModel(object):
                     break
 
                 prog.update(batch, values=[("loss", loss)])
-            if val_type=="single":
+            if val_type == "single":
                 self.pred_color_one_image("data/test_pic.jpeg",
-                                      os.path.join(self.config.output_path, "samplepic_epoch{}".format(epoch_number)),
-                                      epoch_number)
-        if val_type=="full":
-            self.pred_validation_set(epoch_number)
+                                          os.path.join(self.config.output_path,
+                                                       "samplepic_epoch{}".format(epoch_number)),
+                                          epoch_number)
+            if val_type == "full":
+                self.pred_validation_set(epoch_number)
 
-    def train_model(self, warm_start=False,val_type = "single"):
-
+    def train_model(self, warm_start=False, val_type="single"):
         if not warm_start:
             self._build_new_graph_session()
             with self.graph.as_default():
                 self.session.run(tf.global_variables_initializer())
-        self.writer = tf.summary.FileWriter(self.config.output_path+"train/", graph=self.graph)
+        self.writer = tf.summary.FileWriter(self.config.output_path + "train/", graph=self.graph)
         for ii in range(self.config.n_epochs):
             i = ii + 1
             print("\nRunning epoch {}/{}:".format(i, self.config.n_epochs))
-            self.run_epoch(i,val_type=val_type)
+            self.run_epoch(i, val_type=val_type)
+            self.dataset.iterating_seed += 1
 
-    def pred_color_one_image(self, image_path, out_jpg_path, epoch_number):
+    def pred_color_one_image(self, image_path, out_jpg_path=None, epoch_number=0):
         image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
         categorized_image, weights = self.dataset.color_discretizer.categorize(image_UVscale, return_weights=True)
         feed = {self.image_Yscale: image_Yscale.reshape([1] + self.config.image_shape[:2] + [1]),
@@ -167,22 +168,24 @@ class ColoringModel(object):
         loss, pred_image_categories = self.session.run([self.loss, self.pred_image_categories],
                                                        feed_dict=feed)
 
-        print('\nprediction loss = {}'.format(loss))
-        pred_UVimage = self.dataset.color_discretizer.UVpixels_from_distribution(pred_image_categories)
-        pred_UVimage = np.reshape(pred_UVimage, newshape=pred_UVimage.shape[1:])
-        predicted_YUV_image = np.concatenate([image_Yscale, pred_UVimage], axis=2) * np.reshape(mask, (
-            mask.shape[0], mask.shape[1], 1))
-        dump_YUV_image_to_jpg(predicted_YUV_image, out_jpg_path + "_pred.png")
+        if out_jpg_path is not None:
+            print('\nprediction loss = {}'.format(loss))
+            pred_UVimage = self.dataset.color_discretizer.UVpixels_from_distribution(pred_image_categories)
+            pred_UVimage = np.reshape(pred_UVimage, newshape=pred_UVimage.shape[1:])
+            predicted_YUV_image = np.concatenate([image_Yscale, pred_UVimage], axis=2) * np.reshape(mask, (
+                mask.shape[0], mask.shape[1], 1))
+            dump_YUV_image_to_jpg(predicted_YUV_image, out_jpg_path + "_pred.png")
 
-        if epoch_number == 1:
-            true_YUV_image = np.concatenate([image_Yscale, image_UVscale], axis=2)
-            dump_YUV_image_to_jpg(true_YUV_image, out_jpg_path + "_groundtruth.png")
+            if epoch_number == 1:
+                true_YUV_image = np.concatenate([image_Yscale, image_UVscale], axis=2)
+                dump_YUV_image_to_jpg(true_YUV_image, out_jpg_path + "_groundtruth.png")
+        return loss
 
-    def pred_validation_set(self,epoch_number = 0):
+    def pred_validation_set(self, epoch_number=0):
         print("Validating epoch {} ...".format(epoch_number))
         self.writer_val = tf.summary.FileWriter(self.config.output_path + "test/", graph=self.graph)
         nbatches = len(self.dataset.val_ex_paths)
-        if hasattr(self.config,"max_batch_val"):
+        if hasattr(self.config, "max_batch_val"):
             target_progbar = nbatches if self.config.max_batch_val <= 0 else min(nbatches, self.config.max_batch_val)
         else:
             target_progbar = nbatches
@@ -193,7 +196,8 @@ class ColoringModel(object):
             self.session.run(self.test_init_op)
             while True:
                 try:
-                    loss, summary, pred_image_categories = self.session.run([self.loss, self.summary_op,self.pred_image_categories],)
+                    loss, summary, pred_image_categories = self.session.run(
+                        [self.loss, self.summary_op, self.pred_image_categories], )
                     self.writer_val.add_summary(summary, epoch_number * target_progbar + batch)
                     batch += self.config.batch_size
 
@@ -205,36 +209,28 @@ class ColoringModel(object):
 
                 prog.update(batch, values=[("loss", loss)])
 
-    def save(self, model_name=None, save_dir='checkpoints', verbose=True):
+    def save(self, save_dir=None, verbose=True):
         """Save current model."""
-        if model_name is None:
-            model_name = self.name
-
-        model_dir = os.path.join(save_dir, model_name)
-        if not os.path.exists(model_dir):
-            os.makedirs(model_dir)
+        if save_dir is None:
+            save_dir = os.path.join(self.config.output_path, "checkpoints")
+            os.mkdir(save_dir)
 
         # Create Saver
         with self.graph.as_default():
             saver = tf.train.Saver(tf.global_variables())
 
-        # Save model kwargs needed to rebuild model
-        with open(os.path.join(model_dir, "model_config.pkl"), 'wb') as f:
-            pickle.dump(self.config, f)
-
         # Save graph
-        saver.save(self.session, os.path.join(model_dir, model_name))
+        saver.save(self.session, os.path.join(save_dir, "model"))
         if verbose:
-            print("[{0}] Model saved as <{1}>".format(self.name, model_name))
+            print("Model saved in {}".format(save_dir))
 
-    def load(self, model_name=None, save_dir='checkpoints', verbose=True):
+    def load(self, output_dir, verbose=True):
         """Load model"""
-        model_name = model_name or self.name
-        model_dir = os.path.join(save_dir, model_name)
+        save_dir = os.path.join(output_dir, "checkpoints")
+        config_dir = os.path.join(output_dir, "config.json")
 
-        # Load model kwargs needed to rebuild model
-        with open(os.path.join(model_dir, "model_config.pkl"), 'rb') as f:
-            self.config = pickle.load(f)
+        # Load the dumped model config
+        self.config = Config(config_dir)
 
         # Create new graph, build network, and start session
         self._build_new_graph_session()
@@ -246,11 +242,11 @@ class ColoringModel(object):
         # Load saved checkpoint to populate trained parameters
         with self.graph.as_default():
             saver = tf.train.Saver(tf.global_variables())
-            ckpt = tf.train.get_checkpoint_state(model_dir)
+            ckpt = tf.train.get_checkpoint_state(os.path.join(save_dir))
         if ckpt and ckpt.model_checkpoint_path:
             saver.restore(self.session, ckpt.model_checkpoint_path)
             if verbose:
-                print("[{0}] Loaded model <{1}>".format(self.name, model_name))
+                print("[{0}] Loaded model <{1}>".format(self.name, save_dir))
         else:
             raise Exception("[{0}] No model found at <{1}>".format(
-                self.name, model_name))
+                self.name, save_dir))

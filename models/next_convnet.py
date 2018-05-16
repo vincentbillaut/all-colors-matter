@@ -10,7 +10,7 @@ class NextConvColoringModel(ColoringModel):
     def add_model(self):
         """ Add Tensorflow ops to get scores from inputs.
         """
-        init = tf.contrib.layers.xavier_initializer(seed=4)
+        init = tf.contrib.layers.xavier_initializer(seed=self.seed)
 
         conv11 = tf.layers.conv2d(self.image_Yscale, filters=32, kernel_size=3, strides=2, padding="SAME",
                                   kernel_initializer=init,name="CONV_1_1")
