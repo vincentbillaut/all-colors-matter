@@ -49,7 +49,7 @@ class Dataset(object):
         if not is_test:
             np.random.seed(self.iterating_seed)
             np.random.shuffle(images_paths_utf)
-        print(images_paths_utf[0])
+
         for impath in images_paths_utf:
             image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(impath, is_test, config)
             categorized_image, weights = self.color_discretizer.categorize(image_UVscale, return_weights=True)
