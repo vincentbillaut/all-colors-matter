@@ -114,7 +114,7 @@ class ColoringModel(object):
         tf.summary.scalar("loss", self.loss)
         self.summary_op = tf.summary.merge_all()
 
-    def run_epoch(self, epoch_number=0):
+    def run_epoch(self, epoch_number=0,val_type = "single"):
         nbatches = len(self.dataset.train_ex_paths)
         target_progbar = nbatches if self.config.max_batch <= 0 else min(nbatches, self.config.max_batch)
         prog = Progbar(target=target_progbar)
@@ -136,22 +136,24 @@ class ColoringModel(object):
                     break
 
                 prog.update(batch, values=[("loss", loss)])
-
-            self.pred_color_one_image("data/test_pic.jpeg",
+            if val_type=="single":
+                self.pred_color_one_image("data/test_pic.jpeg",
                                       os.path.join(self.config.output_path, "samplepic_epoch{}".format(epoch_number)),
                                       epoch_number)
+        if val_type=="full":
+            self.pred_validation_set(epoch_number)
 
-    def train_model(self, warm_start=False):
+    def train_model(self, warm_start=False,val_type = "single"):
 
         if not warm_start:
             self._build_new_graph_session()
             with self.graph.as_default():
                 self.session.run(tf.global_variables_initializer())
-        self.writer = tf.summary.FileWriter(self.config.output_path, graph=self.graph)
+        self.writer = tf.summary.FileWriter(self.config.output_path+"train/", graph=self.graph)
         for ii in range(self.config.n_epochs):
             i = ii + 1
             print("\nRunning epoch {}/{}:".format(i, self.config.n_epochs))
-            self.run_epoch(i)
+            self.run_epoch(i,val_type=val_type)
 
     def pred_color_one_image(self, image_path, out_jpg_path, epoch_number):
         image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
@@ -175,6 +177,33 @@ class ColoringModel(object):
         if epoch_number == 1:
             true_YUV_image = np.concatenate([image_Yscale, image_UVscale], axis=2)
             dump_YUV_image_to_jpg(true_YUV_image, out_jpg_path + "_groundtruth.png")
+
+    def pred_validation_set(self,epoch_number = 0):
+        print("Validating epoch {} ...".format(epoch_number))
+        self.writer_val = tf.summary.FileWriter(self.config.output_path + "test/", graph=self.graph)
+        nbatches = len(self.dataset.val_ex_paths)
+        if hasattr(self.config,"max_batch_val"):
+            target_progbar = nbatches if self.config.max_batch_val <= 0 else min(nbatches, self.config.max_batch_val)
+        else:
+            target_progbar = nbatches
+        prog = Progbar(target=target_progbar)
+        batch = 0
+
+        with self.graph.as_default():
+            self.session.run(self.test_init_op)
+            while True:
+                try:
+                    loss, summary, pred_image_categories = self.session.run([self.loss, self.summary_op,self.pred_image_categories],)
+                    self.writer_val.add_summary(summary, epoch_number * target_progbar + batch)
+                    batch += self.config.batch_size
+
+                except tf.errors.OutOfRangeError:
+                    break
+
+                if 0 < self.config.max_batch < batch:
+                    break
+
+                prog.update(batch, values=[("loss", loss)])
 
     def save(self, model_name=None, save_dir='checkpoints', verbose=True):
         """Save current model."""
