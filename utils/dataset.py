@@ -17,9 +17,9 @@ class Dataset(object):
         self.train_ex_paths = get_im_paths(self.train_path)
         self.val_ex_paths = get_im_paths(self.val_path)
 
-    def get_dataset_batched(self, is_test, config,shuffle = False,seed = 42):
+    def get_dataset_batched(self, is_test, config,seed = 0):
         def gen():
-            return self.gen_images(self.val_path if is_test else self.train_path, is_test, config)
+            return self.gen_images(self.val_path if is_test else self.train_path, is_test, config,seed)
 
         dataset = tf.data.Dataset.from_generator(generator=gen,
                                                  output_types=(tf.float32,
@@ -29,11 +29,9 @@ class Dataset(object):
         batch_size = config.batch_size
         batched_dataset = dataset.batch(batch_size)
         batched_dataset = batched_dataset.prefetch(1)
-        if shuffle:
-            batched_dataset = batched_dataset.shuffle(buffer_size=5,seed = seed,reshuffle_each_iteration=True)
         return batched_dataset
 
-    def gen_images(self, directory, is_test, config):
+    def gen_images(self, directory, is_test, config,seed = 0):
         images_paths = os.listdir(directory)
         if self.filter is None:
             global_images_paths = [os.path.join(directory, impath) for impath in images_paths]
@@ -44,7 +42,7 @@ class Dataset(object):
 
         images_paths_utf.sort()
         if not is_test:
-            np.random.seed(0)
+            np.random.seed(seed)
             np.random.shuffle(images_paths_utf)
 
         for impath in images_paths_utf:
