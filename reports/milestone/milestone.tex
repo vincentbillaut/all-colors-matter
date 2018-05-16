@@ -93,17 +93,20 @@ Upon loading of an image, we switch the encoding from the RGB format to the YUV 
 
 \subsection{Expected results and evaluation}
 
-
+% try to overfit 						[ ]
+% validation
+%	- manual (visual) will be ~enough	[ ]
+% 	- decreasing loss is good enough	[ ]
 
 \section{Technical approach}
 
 \subsection{Overview}
 
-% CNN approach
-%	- classification, not regression
-%	- prediction trick
-%	- rebalancing trick
-% considered GANs ?
+% CNN approach							[ ]
+%	- classification, not regression	[X]
+%	- prediction trick					[X]
+%	- rebalancing trick					[X]
+% considered GANs ?						[ ]
 
 The practical approaches to learning the color of a grayscale image can be split in two groups: the ones who take the angle of regression and try to predict a continuous color value, \eg \cite{cheng2015deep}, \cite{dahl2016tinyclouds} and \cite{deshpande2015learning}, and the ones who take an angle of classification, and discretize the color space into a finite amount of bins, \eg \cite{charpiat2008automatic} and \cite{zhang2016colorful}. Once again taking the angle of \cite{zhang2016colorful}, we're approaching the colorization as a classification problem.
 
@@ -128,19 +131,26 @@ Following the approach of \cite{zhang2016colorful}, we want to boost the possibi
 Figure \ref{cdex} shows our discretized colorspace, as well as what the weights of the bins look like after rebalancing.
 
 
-
 \subsection{Current model}
 
 % details on 	# of layers
 % 				sizes of layers
 %				batch norm
+% layers table								[ ]
 
 \section{Preliminary results}
 
-% our best hyper parameters yet
-% one or two examples of predicted images
+% our best hyper parameters yet				[ ]
+% one or two examples of predicted images	[ ]
 
 \section{Next steps}
+
+% Depending on results, we can
+% 	- extend to more layers					[ ]
+% 	- extend to bigger training set			[ ]
+%											 _
+% If ambitious, extend to videos (already	| |
+% mentioned in introduction).				|_|
 
 {\small
 \bibliographystyle{ieee}
