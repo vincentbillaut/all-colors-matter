@@ -95,6 +95,7 @@ class ColorDiscretizer(object):
         plt.ylim([-.650, .650])
         plt.xlim([-.650, .650])
         plt.title("Frequency map (log-scale)")
+        # plt.title("(b)", fontsize=25)
 
         plt.subplot(224)
         weights_matrix = np.zeros([self.nbins, self.nbins])
@@ -106,6 +107,7 @@ class ColorDiscretizer(object):
         plt.ylim([-.650, .650])
         plt.xlim([-.650, .650])
         plt.title("Weight map (log-scale)")
+        # plt.title("(d)", fontsize=25)
 
         plt.subplot(221)
         color_matrix = np.zeros([self.nbins, self.nbins, 3]) + 255.
@@ -117,6 +119,7 @@ class ColorDiscretizer(object):
         plt.ylim([-.650, .650])
         plt.xlim([-.650, .650])
         plt.title("Color map")
+        # plt.title("(a)", fontsize=25)
 
         plt.subplot(223)
         plt.imshow(-logheatmap.T, extent=extent, origin='lower')
@@ -124,6 +127,7 @@ class ColorDiscretizer(object):
         plt.ylim([-.650, .650])
         plt.xlim([-.650, .650])
         plt.title("Inverse-frequency map (log-scale)")
+        # plt.title("(c)", fontsize=25)
 
         plt.tight_layout()
 
