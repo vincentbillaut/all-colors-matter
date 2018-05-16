@@ -26,7 +26,7 @@
 \begin{document}
 
 %%%%%%%%% TITLE
-\title{Colorization}
+\title{A convolutional classification approach to colorization}
 
 \author{Vincent Billaut\\
 Department of Statistics\\
@@ -64,7 +64,6 @@ Stanford University\\
 \section{Introduction}
 
 The problem of colorization is one that comes quickly to mind when thinking about interesting challenges involving pictural data. Namely, the goal is to build a model that takes the greyscale version of an image (or even an actual "black and white" picture) and outputs its colorized version, as close to the original as possible (or at least realistic, if the original is not in colors).
-
 One clear upside to this challenge is that any computer vision dataset, and even any image bank really, is a proper dataset for the colorization problem (the image itself is the model's expected output, and its greyscale version is the input to the model).
 
 Classical approaches to this task, \eg \cite{cheng2015deep} and \cite{dahl2016tinyclouds}, aim at predicting an image as close as possible to the ground truth, and notably make use of a simple $L_2$ loss, which penalizes predictions that fall overall too far from the ground truth. As a consequence, the models trained following such methods usually tend to be very conservative, and to give desaturated, pale results.
@@ -84,7 +83,7 @@ More precisely, we are tackling a simplified version of our general task: correc
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=200px]{img/beach.jpg}
+\includegraphics[width=150px]{img/beach.jpg}
 \caption{Example of a picture from our reduced datasets (in this case, from \texttt{ImageNet/beach})}
 \label{inex}
 \end{center}
@@ -96,30 +95,26 @@ Upon loading of an image, we switch the encoding from the RGB format to the YUV 
 
 % try to overfit 						[ ]
 % validation
-%	- manual (visual) will be ~enough	[ ]
-% 	- decreasing loss is good enough	[ ]
+%	- manual (visual) will be ~enough	[X]
+% 	- decreasing loss is good enough	[X]
 
-The final objective of our project is ideally to be able to recolorize old grayscale pictures. For this milestone, our objective is to be able to recolorize seashore pictures in a plausible way. The purpose is not to have the exact reconstitution of the initial image, but rather to output an image that looks true. To evaluate this, our main and final evaluation metric will simply be the qualitatitive and subjective aspect of the pictures produced by our algorithm. As a result, our final validation will be manual, as it is very difficult to numerically determine if the coloring of an image is satisfying.
+The final objective of this project is ideally to be able to recolorize old grayscale pictures. For this milestone, our objective is to be able to recolorize seashore pictures in a plausible way. The purpose is not to have the exact reconstitution of the initial image, but rather to output an image that \textit{looks} true. To evaluate this, our main and final evaluation metric will simply be the qualitatitive and subjective aspect of the pictures produced by our algorithm, as it is very difficult to numerically determine if the coloring of an image is satisfying.
 
-For now, given that we only work on the test and validation set, we will only consider the classification loss. As a result, our current focus is to find a network that is efficient at solving the classification task that we used to "encode" the colorization problem. The loss of our network is our main metric (it will be describes more precisely in section ???). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a quite complex model. To check this, we simply tune the parameters so that the network has a consistent behavior in terms of loss and actually colorizes images from the training set.
-
+For now, given that we work solely on the training set, we will only look at the classification loss and not use validation. Our current focus is to find a network that is efficient at solving the classification task that we used to "encode" the colorization problem, the loss being our main metric (Section \ref{overview} gives more detail on this). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a quite complex model. To check this, we simply tune the hyper-parameters so that the network has a consistent behavior in terms of loss and actually colorizes images from the training set.
 This will serve as a baseline to fine-tune the loss definition and prediction procedure, and to sophisticate the structure of the network.
 
-\section{Technical approach}
+\section{Technical approach} \label{overview}
 
 \subsection{Overview}
 
-% CNN approach							[ ]
 %	- classification, not regression	[X]
 %	- prediction trick					[X]
 %	- rebalancing trick					[X]
 % considered GANs ?						[ ]
 
-The practical approaches to learning the color of a grayscale image can be split in two groups: the ones who take the angle of regression and try to predict a continuous color value, \eg \cite{cheng2015deep}, \cite{dahl2016tinyclouds} and \cite{deshpande2015learning}, and the ones who take an angle of classification, and discretize the color space into a finite amount of bins, \eg \cite{charpiat2008automatic} and \cite{zhang2016colorful}. Once again taking the angle of \cite{zhang2016colorful}, we're approaching the colorization as a classification problem.
+The practical approaches to learning the color of a grayscale image can be split in two groups: the ones who take the angle of regression and try to predict a continuous color value, \eg \cite{cheng2015deep}, \cite{dahl2016tinyclouds} and \cite{deshpande2015learning}, and the ones who take an angle of classification, and discretize the color space into a finite amount of bins, \eg \cite{charpiat2008automatic} and \cite{zhang2016colorful}. Once again taking the angle of \cite{zhang2016colorful}, we're approaching the colorization as a classification problem, and therefore using a (weighted) cross-entropy loss.
 
 Concretely, we want to discretize our colorspace, and for that we simply split our colormap into equal sized bins. As a first step, in order to reduce the computational toll, we don't want too many bins, and are therefore restricting our discretization to the $n$ most frequent color bins, as learned on a big dataset beforehand. In what follows, if a color from our actual image does not fall within one of our $n$ bins, we will simply assign it to the closest available. This simplification leads to a rather faint degradation of the images.
-
-[exemple avec le bateau ???]
 
 Following the approach of \cite{zhang2016colorful}, we want to boost the possibility of a rare color being predicted, and therefore reproduce the following tricks:
 \begin{itemize}
@@ -129,7 +124,7 @@ Following the approach of \cite{zhang2016colorful}, we want to boost the possibi
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=250px]{img/cdexample.png}
+\includegraphics[width=200px]{img/cdexample.png}
 \caption{(a) Color map, showing the mean color (\textit{chrominance}) of each of the selected bins (here, we set a threshold of 32 bins to select). (b) Frequency map (log-scale), shows the empirical frequency of the colors within each bin, computed over a dataset beforehand. (c) Inverse-frequency map (log-scale), \ie the inverse of (b). (d) Weight map (log-scale), shows the weights assigned to each bin after rebalancing. Interestingly, we notice that the amplitude in weights is much smaller than the amplitude in frequency (2 orders of magnitude against 4), which means that we partially make up for the underrepresentation bias and therefore encourage the prediction of rare colors.}
 \label{cdex}
 \end{center}
@@ -140,14 +135,9 @@ Figure \ref{cdex} shows our discretized colorspace, as well as what the weights 
 
 \subsection{Current model}
 
-Our current choice is to have a purely convolutional model (so that it can easily adapt to any image size if needed).
-
-The general idea is that we stack blocks of convolutional layers to scale down the image, progressively increasing the number of filters as the dimension decreases, then we upscale it to its original dimension using convolutional transpose layers.
-
-
 \begin{figure}
 \begin{center}
- \begin{tabular}{||l |c||}
+ \begin{tabular}{|l |c|}
  \hline
  \multirow{3}{60pt}{ConvBlock1}&CONV3-32(2), ReLU\\
     &CONV3-32(1), ReLU\\
@@ -175,33 +165,55 @@ The general idea is that we stack blocks of convolutional layers to scale down t
  \hline
 \end{tabular}
 \end{center}
-\caption{Architecture of the network (Where CONVK-C(S) is a conv layer of size KxK with C channels and stride S.)}
+\caption{Architecture of the network (CONVK-C(S) is a conv layer of size KxK with C channels and stride S.)}
 \label{archi}
 \end{figure}
 
+Our current choice is to have a purely convolutional model (so that it can easily adapt to any image size if needed).
+The general idea is that we stack blocks of convolutional layers to scale down the image, progressively increasing the number of filters as the dimension decreases, then we upscale it to its original dimension using convolutional transpose layers.
 This is summed up in Figure \ref{archi}.
 % details on 	# of layers
 % 				sizes of layers
 %				batch norm
-% layers table								[ ]
+% layers table								[X]
 
 \section{Preliminary results}
 
-% our best hyper parameters yet				[ ]
-% one or two examples of predicted images	[ ]
+% our best hyper parameters yet				[X]
+% overfitting example?						[X]
+% one or two examples of predicted images	[X]
+
+\begin{figure}
+\includegraphics[width=75px]{img/grayscaleis.png}
+\includegraphics[width=75px]{img/100epochis.png}
+\includegraphics[width=75px]{img/grndtruthis.png}
+\caption{In-sample prediction after 100 epochs, on a complicated case. (left) grayscale input image. (center) prediction after 100 epochs. (right) groundtruth image.}
+\label{is}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=75px]{img/grayscaleoos.png}
+\includegraphics[width=75px]{img/100epochoos.png}
+\includegraphics[width=75px]{img/grndtruthoos.png}
+\caption{Out-of-sample prediction after 100 epochs. (left) grayscale input image. (center) prediction after 100 epochs. (right) groundtruth image.}
+\label{oos}
+\end{figure}
+
+After training our model on 100 epochs with a learning rate of $2~10^{-3}$ and a batchsize of 64, we can see some overfitting occur (even though for complicated images, \eg on Figure \ref{is} where the sea is mixed up with the beach, the model still struggles a bit).
+Using this trained model to colorize an out-of-sample picture, we see that it has had enough time to learn the notions of beach and sky (coloring the former in yellow tones and the latter in blue). As the reader can notice (Figure \ref{oos}), the model still has trouble handling the clouds and separating the sea from the rest, but this result is definitely encouraging.
 
 \section{Next steps}
 
 % Depending on results, we can
-% 	- extend to more layers					[ ]
-% 	- extend to bigger training set			[ ]
-%											 _
-% If ambitious, extend to videos (already	| |
-% mentioned in introduction).				|_|
+% 	- extend to more layers					[X]
+% 	- extend to bigger training set			[X]
+%											 
+% If ambitious, extend to videos (already	[X]
+% mentioned in introduction).				
+
 These results are encouraging as they show the robustness of the preliminary blocks we built, such as the color discretization and the learning and validating framework.
 
 The next step of this project is to experiment with the network's composition. We want to test the influence of meta-parameters (layer size, regularization rate, dropout rate) on our learning performance. We expect to strengthen our results by optimizing our network this way. Next, we'll want to test new and more fancy network structures, such as U-nets, in order to see if we can reconstruct more information from our images.
-
 Finally, we'll want to expand our analysis to larger datasets. This step is crucial as it provides the perfect testing ground to quantify the ability of our model to generalize. If this performs well, we'll push towards colorizing videos, which should yield the most exciting results.
 
 {\small
