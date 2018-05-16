@@ -98,9 +98,9 @@ Upon loading of an image, we switch the encoding from the RGB format to the YUV 
 %	- manual (visual) will be ~enough	[X]
 % 	- decreasing loss is good enough	[X]
 
-The final objective of this project is ideally to be able to recolorize old grayscale pictures. For this milestone, our objective is to be able to recolorize seashore pictures in a plausible way. The purpose is not to have the exact reconstitution of the initial image, but rather to output an image that \textit{looks} true. To evaluate this, our main and final evaluation metric will simply be the qualitatitive and subjective aspect of the pictures produced by our algorithm, as it is very difficult to numerically determine if the coloring of an image is satisfying.
+The final objective of this project is ideally to be able to recolorize old grayscale pictures. For this milestone, our objective is to be able to recolorize seashore pictures in a plausible way. The purpose is not to have the exact reconstitution of the initial image, but rather to output an image that \textit{looks} true. To evaluate this, our final evaluation metric will be the qualitative aspect of the colorized pictures, as it is difficult to numerically determine if the coloring of an image is satisfying.
 
-For now, given that we work solely on the training set, we will only look at the classification loss and not use validation. Our current focus is to find a network that is efficient at solving the classification task that we used to ``encode'' the colorization problem, the loss being our main metric (Section \ref{overview} gives more detail on this). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a quite complex model. To check this, we simply tune the hyper-parameters so that the network has a consistent behavior in terms of loss and actually colorizes images from the training set.
+For now, given that we work solely on the training set, we will only look at the classification loss and not use validation. Our current focus is to find a network that is efficient at solving the classification task that we used to ``encode'' the colorization problem, the loss being our main metric (Section \ref{overview} gives more detail on this). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a complex model. To check this, we tune the hyper-parameters so that the network has a consistent behavior in terms of loss and actually colorizes images from the training set.
 This will serve as a baseline to fine-tune the loss definition and prediction procedure, and to sophisticate the structure of the network.
 
 \section{Technical approach} \label{overview}
@@ -207,13 +207,13 @@ Using this trained model to colorize an out-of-sample picture, we see that it ha
 % Depending on results, we can
 % 	- extend to more layers					[X]
 % 	- extend to bigger training set			[X]
-%											 
+%
 % If ambitious, extend to videos (already	[X]
-% mentioned in introduction).				
+% mentioned in introduction).
 
 These results are encouraging as they show the robustness of the preliminary blocks we built, such as the color discretization and the learning and validating framework.
 
-The next step of this project is to experiment with the network's composition. We want to test the influence of meta-parameters (layer size, regularization rate, dropout rate) on our learning performance. We expect to strengthen our results by optimizing our network this way. Next, we'll want to test new and more fancy network structures. Typically, a U-net could strengthen the gradient flow and help the upsampling layers. Our current model could also be seen as the baseline for the generator od a GAN-based approach.
+The next step of this project is to experiment with the network's composition. We want to test the influence of meta-parameters (layer size, regularization rate, dropout rate) on our learning performance. We expect to strengthen our results by optimizing our network this way. Next, we'll want to test new and more fancy network structures. Typically, a U-net could strengthen the gradient flow and help the upsampling layers. Our current model could also be seen as the baseline for the generator of a GAN-based approach.
 Finally, we'll want to expand our analysis to larger datasets. This step is crucial as it provides the perfect testing ground to quantify the ability of our model to generalize. If this performs well, we'll push towards colorizing videos, which should yield the most exciting results.
 
 {\small
