@@ -36,7 +36,6 @@ class Dataset(object):
         return batched_dataset
 
     def gen_images(self, directory, is_test, config):
-        print("TEST")
         images_paths = os.listdir(directory)
         if self.filter is None:
             global_images_paths = [os.path.join(directory, impath) for impath in images_paths]
