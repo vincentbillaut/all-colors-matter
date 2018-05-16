@@ -60,7 +60,7 @@ class ColoringModel(object):
         self.session = tf.Session(graph=self.graph, config=conf)
 
     def add_dataset(self):
-        train_dataset = self.dataset.get_dataset_batched(False, self.config, shuffle=True, seed=self.seed)
+        train_dataset = self.dataset.get_dataset_batched(False, self.config)
         val_dataset = self.dataset.get_dataset_batched(True, self.config)
 
         # iterator just needs to know the output types and shapes of the datasets
