@@ -124,3 +124,6 @@ checkpoints/*
 *.synctex.gz
 *.log
 *.dvi
+
+# OSX
+*.DS_Store
