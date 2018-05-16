@@ -56,13 +56,7 @@ Stanford University\\
 % TODO for final report
 
 %\begin{abstract}
-%   The ABSTRACT is to be in fully-justified italicized text, at the top
-%   of the left-hand column, below the author and affiliation
-%   information. Use the word ``Abstract'' as the title, in 12-point
-%   Times, boldface type, centered relative to the column, initially
-%   capitalized. The abstract is to be in 10-point, single-spaced type.
-%   Leave two blank lines after the Abstract, then begin the main text.
-%   Look at previous CVPR abstracts to get a feel for style and length.
+%   
 %\end{abstract}
 
 %%%%%%%%% BODY TEXT
@@ -85,25 +79,42 @@ If we reach satistfactory results in a timely manner, we will consider tackling 
 
 As previously stated, any dataset is proper for the colorization task, and we are currently working with subsets of both the SUN dataset \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet}.
 
-More precisely, we are tackling a simplified version of our general task: correctly colorizing scenes that involve beaches and seashores. The idea behind this simplification is that restricting our model to rather consistent scenes, where we typically find the same patterns (the top of the scene is usually the sky, \ie blue, and the bottom usually sand, \ie yellow or brown, as shown by the example of Figure \ref{inex}), will enable us to have a working proof of concept, on top of which we can extend to bigger sets later.
+More precisely, we are tackling a simplified version of our general task: correctly colorizing scenes that involve beaches and seashores. The idea behind this simplification is that restricting our model to rather consistent scenes, where we typically find the same patterns (the top of the scene is usually the sky, \ie blue, and the bottom usually sand, \ie yellow or brown, as shown by the example of Figure \ref{inex}), will enable us to have a working proof of concept, on top of which we can extend to bigger sets later. The "\texttt{beach\_sun}", "\texttt{coast}" and "\texttt{sandbar}" categories of the SUN database contain ??? pictures. The "\texttt{beach}", "\texttt{coast}" and "\texttt{seashore}" categories of ImageNet respectively contain 1713, 321 and 2382 pictures. This amounts to a total of (only) (?? = 4416+???) pictures, which doesn't appear to be much, but might be enough considering the reduction of our problem that we're focusing on.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=200px]{img/beach.jpg}
-\caption{Example of a picture from our reduced datasets (in this case, from ImageNet/beach)}
+\caption{Example of a picture from our reduced datasets (in this case, from \texttt{ImageNet/beach})}
 \label{inex}
 \end{center}
 \end{figure}
 
-[WRITE HOW MANY PICTURES THIS REPRESENTS FOR EACH DATASET?]
+Upon loading of an image, we switch the encoding from the RGB format to the YUV format, which means that the first dimension of every pixel encodes its grayscale value (the \textit{luminance}) and the two other encode the color itself (the \textit{chrominance}). This trick aims at simplifying the problem, because now the input is just one dimension of the image, and the expected output the two other dimensions.
 
-\subsection{Expected results}
+\subsection{Expected results and evaluation}
 
-\subsection{Evaluation}
+
 
 \section{Technical approach}
 
+\subsection{Overview}
+
+% CNN approach
+%	- classification, not regression
+%	- prediction trick
+%	- rebalancing trick
+% considered GANs ?
+
+\subsection{Current model}
+
+% details on 	# of layers
+% 				sizes of layers
+%				batch norm
+
 \section{Preliminary results}
+
+% our best hyper parameters yet
+% one or two examples of predicted images
 
 \section{Next steps}
 
