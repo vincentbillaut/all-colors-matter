@@ -17,6 +17,8 @@ class Dataset(object):
         self.train_ex_paths = get_im_paths(self.train_path)
         self.val_ex_paths = get_im_paths(self.val_path)
 
+        self.iterating_seed = 0
+
     def get_dataset_batched(self, is_test, config,shuffle = False,seed = 42):
         def gen():
             return self.gen_images(self.val_path if is_test else self.train_path, is_test, config)
@@ -34,6 +36,7 @@ class Dataset(object):
         return batched_dataset
 
     def gen_images(self, directory, is_test, config):
+        print("TEST")
         images_paths = os.listdir(directory)
         if self.filter is None:
             global_images_paths = [os.path.join(directory, impath) for impath in images_paths]
@@ -44,9 +47,9 @@ class Dataset(object):
 
         images_paths_utf.sort()
         if not is_test:
-            np.random.seed(0)
+            np.random.seed(self.iterating_seed)
             np.random.shuffle(images_paths_utf)
-
+        print(images_paths_utf[0])
         for impath in images_paths_utf:
             image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(impath, is_test, config)
             categorized_image, weights = self.color_discretizer.categorize(image_UVscale, return_weights=True)

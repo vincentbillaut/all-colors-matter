@@ -154,6 +154,7 @@ class ColoringModel(object):
             i = ii + 1
             print("\nRunning epoch {}/{}:".format(i, self.config.n_epochs))
             self.run_epoch(i, val_type=val_type)
+            self.dataset.iterating_seed += 1
 
     def pred_color_one_image(self, image_path, out_jpg_path=None, epoch_number=0):
         image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
