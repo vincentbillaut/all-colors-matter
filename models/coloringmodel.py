@@ -143,7 +143,7 @@ class ColoringModel(object):
         if val_type=="full":
             self.pred_validation_set(epoch_number)
 
-    def train_model(self, warm_start=False):
+    def train_model(self, warm_start=False,val_type = "single"):
 
         if not warm_start:
             self._build_new_graph_session()
@@ -153,7 +153,7 @@ class ColoringModel(object):
         for ii in range(self.config.n_epochs):
             i = ii + 1
             print("\nRunning epoch {}/{}:".format(i, self.config.n_epochs))
-            self.run_epoch(i)
+            self.run_epoch(i,val_type=val_type)
 
     def pred_color_one_image(self, image_path, out_jpg_path, epoch_number):
         image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
