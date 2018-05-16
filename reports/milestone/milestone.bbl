@@ -1,5 +1,11 @@
 \begin{thebibliography}{1}\itemsep=-1pt
 
+\bibitem{charpiat2008automatic}
+G.~Charpiat, M.~Hofmann, and B.~Sch{\"o}lkopf.
+\newblock Automatic image colorization via multimodal predictions.
+\newblock In {\em European conference on computer vision}, pages 126--139.
+  Springer, 2008.
+
 \bibitem{cheng2015deep}
 Z.~Cheng, Q.~Yang, and B.~Sheng.
 \newblock Deep colorization.
@@ -10,6 +16,12 @@ Z.~Cheng, Q.~Yang, and B.~Sheng.
 R.~Dahl.
 \newblock Automatic colorization.
 \newblock \url{http://tinyclouds.org/colorize/}, 2016.
+
+\bibitem{deshpande2015learning}
+A.~Deshpande, J.~Rock, and D.~Forsyth.
+\newblock Learning large-scale automatic image colorization.
+\newblock In {\em Proceedings of the IEEE International Conference on Computer
+  Vision}, pages 567--575, 2015.
 
 \bibitem{russakovsky2015imagenet}
 O.~Russakovsky, J.~Deng, H.~Su, J.~Krause, S.~Satheesh, S.~Ma, Z.~Huang,

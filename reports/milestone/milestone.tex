@@ -105,6 +105,30 @@ Upon loading of an image, we switch the encoding from the RGB format to the YUV 
 %	- rebalancing trick
 % considered GANs ?
 
+The practical approaches to learning the color of a grayscale image can be split in two groups: the ones who take the angle of regression and try to predict a continuous color value, \eg \cite{cheng2015deep}, \cite{dahl2016tinyclouds} and \cite{deshpande2015learning}, and the ones who take an angle of classification, and discretize the color space into a finite amount of bins, \eg \cite{charpiat2008automatic} and \cite{zhang2016colorful}. Once again taking the angle of \cite{zhang2016colorful}, we're approaching the colorization as a classification problem.
+
+Concretely, we want to discretize our colorspace, and for that we simply split our colormap into equal sized bins. As a first step, in order to reduce the computational toll, we don't want too many bins, and are therefore restricting our discretization to the $n$ most frequent color bins, as learned on a big dataset beforehand. In what follows, if a color from our actual image does not fall within one of our $n$ bins, we will simply assign it to the closest available. This simplification leads to a rather faint degradation of the images.
+
+[exemple avec le bateau ???]
+
+Following the approach of \cite{zhang2016colorful}, we want to boost the possibility of a rare color being predicted, and therefore reproduce the following tricks:
+\begin{itemize}
+\item Use \textit{rebalancing} to give larger weights to rare colors in our loss function. Precisely, each pixel value $p$, assigned to its closest bin $b \in \mathbb{R}^n$ is given a weight $w_p$ such that $$w_p \propto \left( (1-\lambda) \widehat{P}(b) + {\lambda \over n} \right)^{-1}$$ where $\widehat{P}(b)$ is the estimated probability of the bin (computed prior to our model's training).
+\item Use an \textit{annealed-mean} to output predictions $y$ from the probability distribution $\textbf{Z}$ over our $n$ bins to the original, full color space. The idea is to find a compromise between taking the color class with the maximum probability (the mode), which gives a rather colorful result but sometimes lacking spatial consistency, and taking the weighted average over the bins, which gives a rather flat, sepia kind of tone. To achieve this we use a temperature parameter $T$ in the following softmax-like formula for one pixel $$y = f_T(\textbf{z}) = {\exp(\log(\textbf{z}) / T) \over \sum_i \exp(\log(\textbf{z}_i) / T)}$$ where $\textbf{z}$ is the $n$-dimensional probability vector of a given pixel over the $n$ bins, and the sum in the denominator is over all the bins. 
+\end{itemize}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=250px]{img/cdexample.png}
+\caption{(a) Color map, showing the mean color (\textit{chrominance}) of each of the selected bins (here, we set a threshold of 32 bins to select). (b) Frequency map (log-scale), shows the empirical frequency of the colors within each bin, computed over a dataset beforehand. (c) Inverse-frequency map (log-scale), \ie the inverse of (b). (d) Weight map (log-scale), shows the weights assigned to each bin after rebalancing. Interestingly, we notice that the amplitude in weights is much smaller than the amplitude in frequency (2 orders of magnitude against 4), which means that we partially make up for the underrepresentation bias and therefore encourage the prediction of rare colors.}
+\label{cdex}
+\end{center}
+\end{figure}
+
+Figure \ref{cdex} shows our discretized colorspace, as well as what the weights of the bins look like after rebalancing.
+
+
+
 \subsection{Current model}
 
 % details on 	# of layers
