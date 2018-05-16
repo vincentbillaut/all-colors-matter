@@ -112,7 +112,7 @@ This will serve as a baseline to fine-tune the loss definition and prediction pr
 %	- rebalancing trick					[X]
 % considered GANs ?						[ ]
 
-The practical approaches to learning the color of a grayscale image can be split in two groups: the ones who take the angle of regression and try to predict a continuous color value, \eg \cite{cheng2015deep}, \cite{dahl2016tinyclouds} and \cite{deshpande2015learning}, and the ones who take an angle of classification, and discretize the color space into a finite amount of bins, \eg \cite{charpiat2008automatic} and \cite{zhang2016colorful}. Once again taking the angle of \cite{zhang2016colorful}, we're approaching the colorization as a classification problem, and therefore using a (weighted) cross-entropy loss.
+The practical approaches to learning the color of a grayscale image can be split in two groups: the ones who take the angle of regression and try to predict a continuous color value, \eg \cite{cheng2015deep} and \cite{dahl2016tinyclouds}, and the ones who take an angle of classification, and discretize the color space into a finite amount of bins, \eg \cite{charpiat2008automatic} and \cite{zhang2016colorful}. Once again taking the angle of \cite{zhang2016colorful}, we're approaching the colorization as a classification problem, and therefore using a (weighted) cross-entropy loss.
 
 Concretely, we want to discretize our colorspace, and for that we simply split our colormap into equal sized bins. As a first step, in order to reduce the computational toll, we don't want too many bins, and are therefore restricting our discretization to the $n$ most frequent color bins, as learned on a big dataset beforehand. In what follows, if a color from our actual image does not fall within one of our $n$ bins, we will simply assign it to the closest available. This simplification leads to a rather faint degradation of the images.
 
@@ -199,8 +199,8 @@ This is summed up in Figure \ref{archi}.
 \label{oos}
 \end{figure}
 
-After training our model on 100 epochs with a learning rate of $2~10^{-3}$ and a batchsize of 64, we can see some overfitting occur (even though for complicated images, \eg on Figure \ref{is} where the sea is mixed up with the beach, the model still struggles a bit).
-Using this trained model to colorize an out-of-sample picture, we see that it has had enough time to learn the notions of beach and sky (coloring the former in yellow tones and the latter in blue). As the reader can notice (Figure \ref{oos}), the model still has trouble handling the clouds and separating the sea from the rest, but this result is definitely encouraging.
+After training our model (100 epochs, learning rate of $2~10^{-3}$, batchsize of 64), we can see some overfitting occur (even though for complicated images, \eg on Figure \ref{is} where the sea is mixed up with the beach, the model still struggles a bit).
+Using this trained model to colorize an out-of-sample picture, we see that it has captured the notions of beach and sky (coloring the former in yellow tones and the latter in blue). As we notice (Figure \ref{oos}), the model still has trouble handling the clouds and separating the sea from the rest, but this result is definitely encouraging.
 
 \section{Next steps}
 
