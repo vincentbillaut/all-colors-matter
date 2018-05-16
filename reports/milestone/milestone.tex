@@ -161,7 +161,7 @@ Figure \ref{cdex} shows our discretized colorspace, as well as what the weights 
  \hline
  UpConvBlock3 & CONVT3-16(2)\\
  \hline
- OutputBlock & CONV1-N\_CATEGORIES(1)\\
+ OutputBlock & CONV1-$n$\\
  \hline
 \end{tabular}
 \end{center}
@@ -213,7 +213,7 @@ Using this trained model to colorize an out-of-sample picture, we see that it ha
 
 These results are encouraging as they show the robustness of the preliminary blocks we built, such as the color discretization and the learning and validating framework.
 
-The next step of this project is to experiment with the network's composition. We want to test the influence of meta-parameters (layer size, regularization rate, dropout rate) on our learning performance. We expect to strengthen our results by optimizing our network this way. Next, we'll want to test new and more fancy network structures, such as U-nets, in order to see if we can reconstruct more information from our images.
+The next step of this project is to experiment with the network's composition. We want to test the influence of meta-parameters (layer size, regularization rate, dropout rate) on our learning performance. We expect to strengthen our results by optimizing our network this way. Next, we'll want to test new and more fancy network structures. Typically, a U-net could strengthen the gradient flow and help the upsampling layers. Our current model could also be seen as the baseline for the generator od a GAN-based approach.
 Finally, we'll want to expand our analysis to larger datasets. This step is crucial as it provides the perfect testing ground to quantify the ability of our model to generalize. If this performs well, we'll push towards colorizing videos, which should yield the most exciting results.
 
 {\small
