@@ -152,7 +152,7 @@ class ColoringModel(object):
         self.writer = tf.summary.FileWriter(self.config.output_path+"train/", graph=self.graph)
         for ii in range(self.config.n_epochs):
             i = ii + 1
-            print("\nRunning epoch {}:".format(i))
+            print("\nRunning epoch {}/{}:".format(i, self.config.n_epochs))
             self.run_epoch(i)
 
     def pred_color_one_image(self, image_path, out_jpg_path, epoch_number):
