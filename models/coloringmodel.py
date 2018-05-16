@@ -234,7 +234,7 @@ class ColoringModel(object):
         loss_export = pd.DataFrame(self.train_loss_history)
         if clear:
             self.train_loss_history.clear()
-        loss_export.colnames = ["epoch", "loss"]
+        loss_export.columns = ["epoch", "loss"]
         loss_export.to_csv(self.config.output_path + "train_loss_history.csv")
         if verbose:
             print("Exported loss history to {}".format(self.config.output_path + "train_loss_history.csv"))
