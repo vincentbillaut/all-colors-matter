@@ -101,7 +101,7 @@ Upon loading of an image, we switch the encoding from the RGB format to the YUV 
 
 The final objective of our project is ideally to be able to recolorize old grayscale pictures. For this milestone, our objective is to be able to recolorize seashore pictures in a plausible way. The purpose is not to have the exact reconstitution of the initial image, but rather to output an image that looks true. To evaluate this, our main and final evaluation metric will simply be the qualitatitive and subjective aspect of the pictures produced by our algorithm. As a result, our final validation will be manual, as it is very difficult to numerically determine if the coloring of an image is satisfying.
 
-For now, given that we only work on the test and validation set, we will only consider the classification loss. As a result, our current focus is to find a network that is efficient at solving the classification task that we used to "encode" the colorization problem. The loss of our network is our main metric (it will be describes more precisely in section ???). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a quite complex model.To check this, we simply tune the network so that th network has a consistent behavior in terms of loss and actually colorizes images from the training set.
+For now, given that we only work on the test and validation set, we will only consider the classification loss. As a result, our current focus is to find a network that is efficient at solving the classification task that we used to "encode" the colorization problem. The loss of our network is our main metric (it will be describes more precisely in section ???). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a quite complex model. To check this, we simply tune the parameters so that the network has a consistent behavior in terms of loss and actually colorizes images from the training set.
 
 This will serve as a baseline to fine-tune the loss definition and prediction procedure, and to sophisticate the structure of the network.
 
@@ -144,9 +144,6 @@ Our current choice is to have a purely convolutional model (so that it can easil
 
 The general idea is that we stack blocks of convolutional layers to scale down the image, progressively increasing the number of filters as the dimension decreases, then we upscale it to its original dimension using convolutional transpose layers.
 
-This is summed up in table 1:
-%% PUT THIS IN APPENDIX?
-
 
 \begin{figure}
 \begin{center}
@@ -179,9 +176,10 @@ This is summed up in table 1:
 \end{tabular}
 \end{center}
 \caption{Architecture of the network (Where CONVK-C(S) is a conv layer of size KxK with C channels and stride S.)}
+\label{archi}
 \end{figure}
 
-
+This is summed up in Figure \ref{archi}.
 % details on 	# of layers
 % 				sizes of layers
 %				batch norm
