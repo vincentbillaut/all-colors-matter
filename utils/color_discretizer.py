@@ -8,7 +8,7 @@ from utils.color_utils import RGB_to_YUV, YUV_to_RGB
 
 
 class ColorDiscretizer(object):
-    def __init__(self, nbins=30, threshold=.000001, weighting_lambda=.2, max_categories=None):
+    def __init__(self, nbins=10, threshold=.000001, weighting_lambda=.2, max_categories=None):
         self.nbins = nbins
         self.threshold = threshold
         self.weighting_lambda = weighting_lambda
@@ -97,7 +97,7 @@ class ColorDiscretizer(object):
         plt.title("Frequency map (log-scale)")
 
         plt.subplot(224)
-        weights_matrix = np.zeros([30, 30])
+        weights_matrix = np.zeros([self.nbins, self.nbins])
         for k in self.weights:
             weights_matrix[self.indices_to_xycategories_map[k]] = self.weights[k]
         logweights_matrix = np.log10(weights_matrix)
@@ -108,7 +108,7 @@ class ColorDiscretizer(object):
         plt.title("Weight map (log-scale)")
 
         plt.subplot(221)
-        color_matrix = np.zeros([30, 30, 3]) + 255.
+        color_matrix = np.zeros([self.nbins, self.nbins, 3]) + 255.
         for k in self.weights:
             yuv = np.zeros([1, 1, 3]) + .5
             yuv[..., 1:] = self.categories_mean_pixels[k]
