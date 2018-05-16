@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import imread
 
-from utils.color_utils import RGB_to_YUV
+from utils.color_utils import RGB_to_YUV, YUV_to_RGB
 
 
 class ColorDiscretizer(object):
@@ -56,7 +56,7 @@ class ColorDiscretizer(object):
                     self.category_frequency[index] = heatscore
                     index += 1
 
-        self.n_categories = index  # TODO: Revise?
+        self.n_categories = index
 
         # Second pass, mapping rare colors to frequent ones; updating frequencies
         for xcategory in range(self.nbins):
@@ -88,11 +88,44 @@ class ColorDiscretizer(object):
         logheatmap = np.log10(hm)
         extent = [self.xedges[0], self.xedges[-1], self.yedges[0], self.yedges[-1]]
 
+        plt.figure(figsize=(15, 10))
+        plt.subplot(222)
         plt.imshow(logheatmap.T, extent=extent, origin='lower')
         plt.colorbar()
-        plt.xlim([-.450, .450])
         plt.ylim([-.650, .650])
-        plt.show()
+        plt.xlim([-.650, .650])
+        plt.title("Frequency map (log-scale)")
+
+        plt.subplot(224)
+        weights_matrix = np.zeros([30, 30])
+        for k in self.weights:
+            weights_matrix[self.indices_to_xycategories_map[k]] = self.weights[k]
+        logweights_matrix = np.log10(weights_matrix)
+        plt.imshow(logweights_matrix.T, extent=extent, origin='lower')
+        plt.colorbar()
+        plt.ylim([-.650, .650])
+        plt.xlim([-.650, .650])
+        plt.title("Weight map (log-scale)")
+
+        plt.subplot(221)
+        color_matrix = np.zeros([30, 30, 3]) + 255.
+        for k in self.weights:
+            yuv = np.zeros([1, 1, 3]) + .5
+            yuv[..., 1:] = self.categories_mean_pixels[k]
+            color_matrix[self.indices_to_xycategories_map[k][1], self.indices_to_xycategories_map[k][0], :] = YUV_to_RGB(yuv)
+        plt.imshow(color_matrix / 255., extent=extent, origin='lower')
+        plt.ylim([-.650, .650])
+        plt.xlim([-.650, .650])
+        plt.title("Color map")
+
+        plt.subplot(223)
+        plt.imshow(-logheatmap.T, extent=extent, origin='lower')
+        plt.colorbar()
+        plt.ylim([-.650, .650])
+        plt.xlim([-.650, .650])
+        plt.title("Inverse-frequency map (log-scale)")
+
+        plt.tight_layout()
 
     def categorize(self, UVpixels, return_weights=False):
         """
