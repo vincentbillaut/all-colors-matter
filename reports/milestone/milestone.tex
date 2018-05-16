@@ -63,11 +63,11 @@ Stanford University\\
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 
-The problem of colorization is one that comes quickly to mind when thinking about interesting challenges involving pictural data. Namely, the goal is to build a model that takes the greyscale version of an image (or even an actual "black and white" picture) and outputs its colorized version, as close to the original as possible (or at least realistic, if the original is not in colors).
+The problem of colorization is one that comes quickly to mind when thinking about interesting challenges involving pictural data. Namely, the goal is to build a model that takes the greyscale version of an image (or even an actual ``black and white'' picture) and outputs its colorized version, as close to the original as possible (or at least realistic, if the original is not in colors).
 One clear upside to this challenge is that any computer vision dataset, and even any image bank really, is a proper dataset for the colorization problem (the image itself is the model's expected output, and its greyscale version is the input to the model).
 
 Classical approaches to this task, \eg \cite{cheng2015deep} and \cite{dahl2016tinyclouds}, aim at predicting an image as close as possible to the ground truth, and notably make use of a simple $L_2$ loss, which penalizes predictions that fall overall too far from the ground truth. As a consequence, the models trained following such methods usually tend to be very conservative, and to give desaturated, pale results.
-On the contrary, authors of \cite{zhang2016colorful} take another angle and set their objective to be "\textit{plausible} colorization" (and not necessarily \textit{accurate}). One of their methods to validate their results was to set up a blind testing experiment where human subjects had to determine, between their prediction and the ground truth, which one seemed more realistic (and they achieved very good performance).
+On the contrary, authors of \cite{zhang2016colorful} take another angle and set their objective to be ``\textit{plausible} colorization'' (and not necessarily \textit{accurate}), which they validate with a large-scale human trial.
 
 Our goal is to reproduce the approach of \cite{zhang2016colorful}, as we consider the implementation more challenging in the way the loss function and the prediction mechanism are designed, and the results more visually appealing.
 
@@ -79,11 +79,11 @@ If we reach satistfactory results in a timely manner, we will consider tackling 
 
 As previously stated, any dataset is proper for the colorization task, and we are currently working with subsets of both the SUN dataset \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet}.
 
-More precisely, we are tackling a simplified version of our general task: correctly colorizing scenes that involve beaches and seashores. The idea behind this simplification is that restricting our model to rather consistent scenes, where we typically find the same patterns (the top of the scene is usually the sky, \ie blue, and the bottom usually sand, \ie yellow or brown, as shown by the example of Figure \ref{inex}), will enable us to have a working proof of concept, on top of which we can extend to bigger sets later. The "\texttt{beach\_sun}", "\texttt{coast}" and "\texttt{sandbar}" categories of the SUN database contain 211 pictures. The "\texttt{beach}", "\texttt{coast}" and "\texttt{seashore}" categories of ImageNet respectively contain 1713, 321 and 2382 pictures. This amounts to a total of (only) 4627 pictures, which doesn't appear to be much, but might be enough considering the reduction of our problem that we're focusing on.
+More precisely, we are tackling a simplified version of our general task: correctly colorizing scenes that involve beaches and seashores. The idea behind this simplification is that restricting our model to rather consistent scenes, where we typically find the same patterns (the top of the scene is usually the sky, \ie blue, and the bottom usually sand, \ie yellow or brown, as shown by the example of Figure \ref{inex}), will enable us to have a working proof of concept, on top of which we can extend to bigger sets later. The ``\texttt{beach\_sun}'', ``\texttt{coast}'' and ``\texttt{sandbar}'' categories of the SUN database contain 211 pictures. The ``\texttt{beach}'', ``\texttt{coast}'' and ``\texttt{seashore}'' categories of ImageNet respectively contain 1,713, 321 and 2,382 pictures. This amounts to a total of (only) 4,627 pictures, which doesn't appear to be much, but might be enough considering the reduction of our problem that we're focusing on.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=220px]{img/beach.jpg}
+\includegraphics[width=200px]{img/beach.jpg}
 \caption{Example of a picture from our reduced datasets (in this case, from \texttt{ImageNet/beach})}
 \label{inex}
 \end{center}
@@ -100,7 +100,7 @@ Upon loading of an image, we switch the encoding from the RGB format to the YUV 
 
 The final objective of this project is ideally to be able to recolorize old grayscale pictures. For this milestone, our objective is to be able to recolorize seashore pictures in a plausible way. The purpose is not to have the exact reconstitution of the initial image, but rather to output an image that \textit{looks} true. To evaluate this, our main and final evaluation metric will simply be the qualitatitive and subjective aspect of the pictures produced by our algorithm, as it is very difficult to numerically determine if the coloring of an image is satisfying.
 
-For now, given that we work solely on the training set, we will only look at the classification loss and not use validation. Our current focus is to find a network that is efficient at solving the classification task that we used to "encode" the colorization problem, the loss being our main metric (Section \ref{overview} gives more detail on this). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a quite complex model. To check this, we simply tune the hyper-parameters so that the network has a consistent behavior in terms of loss and actually colorizes images from the training set.
+For now, given that we work solely on the training set, we will only look at the classification loss and not use validation. Our current focus is to find a network that is efficient at solving the classification task that we used to ``encode'' the colorization problem, the loss being our main metric (Section \ref{overview} gives more detail on this). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a quite complex model. To check this, we simply tune the hyper-parameters so that the network has a consistent behavior in terms of loss and actually colorizes images from the training set.
 This will serve as a baseline to fine-tune the loss definition and prediction procedure, and to sophisticate the structure of the network.
 
 \section{Technical approach} \label{overview}
