@@ -115,3 +115,12 @@ outputs/*
 
 #Checkpoints
 checkpoints/*
+
+#latex
+
+*.aux
+*.bbl
+*.blg
+*.synctex.gz
+*.log
+*.dvi
