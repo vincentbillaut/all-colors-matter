@@ -5,6 +5,7 @@ from datetime import datetime
 from shutil import copyfile
 
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 
 from utils.data_utils import dump_YUV_image_to_jpg, load_image_jpg_to_YUV
@@ -33,6 +34,9 @@ class ColoringModel(object):
         self.dataset = dataset
         self.name = name
         self.n_categories = self.dataset.color_discretizer.n_categories
+        self.train_loss_history = list()
+        self.val_loss_history = list()
+        # TODO: log this
 
     def _build_model(self):
         self.add_dataset()
@@ -127,6 +131,7 @@ class ColoringModel(object):
                     loss, summary, _ = self.session.run([self.loss, self.summary_op, self.train_op],
                                                         )  # feed_dict=feed)
                     self.writer.add_summary(summary, epoch_number * target_progbar + batch)
+                    self.train_loss_history.append((epoch_number, loss))
                     batch += self.config.batch_size
 
                 except tf.errors.OutOfRangeError:
@@ -155,6 +160,7 @@ class ColoringModel(object):
             print("\nRunning epoch {}/{}:".format(i, self.config.n_epochs))
             self.run_epoch(i, val_type=val_type)
             self.dataset.iterating_seed += 1
+        self.export_train_history()
 
     def pred_color_one_image(self, image_path, out_jpg_path=None, epoch_number=0):
         image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
@@ -223,6 +229,15 @@ class ColoringModel(object):
         saver.save(self.session, os.path.join(save_dir, "model"))
         if verbose:
             print("Model saved in {}".format(save_dir))
+
+    def export_train_history(self, clear=True, verbose=True):
+        loss_export = pd.DataFrame(self.train_loss_history)
+        if clear:
+            self.train_loss_history.clear()
+        loss_export.colnames = ["epoch", "loss"]
+        loss_export.to_csv(self.config.output_path + "train_loss_history.csv")
+        if verbose:
+            print("Exported loss history to {}".format(self.config.output_path + "train_loss_history.csv"))
 
     def load(self, output_dir, verbose=True):
         """Load model"""
