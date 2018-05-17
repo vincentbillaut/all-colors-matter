@@ -71,7 +71,7 @@ On the contrary, authors of \cite{zhang2016colorful} take another angle and set 
 
 Our goal is to reproduce the approach of \cite{zhang2016colorful}, as we consider the implementation more challenging in the way the loss function and the prediction mechanism are designed, and the results more visually appealing.
 
-If we reach satistfactory results in a timely manner, we will consider tackling the task of colorizing videos, which, in order to fully take advantage of the input format, will need to incorporate the notion of consistency between consecutive frames in a sequence.
+If we reach satisfactory results in a timely manner, we will consider tackling the task of colorizing videos, for which, in order to fully take advantage of the input format, will need to incorporate the notion of consistency between consecutive frames in a sequence.
 
 \section{Problem statement}
 
@@ -79,7 +79,7 @@ If we reach satistfactory results in a timely manner, we will consider tackling 
 
 As previously stated, any dataset is proper for the colorization task, and we are currently working with subsets of both the SUN dataset \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet}.
 
-More precisely, we are tackling a simplified version of our general task: correctly colorizing scenes that involve beaches and seashores. The idea behind this simplification is that restricting our model to rather consistent scenes, where we typically find the same patterns (the top of the scene is usually the sky, \ie blue, and the bottom usually sand, \ie yellow or brown, as shown by the example of Figure \ref{inex}), will enable us to have a working proof of concept, on top of which we can extend to bigger sets later. The ``\texttt{beach\_sun}'', ``\texttt{coast}'' and ``\texttt{sandbar}'' categories of the SUN database contain 211 pictures. The ``\texttt{beach}'', ``\texttt{coast}'' and ``\texttt{seashore}'' categories of ImageNet respectively contain 1,713, 321 and 2,382 pictures. This amounts to a total of (only) 4,627 pictures, which doesn't appear to be much, but might be enough considering the reduction of our problem that we're focusing on.
+More precisely, we are tackling a simplified version of our general task: correctly colorizing scenes that involve beaches and seashores. The idea behind this simplification is that restricting our model to rather consistent scenes, where we typically find the same patterns (the top of the scene is usually the sky, \ie blue, and the bottom usually sand, \ie yellow or brown, as the example of Figure \ref{inex} shows), will enable us to have a working proof of concept, on top of which we can extend to bigger sets later. The ``\texttt{beach\_sun}'', ``\texttt{coast}'' and ``\texttt{sandbar}'' categories of the SUN database contain 211 pictures. The ``\texttt{beach}'', ``\texttt{coast}'' and ``\texttt{seashore}'' categories of ImageNet respectively contain 1,713, 321 and 2,382 pictures. This amounts to a total of 4,627 pictures, which doesn't appear to be much, but might be enough considering the reduction of our problem that we're focusing on.
 
 \begin{figure}
 \begin{center}
@@ -98,9 +98,9 @@ Upon loading of an image, we switch the encoding from the RGB format to the YUV 
 %	- manual (visual) will be ~enough	[X]
 % 	- decreasing loss is good enough	[X]
 
-The final objective of this project is ideally to be able to recolorize old grayscale pictures. For this milestone, our objective is to be able to recolorize seashore pictures in a plausible way. The purpose is not to have the exact reconstitution of the initial image, but rather to output an image that \textit{looks} true. To evaluate this, our final evaluation metric will be the qualitative aspect of the colorized pictures, as it is difficult to numerically determine if the coloring of an image is satisfying.
+The final objective of this project is ideally to be able to recolorize legacy grayscale pictures. For this milestone, our objective is to be able to recolorize seashore pictures in a plausible way. The purpose is not to have the exact reconstitution of the initial image, but rather to output an image that \textit{looks} true. To evaluate this, our final evaluation metric will be the qualitative aspect of the colorized pictures, as it is difficult to numerically determine if the coloring of an image is satisfying.
 
-For now, given that we work solely on the training set, we will only look at the classification loss and not use validation. Our current focus is to find a network that is efficient at solving the classification task that we used to ``encode'' the colorization problem, the loss being our main metric (Section \ref{overview} gives more detail on this). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a complex model. To check this, we tune the hyper-parameters so that the network has a consistent behavior in terms of loss and actually colorizes images from the training set.
+Our current focus is to find a network that is efficient at solving the classification task that we use to ``encode'' the colorization problem, the loss being our main metric (Section \ref{overview} gives more details on this). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a complex model and are therefore solely working on the training set. We will only look at the classification loss, and not use validation. To check this, we tune the hyper-parameters so that the network has a consistent behavior in terms of loss and actually colorizes images from the training set.
 This will serve as a baseline to fine-tune the loss definition and prediction procedure, and to sophisticate the structure of the network.
 
 \section{Technical approach} \label{overview}
@@ -110,7 +110,7 @@ This will serve as a baseline to fine-tune the loss definition and prediction pr
 %	- classification, not regression	[X]
 %	- prediction trick					[X]
 %	- rebalancing trick					[X]
-% considered GANs ?						[ ]
+% considered GANs ?						[-]  elsewhere
 
 The practical approaches to learning the color of a grayscale image can be split in two groups: the ones who take the angle of regression and try to predict a continuous color value, \eg \cite{cheng2015deep} and \cite{dahl2016tinyclouds}, and the ones who take an angle of classification, and discretize the color space into a finite amount of bins, \eg \cite{charpiat2008automatic} and \cite{zhang2016colorful}. Once again taking the angle of \cite{zhang2016colorful}, we're approaching the colorization as a classification problem, and therefore using a (weighted) cross-entropy loss.
 
@@ -200,7 +200,7 @@ This is summed up in Figure \ref{archi}.
 \end{figure}
 
 After training our model (100 epochs, learning rate of $2~10^{-3}$, batchsize of 64), we can see some overfitting occur (even though for complicated images, \eg on Figure \ref{is} where the sea is mixed up with the beach, the model still struggles a bit).
-Using this trained model to colorize an out-of-sample picture, we see that it has captured the notions of beach and sky (coloring the former in yellow tones and the latter in blue). As we notice (Figure \ref{oos}), the model still has trouble handling the clouds and separating the sea from the rest, but this result is definitely encouraging.
+Using this trained model to colorize an out-of-sample picture, we see that it has captured the notions of beach and sky (coloring the former in yellow tones and the latter in blue). As we notice (Figure \ref{oos}), the model still has trouble handling the clouds and separating the sea from the rest, but this is definitely a good step.
 
 \section{Next steps}
 
