@@ -3,6 +3,7 @@ import argparse
 from models.coloringmodel import Config
 from models.naive_convnet import NaiveConvColoringModel
 from models.next_convnet import NextConvColoringModel
+from models.unet import UNetColoringModel
 from utils.color_discretizer import ColorDiscretizer
 from utils.dataset import Dataset
 
@@ -23,13 +24,15 @@ if __name__ == "__main__":
             model = NextConvColoringModel(config, dataset=dataset)
         elif config.model == "NaiveConvColoringModel":
             model = NaiveConvColoringModel(config, dataset=dataset)
+        elif config.model == "UNetColoringModel":
+            model = UNetColoringModel(config,dataset=dataset)
         else:
             model = NaiveConvColoringModel(config, dataset=dataset)
     else:
         model = NaiveConvColoringModel(config, dataset=dataset)
 
     model.train_model()
-    model.save("test_save")
+    model.save()
     # model.load("test_save")
     # model.pred_color_one_image("data/iccv09Data/images/0000382.jpg",
     #                           "outputs/0000382_epoch{}".format("loaded"))

@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{multirow}
 
 % Include other packages here, before hyperref.
 
@@ -25,7 +26,7 @@
 \begin{document}
 
 %%%%%%%%% TITLE
-\title{Colorization}
+\title{A convolutional classification approach to colorization}
 
 \author{Vincent Billaut\\
 Department of Statistics\\
@@ -56,28 +57,21 @@ Stanford University\\
 % TODO for final report
 
 %\begin{abstract}
-%   The ABSTRACT is to be in fully-justified italicized text, at the top
-%   of the left-hand column, below the author and affiliation
-%   information. Use the word ``Abstract'' as the title, in 12-point
-%   Times, boldface type, centered relative to the column, initially
-%   capitalized. The abstract is to be in 10-point, single-spaced type.
-%   Leave two blank lines after the Abstract, then begin the main text.
-%   Look at previous CVPR abstracts to get a feel for style and length.
+%
 %\end{abstract}
 
 %%%%%%%%% BODY TEXT
 \section{Introduction}
 
-The problem of colorization is one that comes quickly to mind when thinking about interesting challenges involving pictural data. Namely, the goal is to build a model that takes the greyscale version of an image (or even an actual "black and white" picture) and outputs its colorized version, as close to the original as possible (or at least realistic, if the original is not in colors).
-
+The problem of colorization is one that comes quickly to mind when thinking about interesting challenges involving pictural data. Namely, the goal is to build a model that takes the greyscale version of an image (or even an actual ``black and white'' picture) and outputs its colorized version, as close to the original as possible (or at least realistic, if the original is not in colors).
 One clear upside to this challenge is that any computer vision dataset, and even any image bank really, is a proper dataset for the colorization problem (the image itself is the model's expected output, and its greyscale version is the input to the model).
 
 Classical approaches to this task, \eg \cite{cheng2015deep} and \cite{dahl2016tinyclouds}, aim at predicting an image as close as possible to the ground truth, and notably make use of a simple $L_2$ loss, which penalizes predictions that fall overall too far from the ground truth. As a consequence, the models trained following such methods usually tend to be very conservative, and to give desaturated, pale results.
-On the contrary, authors of \cite{zhang2016colorful} take another angle and set their objective to be "\textit{plausible} colorization" (and not necessarily \textit{accurate}). One of their methods to validate their results was to set up a blind testing experiment where human subjects had to determine, between their prediction and the ground truth, which one seemed more realistic (and they achieved very good performance).
+On the contrary, authors of \cite{zhang2016colorful} take another angle and set their objective to be ``\textit{plausible} colorization'' (and not necessarily \textit{accurate}), which they validate with a large-scale human trial.
 
 Our goal is to reproduce the approach of \cite{zhang2016colorful}, as we consider the implementation more challenging in the way the loss function and the prediction mechanism are designed, and the results more visually appealing.
 
-If we reach satistfactory results in a timely manner, we will consider tackling the task of colorizing videos, which, in order to fully take advantage of the input format, will need to incorporate the notion of consistency between consecutive frames in a sequence.
+If we reach satisfactory results in a timely manner, we will consider tackling the task of colorizing videos, for which, in order to fully take advantage of the input format, will need to incorporate the notion of consistency between consecutive frames in a sequence.
 
 \section{Problem statement}
 
@@ -85,27 +79,142 @@ If we reach satistfactory results in a timely manner, we will consider tackling 
 
 As previously stated, any dataset is proper for the colorization task, and we are currently working with subsets of both the SUN dataset \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet}.
 
-More precisely, we are tackling a simplified version of our general task: correctly colorizing scenes that involve beaches and seashores. The idea behind this simplification is that restricting our model to rather consistent scenes, where we typically find the same patterns (the top of the scene is usually the sky, \ie blue, and the bottom usually sand, \ie yellow or brown, as shown by the example of Figure \ref{inex}), will enable us to have a working proof of concept, on top of which we can extend to bigger sets later.
+More precisely, we are tackling a simplified version of our general task: correctly colorizing scenes that involve beaches and seashores. The idea behind this simplification is that restricting our model to rather consistent scenes, where we typically find the same patterns (the top of the scene is usually the sky, \ie blue, and the bottom usually sand, \ie yellow or brown, as the example of Figure \ref{inex} shows), will enable us to have a working proof of concept, on top of which we can extend to bigger sets later. The ``\texttt{beach\_sun}'', ``\texttt{coast}'' and ``\texttt{sandbar}'' categories of the SUN database contain 211 pictures. The ``\texttt{beach}'', ``\texttt{coast}'' and ``\texttt{seashore}'' categories of ImageNet respectively contain 1,713, 321 and 2,382 pictures. This amounts to a total of 4,627 pictures, which doesn't appear to be much, but might be enough considering the reduction of our problem that we're focusing on.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=200px]{img/beach.jpg}
-\caption{Example of a picture from our reduced datasets (in this case, from ImageNet/beach)}
+\caption{Example of a picture from our reduced datasets (in this case, from \texttt{ImageNet/beach})}
 \label{inex}
 \end{center}
 \end{figure}
 
-[WRITE HOW MANY PICTURES THIS REPRESENTS FOR EACH DATASET?]
+Upon loading of an image, we switch the encoding from the RGB format to the YUV format, which means that the first dimension of every pixel encodes its grayscale value (the \textit{luminance}) and the two other encode the color itself (the \textit{chrominance}). This trick aims at simplifying the problem, because now the input is just one dimension of the image, and the expected output the two other dimensions.
 
-\subsection{Expected results}
+\subsection{Expected results and evaluation}
 
-\subsection{Evaluation}
+% try to overfit 						[X]
+% validation
+%	- manual (visual) will be ~enough	[X]
+% 	- decreasing loss is good enough	[X]
 
-\section{Technical approach}
+The final objective of this project is ideally to be able to recolorize legacy grayscale pictures. For this milestone, our objective is to be able to recolorize seashore pictures in a plausible way. The purpose is not to have the exact reconstitution of the initial image, but rather to output an image that \textit{looks} true. To evaluate this, our final evaluation metric will be the qualitative aspect of the colorized pictures, as it is difficult to numerically determine if the coloring of an image is satisfying.
+
+Our current focus is to find a network that is efficient at solving the classification task that we use to ``encode'' the colorization problem, the loss being our main metric (Section \ref{overview} gives more details on this). As we are writing this milestone, we want, as a sanity check, to confirm that we are able to overfit the dataset with a complex model and are therefore solely working on the training set. We will only look at the classification loss, and not use validation. To check this, we tune the hyper-parameters so that the network has a consistent behavior in terms of loss and actually colorizes images from the training set.
+This will serve as a baseline to fine-tune the loss definition and prediction procedure, and to sophisticate the structure of the network.
+
+\section{Technical approach} \label{overview}
+
+\subsection{Overview}
+
+%	- classification, not regression	[X]
+%	- prediction trick					[X]
+%	- rebalancing trick					[X]
+% considered GANs ?						[-]  elsewhere
+
+The practical approaches to learning the color of a grayscale image can be split in two groups: the ones who take the angle of regression and try to predict a continuous color value, \eg \cite{cheng2015deep} and \cite{dahl2016tinyclouds}, and the ones who take an angle of classification, and discretize the color space into a finite amount of bins, \eg \cite{charpiat2008automatic} and \cite{zhang2016colorful}. Once again taking the angle of \cite{zhang2016colorful}, we're approaching the colorization as a classification problem, and therefore using a (weighted) cross-entropy loss.
+
+Concretely, we want to discretize our colorspace, and for that we simply split our colormap into equal sized bins. As a first step, in order to reduce the computational toll, we don't want too many bins, and are therefore restricting our discretization to the $n$ most frequent color bins, as learned on a big dataset beforehand. In what follows, if a color from our actual image does not fall within one of our $n$ bins, we will simply assign it to the closest available. This simplification leads to a rather faint degradation of the images.
+
+Following the approach of \cite{zhang2016colorful}, we want to boost the possibility of a rare color being predicted, and therefore reproduce the following tricks:
+\begin{itemize}
+\item Use \textit{rebalancing} to give larger weights to rare colors in our loss function. Precisely, each pixel value $p$, assigned to its closest bin $b \in \mathbb{R}^n$ is given a weight $w_p$ such that $$w_p \propto \left( (1-\lambda) \widehat{P}(b) + {\lambda \over n} \right)^{-1}$$ where $\widehat{P}(b)$ is the estimated probability of the bin (computed prior to our model's training) and $\lambda \in [0,1]$ a tuning parameter (the closer to 1, the less we take the bin's frequency into account).
+\item Use an \textit{annealed-mean} to output predictions $y$ from the probability distribution $\textbf{Z}$ over our $n$ bins to the full original color space. The idea is to find a compromise between taking the color class with the maximum probability (the mode), which gives a rather colorful result but sometimes lacking spatial consistency, and taking the weighted average over the bins, which gives a rather flat, sepia kind of tone. To achieve this we use a temperature parameter $T \in (0,1]$ in the following softmax-like formula for one pixel $$y = f_T(\textbf{z}) = {\exp(\log(\textbf{z}) / T) \over \sum_i \exp(\log(\textbf{z}_i) / T)}$$ where $\textbf{z}$ is the $n$-dimensional probability vector of a given pixel over the $n$ bins, and the sum in the denominator is over all the bins.
+\end{itemize}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=200px]{img/cdexample.png}
+\caption{(a) Color map, showing the mean color (\textit{chrominance}) of each of the selected bins (here, we set a threshold of 32 bins to select). (b) Frequency map (log-scale), shows the empirical frequency of the colors within each bin, computed over a dataset beforehand. (c) Inverse-frequency map (log-scale), \ie the inverse of (b). (d) Weight map (log-scale), shows the weights assigned to each bin after rebalancing. Interestingly, we notice that the amplitude in weights is much smaller than the amplitude in frequency (2 orders of magnitude against 4), which means that we partially make up for the underrepresentation bias and therefore encourage the prediction of rare colors.}
+\label{cdex}
+\end{center}
+\end{figure}
+
+Figure \ref{cdex} shows our discretized colorspace, as well as what the weights of the bins look like after rebalancing.
+
+
+\subsection{Current model}
+
+\begin{figure}
+\begin{center}
+ \begin{tabular}{|l |c|}
+ \hline
+ \multirow{3}{60pt}{ConvBlock1}&CONV3-32(2), ReLU\\
+    &CONV3-32(1), ReLU\\
+    & MAXPOOL2, BATCHNORM \\
+ \hline
+  \multirow{3}{60pt}{ConvBlock2}&CONV3-64(1), ReLU\\
+    &CONV3-64(1), ReLU\\
+    & MAXPOOL2, BATCHNORM \\
+ \hline
+   \multirow{3}{60pt}{ConvBlock3}&CONV3-64(1), ReLU\\
+    &CONV3-64(1), ReLU\\
+    & MAXPOOL2, BATCHNORM \\
+ \hline
+    \multirow{3}{60pt}{UpConvBlock1}&CONVT3-32(2), ReLU,\\
+    &CONV3-32(1), ReLU\\
+    & CONV3-32(1), ReLU \\
+ \hline
+    \multirow{3}{60pt}{UpConvBlock2}&CONVT3-32(2), ReLU,\\
+    &CONV3-32(1), ReLU\\
+    & CONV3-32(1), ReLU \\
+ \hline
+ UpConvBlock3 & CONVT3-16(2)\\
+ \hline
+ OutputBlock & CONV1-$n$\\
+ \hline
+\end{tabular}
+\end{center}
+\caption{Architecture of the network (CONVK-C(S) is a conv layer of size KxK with C channels and stride S.)}
+\label{archi}
+\end{figure}
+
+Our current choice is to have a purely convolutional model (so that it can easily adapt to any image size if needed).
+The general idea is that we stack blocks of convolutional layers to scale down the image, progressively increasing the number of filters as the dimension decreases, then we upscale it to its original dimension using convolutional transpose layers.
+This is summed up in Figure \ref{archi}.
+% details on 	# of layers
+% 				sizes of layers
+%				batch norm
+% layers table								[X]
 
 \section{Preliminary results}
 
+% our best hyper parameters yet				[X]
+% overfitting example?						[X]
+% one or two examples of predicted images	[X]
+
+\begin{figure}
+\includegraphics[width=75px]{img/grayscaleis.png}
+\includegraphics[width=75px]{img/100epochis.png}
+\includegraphics[width=75px]{img/grndtruthis.png}
+\caption{In-sample prediction after 100 epochs, on a complicated case. (left) grayscale input image. (center) prediction after 100 epochs. (right) groundtruth image.}
+\label{is}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=75px]{img/grayscaleoos.png}
+\includegraphics[width=75px]{img/100epochoos.png}
+\includegraphics[width=75px]{img/grndtruthoos.png}
+\caption{Out-of-sample prediction after 100 epochs. (left) grayscale input image. (center) prediction after 100 epochs. (right) groundtruth image.}
+\label{oos}
+\end{figure}
+
+After training our model (100 epochs, learning rate of $2~10^{-3}$, batchsize of 64), we can see some overfitting occur (even though for complicated images, \eg on Figure \ref{is} where the sea is mixed up with the beach, the model still struggles a bit).
+Using this trained model to colorize an out-of-sample picture, we see that it has captured the notions of beach and sky (coloring the former in yellow tones and the latter in blue). As we notice (Figure \ref{oos}), the model still has trouble handling the clouds and separating the sea from the rest, but this is definitely a good step.
+
 \section{Next steps}
+
+% Depending on results, we can
+% 	- extend to more layers					[X]
+% 	- extend to bigger training set			[X]
+%
+% If ambitious, extend to videos (already	[X]
+% mentioned in introduction).
+
+These results are encouraging as they show the robustness of the preliminary blocks we built, such as the color discretization and the learning and validating framework.
+
+The next step of this project is to experiment with the network's composition. We want to test the influence of meta-parameters (layer size, regularization rate, dropout rate) on our learning performance. We expect to strengthen our results by optimizing our network this way. Next, we'll want to test new and more fancy network structures. Typically, a U-net could strengthen the gradient flow and help the upsampling layers. Our current model could also be seen as the baseline for the generator of a GAN-based approach.
+Finally, we'll want to expand our analysis to larger datasets. This step is crucial as it provides the perfect testing ground to quantify the ability of our model to generalize. If this performs well, we'll push towards colorizing videos, which should yield the most exciting results.
 
 {\small
 \bibliographystyle{ieee}

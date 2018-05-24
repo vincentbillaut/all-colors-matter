@@ -3,7 +3,7 @@
   "val_path": "data/iccv09Data/images",
   "cd_train_path": "data/iccv09Data/images",
   "batch_size": 2,
-  "n_epochs": 5,
+  "n_epochs": 3,
   "image_shape": [
     320,
     320,
