@@ -87,12 +87,12 @@ class UNetColoringModel(ColoringModel):
         a61 = tf.nn.relu(upconv61,name = "RELU_6_1")
         conv62 = tf.layers.conv2d(a61, filters=16, kernel_size=3, strides=(1, 1), padding="SAME",
                                   kernel_initializer=init, name="CONV_6_2")
-        a62 = tf.nn.relu(conv62, name="RELU_5_3")
+        a62 = tf.nn.relu(conv62, name="RELU_6_2")
 
 
 
         self.scores = tf.layers.conv2d(a62, filters=self.n_categories, kernel_size=1, strides=(1, 1), padding="SAME",
-                                  kernel_initializer=init,name = "CONV_6_2")
+                                  kernel_initializer=init,name = "CONV_6_3")
 
 
     def add_train_op(self):
