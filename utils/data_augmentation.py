@@ -1,0 +1,111 @@
+import numpy as np
+from utils.color_utils import YUV_to_RGB, RGB_to_YUV
+
+class DataAugmenter(object):
+    def __init__(self, rand_variances = [1e-4, 2e-4, 3e-4], n_crops = 2, crop_param = .7, keep_original = True):
+        self.n_rand = len(rand_variances)
+        self.rand_vars = rand_variances
+        self.n_crop = n_crops
+        self.crop_param = crop_param
+        self.keep_orig = keep_original
+        self.n = int(self.keep_orig) + self.n_rand + self.n_crop
+
+
+    def get_n(self):
+        """Returns the number of images that the Augmenter induces.
+        """
+        return self.n
+
+
+    def transf_generator(self, image):
+        """Generator, which yields the transformed versions of the input image.
+
+        Parameters
+        ----------
+        image : np.ndarray
+            Input image (RGB-encoded).
+
+        Will first yield the original image itself (if keep_original is True),
+        then the noised images, then the cropped images.
+        """
+        # original image
+        if self.keep_orig:
+            yield image
+        # noised images
+        for v in self.rand_vars:
+            yield self.gen_noised(image, v)
+        # cropped images
+        for i in range(self.n_crop):
+            yield self.gen_cropped(image, self.crop_param)
+
+
+    def get_transformed(self, image, i):
+        """Random access generator, which gives the image to which we applied
+        the Augmenter's ith transformation.
+
+        Parameters
+        ----------
+        image : np.ndarray
+            Input image (RGB-encoded).
+        i : int
+            Index of the Augmenter's transformation to apply.
+            Must be between 0 and self.n
+
+        Returns
+        -------
+        np.ndarray
+            Transformed image.
+
+        """
+        assert(i < self.n)
+        if i < int(self.keep_orig):
+            return image
+        elif i < int(self.keep_orig) + self.n_rand:
+            return self.gen_noised(image, self.rand_vars[i - int(self.keep_orig)])
+        else:
+            return self.gen_cropped(image, self.crop_param)
+
+
+    def gen_noised(self, input_img, v):
+        """Adds noise to the luminance channel of an image.
+
+        Parameters
+        ----------
+        input_img : np.ndarray
+            Input image to add noise to, RGB-encoded ([0,1]).
+        v : float
+            Standard deviation parameter, for the noise.
+
+        Returns
+        -------
+        np.ndarray
+            Image with added noise to the luminance channel, RGB-encoded ([0,1]).
+
+        """
+        yuv_img = RGB_to_YUV(input_img)
+        yuv_img[:,:,0] += v*np.random.rand(input_img.shape[0], input_img.shape[1])
+        output_img = YUV_to_RGB(yuv_img)
+        return np.clip(output_img, 0, 1)
+
+
+    def gen_cropped(self, input_img, alpha):
+        """Crops the image by a given ratio, both vertically and horizontally.
+
+        Parameters
+        ----------
+        input_img : np.ndarray
+            Input image.
+        alpha : float
+            Ratio by which to crop the image.
+            Usually take about 0.7 or 0.8.
+
+        Returns
+        -------
+        np.ndarray
+            Cropped image.
+
+        """
+        H, W, _ = input_img.shape
+        new_H, new_W = int(H*alpha), int(W*alpha)
+        new_y0, new_x0 = np.random.randint(0,H-new_H+1), np.random.randint(0,W-new_W+1)
+        return input_img[new_y0:(new_y0+new_H),new_x0:(new_x0+new_W),:]
