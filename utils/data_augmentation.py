@@ -17,13 +17,16 @@ class DataAugmenter(object):
         return self.n
 
 
-    def transf_generator(self, image):
+    def transf_generator(self, image, seed):
         """Generator, which yields the transformed versions of the input image.
 
         Parameters
         ----------
         image : np.ndarray
             Input image (RGB-encoded).
+        seed : str
+            Seed to give for random transformations.
+            Usually we'll give the image's path.
 
         Will first yield the original image itself (if keep_original is True),
         then the noised images, then the cropped images.
@@ -32,14 +35,14 @@ class DataAugmenter(object):
         if self.keep_orig:
             yield image
         # noised images
-        for v in self.rand_vars:
-            yield self.gen_noised(image, v)
+        for i,v in enumerate(self.rand_vars):
+            yield self.gen_noised(image, v, seed+str(i+int(self.keep_orig)))
         # cropped images
         for i in range(self.n_crop):
-            yield self.gen_cropped(image, self.crop_param)
+            yield self.gen_cropped(image, self.crop_param, seed+str(i+int(self.keep_orig)+self.n_rand))
 
 
-    def get_transformed(self, image, i):
+    def get_transformed(self, image, i, seed):
         """Random access generator, which gives the image to which we applied
         the Augmenter's ith transformation.
 
@@ -50,6 +53,9 @@ class DataAugmenter(object):
         i : int
             Index of the Augmenter's transformation to apply.
             Must be between 0 and self.n
+        seed : str
+            Seed to give for random transformations.
+            Usually we'll give the image's path.
 
         Returns
         -------
@@ -61,12 +67,12 @@ class DataAugmenter(object):
         if i < int(self.keep_orig):
             return image
         elif i < int(self.keep_orig) + self.n_rand:
-            return self.gen_noised(image, self.rand_vars[i - int(self.keep_orig)])
+            return self.gen_noised(image, self.rand_vars[i - int(self.keep_orig)], seed+str(i))
         else:
-            return self.gen_cropped(image, self.crop_param)
+            return self.gen_cropped(image, self.crop_param, seed+str(i))
 
 
-    def gen_noised(self, input_img, v):
+    def gen_noised(self, input_img, v, seed='0'):
         """Adds noise to the luminance channel of an image.
 
         Parameters
@@ -75,6 +81,8 @@ class DataAugmenter(object):
             Input image to add noise to, RGB-encoded ([0,1]).
         v : float
             Standard deviation parameter, for the noise.
+        seed : str
+            Seed to give for random transformations.
 
         Returns
         -------
@@ -82,13 +90,16 @@ class DataAugmenter(object):
             Image with added noise to the luminance channel, RGB-encoded ([0,1]).
 
         """
-        yuv_img = RGB_to_YUV(input_img)
-        yuv_img[:,:,0] += v*np.random.rand(input_img.shape[0], input_img.shape[1])
+        np.random.seed(hash(seed) % 2**32)
+        if np.max(input_img) > 1:
+            img = input_img / 255.
+        yuv_img = RGB_to_YUV(img)
+        yuv_img[:,:,0] += v*np.random.rand(img.shape[0], img.shape[1])
         output_img = YUV_to_RGB(yuv_img)
         return np.clip(output_img, 0, 1)
 
 
-    def gen_cropped(self, input_img, alpha):
+    def gen_cropped(self, input_img, alpha, seed='0'):
         """Crops the image by a given ratio, both vertically and horizontally.
 
         Parameters
@@ -98,6 +109,8 @@ class DataAugmenter(object):
         alpha : float
             Ratio by which to crop the image.
             Usually take about 0.7 or 0.8.
+        seed : str
+            Seed to give for random transformations.
 
         Returns
         -------
@@ -105,6 +118,7 @@ class DataAugmenter(object):
             Cropped image.
 
         """
+        np.random.seed(hash(seed) % 2**32)
         H, W, _ = input_img.shape
         new_H, new_W = int(H*alpha), int(W*alpha)
         new_y0, new_x0 = np.random.randint(0,H-new_H+1), np.random.randint(0,W-new_W+1)
