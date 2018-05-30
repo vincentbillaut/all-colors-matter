@@ -9,7 +9,7 @@
     320,
     3
   ],
-  "max_batch": 8,
+  "max_batch": -1,
   "lr":1e-3,
   "max_categories": 16
 }

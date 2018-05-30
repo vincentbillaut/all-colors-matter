@@ -20,8 +20,11 @@ class Dataset(object):
 
         self.filter = filter
         self.train_ex_paths = get_im_paths(self.train_path)
+        self.train_size = len(self.train_ex_paths) * self.dilatation
         self.val_ex_paths = get_im_paths(self.val_path)
+        self.val_size = len(self.val_ex_paths)
         self.iterating_seed = 0
+
 
     def get_dataset_batched(self, is_test, config):
         def gen():
@@ -32,7 +35,7 @@ class Dataset(object):
                                                                tf.int32,
                                                                tf.float32,
                                                                tf.bool))
-        batch_size = config.batch_size if is_test else config.batch_size * self.dilatation
+        batch_size = config.batch_size
         batched_dataset = dataset.batch(batch_size)
         batched_dataset = batched_dataset.prefetch(1)
         return batched_dataset
@@ -54,7 +57,6 @@ class Dataset(object):
             np.random.shuffle(images_paths_utf_with_aug)
         else:
             images_paths_utf_with_aug = [(x,0) for x in images_paths_utf]
-
 
         for impath, transf_id in images_paths_utf_with_aug:
             image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(

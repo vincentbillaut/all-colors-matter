@@ -19,6 +19,7 @@ if __name__ == "__main__":
     cd.train(config.cd_train_path, 30)
 
     da = DataAugmenter() # default data augmenter : image, flipped image, 3 noised and 2 cropped
+    # da = DataAugmenter(rand_variances = [], n_crops = 0, do_flip = False) # empty data augmenter
 
     dataset = Dataset(config.train_path, config.val_path, cd, da)
 

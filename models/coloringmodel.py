@@ -119,7 +119,7 @@ class ColoringModel(object):
         self.summary_op = tf.summary.merge_all()
 
     def run_epoch(self, epoch_number=0, val_type="single"):
-        nbatches = len(self.dataset.train_ex_paths)
+        nbatches = self.dataset.train_size
         target_progbar = nbatches if self.config.max_batch <= 0 else min(nbatches, self.config.max_batch)
         prog = Progbar(target=target_progbar)
         batch = 0
@@ -190,7 +190,7 @@ class ColoringModel(object):
     def pred_validation_set(self, epoch_number=0):
         print("Validating epoch {} ...".format(epoch_number))
         self.writer_val = tf.summary.FileWriter(self.config.output_path + "test/", graph=self.graph)
-        nbatches = len(self.dataset.val_ex_paths)
+        nbatches = self.dataset.val_size
         if hasattr(self.config, "max_batch_val"):
             target_progbar = nbatches if self.config.max_batch_val <= 0 else min(nbatches, self.config.max_batch_val)
         else:
