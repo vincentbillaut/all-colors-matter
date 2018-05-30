@@ -32,7 +32,7 @@ class Dataset(object):
                                                                tf.int32,
                                                                tf.float32,
                                                                tf.bool))
-        batch_size = config.batch_size
+        batch_size = config.batch_size if is_test else config.batch_size * self.dilatation
         batched_dataset = dataset.batch(batch_size)
         batched_dataset = batched_dataset.prefetch(1)
         return batched_dataset
@@ -47,11 +47,14 @@ class Dataset(object):
                             global_images_paths]  # need to encode in bytes to pass it to tf.py_func
 
         images_paths_utf.sort()
-        images_paths_utf_with_aug = list(it.product(images_paths_utf,
-                                                    range(self.dilatation)))
         if not is_test:
+            images_paths_utf_with_aug = list(it.product(images_paths_utf,
+                                                        range(self.dilatation)))
             np.random.seed(self.iterating_seed)
             np.random.shuffle(images_paths_utf_with_aug)
+        else:
+            images_paths_utf_with_aug = [(x,0) for x in images_paths_utf]
+
 
         for impath, transf_id in images_paths_utf_with_aug:
             image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(
