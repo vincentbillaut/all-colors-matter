@@ -8,25 +8,36 @@ from matplotlib.pyplot import imread, imsave
 from utils.color_utils import RGB_to_YUV, YUV_to_RGB
 
 
-def load_image_jpg_to_YUV(impath, is_test, config):
+def load_image_jpg_to_YUV(impath, transf, config):
+    """Loads a jpg into a np array of the image.
+
+    Parameters
+    ----------
+    impath : str
+        Path to the image's jpg file.
+    transf : fun
+        Function that takes an image and outputs a transformed image.
+        This function should come from a DataAugmenter object.
+    config : Config
+        contains the target image shape.
+
+    Returns
+    -------
+        A tuple of the image in YUV format and the Y channel of the image.
+
     """
-    Loads a jpg into a np array of the image.
+    """
+    .
     :param impath: path to the image's jpg file.
-    :param is_test: switch; if true, randomly flips the image horizontally.
     :param config: contains the target image shape.
     :return: A tuple of the image in YUV format and the Y channel of the image.
     """
     if isinstance(impath,bytes):
         impath = impath.decode('utf-8')
     image = imread(impath).astype(np.dtype("float32"))
+    image_transf = transf(image)
 
-    if not is_test:
-        flip = np.random.random()
-        if flip < 0.5:
-            image = image[:, ::-1, :]
-            # pass
-
-    padded_image, mask = pad_image_to_size(image, config.image_shape)
+    padded_image, mask = pad_image_to_size(image_transf, config.image_shape)
     YUV_padded_image = RGB_to_YUV(padded_image)
     return YUV_padded_image[:, :, :1], YUV_padded_image[:, :, 1:], mask
 

@@ -6,6 +6,7 @@ from models.next_convnet import NextConvColoringModel
 from models.unet import UNetColoringModel
 from utils.color_discretizer import ColorDiscretizer
 from utils.dataset import Dataset
+from utils.data_augmentation import DataAugmenter
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description='Run a model from a given config file.')
@@ -17,7 +18,9 @@ if __name__ == "__main__":
     cd = ColorDiscretizer(max_categories=config.max_categories)
     cd.train(config.cd_train_path, 30)
 
-    dataset = Dataset(config.train_path, config.val_path, cd)
+    da = DataAugmenter() # default data augmenter : image, flipped image, 3 noised and 2 cropped
+
+    dataset = Dataset(config.train_path, config.val_path, cd, da)
 
     if hasattr(config, "model"):
         if config.model == "NextConvColoringModel":
