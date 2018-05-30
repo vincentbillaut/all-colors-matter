@@ -18,8 +18,14 @@ if __name__ == "__main__":
     cd = ColorDiscretizer(max_categories=config.max_categories)
     cd.train(config.cd_train_path, 30)
 
-    da = DataAugmenter() # default data augmenter : image, flipped image, 3 noised and 2 cropped
-    # da = DataAugmenter(rand_variances = [], n_crops = 0, do_flip = False) # empty data augmenter
+    # da = DataAugmenter() # empty data augmenter
+    # interesting data augmenter: image, flipped image, 3 noised and 2 cropped
+    da = DataAugmenter(
+                    rand_variances = [1e-4, 2e-4, 3e-4],
+                    n_crops = 2,
+                    crop_param = .7,
+                    do_flip = True
+    )
 
     dataset = Dataset(config.train_path, config.val_path, cd, da)
 

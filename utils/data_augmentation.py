@@ -2,7 +2,7 @@ import numpy as np
 from utils.color_utils import YUV_to_RGB, RGB_to_YUV
 
 class DataAugmenter(object):
-    def __init__(self, rand_variances = [1e-4, 2e-4, 3e-4], n_crops = 2, crop_param = .7, do_flip = True, keep_original = True):
+    def __init__(self, rand_variances = [], n_crops = 0, crop_param = .7, do_flip = False, keep_original = True):
         self.n_rand = len(rand_variances)
         self.rand_vars = rand_variances
         self.n_crop = n_crops
