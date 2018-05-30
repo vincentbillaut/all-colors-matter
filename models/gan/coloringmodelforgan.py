@@ -55,7 +55,7 @@ class ColoringModelForGAN(object):
         pass
 
     def pred_color_one_image(self, sess, image_path, out_jpg_path):
-        image_Yscale, image_UVscale = load_image_jpg_to_YUV(image_path, is_test=False, config=self.config)
+        image_Yscale, image_UVscale = load_image_jpg_to_YUV(image_path, (lambda x:x), config=self.config)
         image_Yscale = image_Yscale.reshape([1] + self.config.image_shape[:2] + [1])
         image_UVscale = image_UVscale.reshape([1] + self.config.image_shape[:2] + [2])
 

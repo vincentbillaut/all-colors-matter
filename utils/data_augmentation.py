@@ -2,13 +2,14 @@ import numpy as np
 from utils.color_utils import YUV_to_RGB, RGB_to_YUV
 
 class DataAugmenter(object):
-    def __init__(self, rand_variances = [1e-4, 2e-4, 3e-4], n_crops = 2, crop_param = .7, keep_original = True):
+    def __init__(self, rand_variances = [], n_crops = 0, crop_param = .7, do_flip = False, keep_original = True):
         self.n_rand = len(rand_variances)
         self.rand_vars = rand_variances
         self.n_crop = n_crops
         self.crop_param = crop_param
+        self.do_flip = do_flip
         self.keep_orig = keep_original
-        self.n = int(self.keep_orig) + self.n_rand + self.n_crop
+        self.n = int(self.keep_orig) + int(self.do_flip) + self.n_rand + self.n_crop
 
 
     def get_n(self):
@@ -34,12 +35,29 @@ class DataAugmenter(object):
         # original image
         if self.keep_orig:
             yield image
+        # flipped image
+        if self.do_flip:
+            yield self.gen_flipped(image)
         # noised images
         for i,v in enumerate(self.rand_vars):
-            yield self.gen_noised(image, v, seed+str(i+int(self.keep_orig)))
+            yield self.gen_noised(image, v, seed+str(i+int(self.keep_orig)+int(self.do_flip)))
         # cropped images
         for i in range(self.n_crop):
-            yield self.gen_cropped(image, self.crop_param, seed+str(i+int(self.keep_orig)+self.n_rand))
+            yield self.gen_cropped(image, self.crop_param, seed+str(i+int(self.keep_orig)+int(self.do_flip)+self.n_rand))
+
+
+    def get_transformation(self, i, seed):
+        """Return the ith transformation of the DataAugmenter instance.
+        Uselful when using it as an argument to another function (e.g. if
+        the image is read at a different place than the data_augmenter is
+        used)
+
+        Parameters
+        ----------
+        Same as get_transformed(...), except that we output a function that
+        takes an image as an argument.
+        """
+        return lambda x: self.get_transformed(x, i, seed)
 
 
     def get_transformed(self, image, i, seed):
@@ -66,10 +84,18 @@ class DataAugmenter(object):
         assert(i < self.n)
         if i < int(self.keep_orig):
             return image
-        elif i < int(self.keep_orig) + self.n_rand:
-            return self.gen_noised(image, self.rand_vars[i - int(self.keep_orig)], seed+str(i))
+        elif i < int(self.keep_orig) + int(self.do_flip):
+            return self.gen_flipped(image)
+        elif i < int(self.keep_orig) + int(self.do_flip) + self.n_rand:
+            return self.gen_noised(image, self.rand_vars[i - int(self.keep_orig) - int(self.do_flip)], seed+str(i))
         else:
             return self.gen_cropped(image, self.crop_param, seed+str(i))
+
+
+    def gen_flipped(self, img):
+        """Flips the image on the horizontal axis.
+        """
+        return img[:, ::-1, :]
 
 
     def gen_noised(self, input_img, v, seed='0'):
