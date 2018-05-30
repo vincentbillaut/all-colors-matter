@@ -56,7 +56,7 @@ class Dataset(object):
         for impath, transf_id in images_paths_utf_with_aug:
             image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(
                                                         impath,
-                                                        self.data_augmenter.get_transformation(transf_id, seed=impath), 
+                                                        self.data_augmenter.get_transformation(transf_id, seed=str(impath)),
                                                         config)
             categorized_image, weights = self.color_discretizer.categorize(image_UVscale, return_weights=True)
             yield image_Yscale, categorized_image, weights, mask
