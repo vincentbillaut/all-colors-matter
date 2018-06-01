@@ -162,8 +162,8 @@ class ColoringModel(object):
             self.dataset.iterating_seed += 1
         self.export_train_history()
 
-    def pred_color_one_image(self, image_path, out_jpg_path=None, epoch_number=0):
-        image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, (lambda x:x), config=self.config)
+    def pred_color_one_image(self, image_path, out_jpg_path=None, epoch_number=0, temperature=1.):
+        image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, (lambda x: x), config=self.config)
         categorized_image, weights = self.dataset.color_discretizer.categorize(image_UVscale, return_weights=True)
         feed = {self.image_Yscale: image_Yscale.reshape([1] + self.config.image_shape[:2] + [1]),
                 self.categorized_image: categorized_image.reshape([1] + self.config.image_shape[:2]),
@@ -176,7 +176,8 @@ class ColoringModel(object):
 
         if out_jpg_path is not None:
             print('\nprediction loss = {}'.format(loss))
-            pred_UVimage = self.dataset.color_discretizer.UVpixels_from_distribution(pred_image_categories)
+            pred_UVimage = self.dataset.color_discretizer.UVpixels_from_distribution(pred_image_categories,
+                                                                                     temperature=temperature)
             pred_UVimage = np.reshape(pred_UVimage, newshape=pred_UVimage.shape[1:])
             predicted_YUV_image = np.concatenate([image_Yscale, pred_UVimage], axis=2) * np.reshape(mask, (
                 mask.shape[0], mask.shape[1], 1))
@@ -185,7 +186,7 @@ class ColoringModel(object):
             if epoch_number == 1:
                 true_YUV_image = np.concatenate([image_Yscale, image_UVscale], axis=2)
                 dump_YUV_image_to_jpg(true_YUV_image, out_jpg_path + "_groundtruth.png")
-        return loss
+        return loss, pred_image_categories, (image_Yscale, image_UVscale, mask)
 
     def pred_validation_set(self, epoch_number=0):
         print("Validating epoch {} ...".format(epoch_number))

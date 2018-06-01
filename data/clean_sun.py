@@ -1,7 +1,8 @@
 import os
 import argparse
 
-def parse_sun(PATH1 = "SUN2012/Images/"):
+
+def parse_sun(PATH1="SUN2012/Images/"):
     list_dirs = os.listdir(PATH1)
 
     for subdir in list_dirs:
@@ -27,7 +28,7 @@ def parse_sun(PATH1 = "SUN2012/Images/"):
             os.rmdir(PATH1 + subdir)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description='Clean the sun dataset')
     argparser.add_argument('--full', action='store_true')
     args = argparser.parse_args()
