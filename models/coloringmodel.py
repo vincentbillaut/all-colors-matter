@@ -102,7 +102,7 @@ class ColoringModel(object):
                                                 shape=[-1, self.config.image_shape[0], self.config.image_shape[1], 1])
 
         self.loss = - tf.reduce_mean(
-            tf.log(tf.nn.softmax(self.scores)) * self.ytrue_onehot * self.reshaped_mask_weights)
+            tf.log(tf.nn.softmax(self.scores)+1e-8) * self.ytrue_onehot * self.reshaped_mask_weights)
 
     def add_train_op(self):
         """ Add Tensorflow op to run one iteration of SGD, stores it in self.train_op.
