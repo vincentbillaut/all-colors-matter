@@ -36,7 +36,6 @@ class ColoringModel(object):
         self.n_categories = self.dataset.color_discretizer.n_categories
         self.train_loss_history = list()
         self.val_loss_history = list()
-        # TODO: log this
 
     def _build_model(self):
         self.add_dataset()
@@ -161,6 +160,8 @@ class ColoringModel(object):
             self.run_epoch(i, val_type=val_type)
             self.dataset.iterating_seed += 1
         self.export_train_history()
+        if val_type=="full":
+            self.export_val_history()
 
     def pred_color_one_image(self, image_path, out_jpg_path=None, epoch_number=0, temperature=1.):
         image_Yscale, image_UVscale, mask = load_image_jpg_to_YUV(image_path, (lambda x: x), config=self.config)
@@ -206,6 +207,7 @@ class ColoringModel(object):
                     loss, summary, pred_image_categories = self.session.run(
                         [self.loss, self.summary_op, self.pred_image_categories], )
                     self.writer_val.add_summary(summary, epoch_number * target_progbar + batch)
+                    self.val_loss_history.append((epoch_number,loss))
                     batch += self.config.batch_size
 
                 except tf.errors.OutOfRangeError:
@@ -239,6 +241,15 @@ class ColoringModel(object):
         loss_export.to_csv(self.config.output_path + "train_loss_history.csv")
         if verbose:
             print("Exported loss history to {}".format(self.config.output_path + "train_loss_history.csv"))
+
+    def export_val_history(self, clear=True, verbose=True):
+        loss_export = pd.DataFrame(self.val_loss_history)
+        if clear:
+            self.val_loss_history.clear()
+        loss_export.columns = ["epoch", "loss"]
+        loss_export.to_csv(self.config.output_path + "val_loss_history.csv")
+        if verbose:
+            print("Exported loss history to {}".format(self.config.output_path + "val_loss_history.csv"))
 
     def load(self, output_dir, verbose=True):
         """Load model"""
