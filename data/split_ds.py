@@ -113,24 +113,31 @@ if __name__ == "__main__":
     # if os.path.isdir("SUN2012/Images"):
     #     prepare_dataset("SUN2012/Images", "sun_inet", begin_filter=["b_beach_sun", "c_coast", "s_sandbar"],
     #                     resize_params=resize_params)
+    # if os.path.isdir("SUN397"):
+    #     prepare_dataset("SUN397", "sun_inet_big", begin_filter=["c_coast_sun",
+    #                                                             "s_sandbar_sun",
+    #                                                             "b_beach_sun",
+    #                                                             "g_golf_course_sun",
+    #                                                             "gazebo_exterior_sun",
+    #                                                             "m_mountain_snowy_sun",
+    #                                                             "c_cemetery_sun",
+    #                                                             "covered_bridge_exterior_sun",
+    #                                                             "c_creek_sun",
+    #                                                             "m_mountain_sun",
+    #                                                             "m_mansion_sun",
+    #                                                             "v_vineyard_sun"],
+    #                          resize_params=resize_params)
+    #
+    # if os.path.isdir("imagenet"):
+    #     for i, subinet in enumerate(os.listdir("imagenet")):
+    #         prepare_dataset(os.path.join("imagenet", subinet), "sun_inet_big", resize_params=resize_params, overwrite_dir=False)
+
     if os.path.isdir("SUN397"):
-        prepare_dataset("SUN397", "sun_inet_big", begin_filter=["c_coast_sun",
-                                                                "s_sandbar_sun",
-                                                                "b_beach_sun",
-                                                                "g_golf_course_sun",
-                                                                "gazebo_exterior_sun",
-                                                                "m_mountain_snowy_sun",
-                                                                "c_cemetery_sun",
-                                                                "covered_bridge_exterior_sun",
-                                                                "c_creek_sun",
-                                                                "m_mountain_sun",
-                                                                "m_mansion_sun",
-                                                                "v_vineyard_sun"],
-                             resize_params=resize_params)
+        prepare_dataset("SUN397", "sun_inet_full", begin_filter=None,resize_params=resize_params,splits_props=[.9, .05, .05])
 
     if os.path.isdir("imagenet"):
         for i, subinet in enumerate(os.listdir("imagenet")):
-            prepare_dataset(os.path.join("imagenet", subinet), "sun_inet_big", resize_params=resize_params, overwrite_dir=False)
+            prepare_dataset(os.path.join("imagenet", subinet), "sun_inet_full", resize_params=resize_params, overwrite_dir=False)
 
     if args.inpath is not None:
         if args.outprefix is not None:
