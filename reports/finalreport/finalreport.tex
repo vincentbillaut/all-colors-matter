@@ -128,25 +128,30 @@ Our end model is a U-Net that has 3 downsampling groups of convolutional layers 
 \section{Dataset and Features}
 
 \subsection{Datasets}
-To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected ????? categories from imagenet and 12 categories from SUN, that correspond mainly to forest and coastal landscapes. Our final training set is made of 12128 images. The valiadation set is made of 2536 images. 
+To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images -- as a reference for comparison, \cite{zhang2016colorful} train their model on 1.5M+ images. Our validation set is made up of 2,889 images. A sample of the training data is shown in Figure \ref{sampletrain}.
+We also tried training the model on the full SUN dataset (for only one epoch), to compare performance and gain insight on the importance for the model to go over the same examples several times to learn well.
 
-(We have also trained one model on the full SUN dataset, to compare the performance we get by training several times on the same reduced dataset to what we get with a much larger dataset and less epochs)
+\begin{figure}
+\begin{center}
+\includegraphics[width=200px]{img/sampletrain.png}
+\caption{TODO}
+\label{sampletrain}
+\end{center}
+\end{figure}
 
-
-
-To keep a reasonable size for our tensors and have uniformity in our dataset, the images have been downsampled to be all less than 256 pixels wide or high. The downsampling has been performed using lanczos method (with a $\text{sinc}$ kernel). 
+To keep a reasonable size for our tensors and have uniformity in our dataset, the images have all been downsampled to fit in a 256x256px frame (if downsampling was necessary). The downsampling has been performed using Lanczos method (with a $\text{sinc}$ kernel), and we used a mask for non-square images to make sure the loss is relevant. 
 
 \subsection{Data Augmentation}
-To improve the robustness of the model we train, we have implemented data augmentation. For each image of the training set, we generate seevral training images by 
+
+To improve the robustness of the model we train, we have implemented data augmentation. For each original image of the training set, we generate several training images by 
 \begin{itemize}
 \item Flipping the image along the horizontal axis
-\item Adding noise at 3 different levels to the image
+\item Adding noise to the image (with different intensities)
 \item Selecting random crops of the image
 \end{itemize}
 
-We noticed an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline. 
+We noticed an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training (so the actual size of the training set is the same). In the case described above, the size of our training set is dilated sevenfold.
 
-This allows to multply by 7? the size of the training set. 
 \section{Results and discussion}
 \section{Conclusion and perspectives}
 \section*{Contributions and acknowledgements}
