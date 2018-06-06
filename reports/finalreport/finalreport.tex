@@ -117,7 +117,36 @@ Figure \ref{cdex} shows our discretized colorspace, as well as what the weights 
 
 Our end model is a U-Net that has 3 downsampling groups of convolutional layers and 2 connections between hidden layers of the same size (we set aside the last and first layers of the downsampling process). 
 
+\begin{figure}
+\begin{center}
+\includegraphics[width=200px]{diagram}
+\caption{Structure of the network}
+\label{structure}
+\end{center}
+\end{figure}
+
 \section{Dataset and Features}
+
+\subsection{Datasets}
+To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected ????? categories from imagenet and 12 categories from SUN, that correspond mainly to forest and coastal landscapes. Our final training set is made of 12128 images. The valiadation set is made of 2536 images. 
+
+(We have also trained one model on the full SUN dataset, to compare the performance we get by training several times on the same reduced dataset to what we get with a much larger dataset and less epochs)
+
+
+
+To keep a reasonable size for our tensors and have uniformity in our dataset, the images have been downsampled to be all less than 256 pixels wide or high. The downsampling has been performed using lanczos method (with a $\text{sinc}$ kernel). 
+
+\subsection{Data Augmentation}
+To improve the robustness of the model we train, we have implemented data augmentation. For each image of the training set, we generate seevral training images by 
+\begin{itemize}
+\item Flipping the image along the horizontal axis
+\item Adding noise at 3 different levels to the image
+\item Selecting random crops of the image
+\end{itemize}
+
+We noticed an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline. 
+
+This allows to multply by 7? the size of the training set. 
 \section{Results and discussion}
 \section{Conclusion and perspectives}
 \section*{Contributions and acknowledgements}
