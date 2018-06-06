@@ -72,15 +72,23 @@ We formulate the colorization problem as a classification problem to gain flexib
 
 \section{Related Work} \label{relatedwork}
 
-Classical approaches to this task, \eg \cite{cheng2015deep} and \cite{dahl2016tinyclouds}, aim at predicting an image as close as possible to the ground truth, and notably make use of a simple $L_2$ loss, which penalizes predictions that fall overall too far from the ground truth. As a consequence, the models trained following such methods usually tend to be very conservative, and to give desaturated, pale results.
+Historically, older approaches of the colorization problem use an idditional input, a \textit{seed scribble} from the user to propagate colors, as does \cite{levin2004colorization}. It may also be seen as a corollary of color style transfer algorithms using a similar image as a "seed" as in \cite{he2017neuralct}. Here, we are interested in fully automatic recolorization
 
-On the contrary, authors of \cite{zhang2016colorful} take another angle and set their objective to be ``\textit{plausible} colorization'' (and not necessarily \textit{accurate}), which they validate with a large-scale human trial.
+Classical approaches to this task, \eg \cite{cheng2015deep} and \cite{dahl2016tinyclouds}, aim at predicting an image as close as possible to the ground truth, and notably make use of a simple $L_2$ loss, which penalizes predictions that fall overall too far from the ground truth. As a consequence, the models trained following such methods usually tend to be very conservative, and to give desaturated, pale results. Usually, the images need some postprocessing adjustments as in \cite{deshpande2015learning} to have a realistic aspect.
+
+On the contrary, authors of \cite{zhang2016colorful} take another angle and set their objective to be ``\textit{plausible} colorization'' (and not necessarily \textit{accurate}), which they validate with a large-scale human trial. To achieve such results, they formulate the colorization task as a classification task using color bins, as suggested already in \cite{charpiat2008automatic}. 
 
 Their approach is the most appealing as they have colorful results and we found the classification formulation to be interesting. However, the network architecture they use is very heavy (taking more than 20 GB of memory), and the scale of their training set (several millions of images). The reason behind this is that to encode meaningful fetures that help to colorize the image, one needs to have a large spatial receptive field. THe approach of the article is to downsample the image a lot in the layers in the middle and then upsample using Convolutional Transpose layers. To keep a lot of information in the intermediate layers, the number of filters in the model of \cite{zhang2016colorful} is very large, resulting in a model that is large and expensive to train.
 
-Authors of \cite{ronneberger2015unet} have shown that conenctions between hidden layers of a bottleneck neural network could enhance the performance gratly, by helping the upsampling process and improving the gradient flow. 
+Authors of \cite{ronneberger2015unet} have shown that connections between hidden layers of a bottleneck neural network could enhance the performance greatly, by helping the upsampling process and improving the gradient flow. 
 
 We hope that applying this method will allow us to train a colorizing model more quickly and more efficently, with less parameters. 
+
+Part of the challenges that are interesting but not yet tackled in the literature involve videos. General information propagation frameworks in a video involving bilateral netwoks as discussed in \cite{jampani2017video} could be seen as a a potential way to implement cosistent colorization of video sequences. The work realized in \cite{zhu2017video} is also interesting since it tackles video stylization by grouping the frames, choose a representative frame for each group and use the output of the network on this frame as a guideline, which enhances temporal consistency. However, the adaptation of such an algorithm to the much more complex task of image colorization is far beyond the scope of this project. 
+
+Actually, one promising way to perform image colorization is to be able to learn meaningful color-related representations for the images (which often involves using very deep and heavy or pretrained architecture as in \cite{larsson2016repres}) and then ensure the temporal consistency of them. 
+
+Given our commitment to developing a lightweight model, we prefered focusing on an efficient colorization for images and then add alayer of temporal convolution for videos. 
 
 
 \section{Methods}
