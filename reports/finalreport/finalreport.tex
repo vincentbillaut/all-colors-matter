@@ -201,6 +201,23 @@ On the other hand, there are examples where our network is obviouly wrong and ou
 \end{center}
 \end{figure*}
 
+\begin{figure*}
+\begin{center}
+\includegraphics[width=450px]{worse}
+\caption{Sample bad predictions of the ColorUNet}
+\label{worse}
+\end{center}
+\end{figure*}
+
+\begin{figure*}
+\begin{center}
+\includegraphics[width=450px]{confidence}
+\caption{Confidence map for bad predictions of the ColorUNet}
+\label{confidence}
+\end{center}
+\end{figure*}
+
+
 We also have cases where the colorizer gives wrong results, because of very specific input images. For example, a snowy ground is guessed to be grass by the classifier, which outputs very interesting results. 
 
 We can also see that in some casesm, our colorizer is completely wrong, and we can quite easily understand why. 
