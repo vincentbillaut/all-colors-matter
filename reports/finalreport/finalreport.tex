@@ -119,7 +119,7 @@ Our end model is a U-Net that has 3 downsampling groups of convolutional layers 
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=200px]{diagram}
+\includegraphics[width=250px]{diagram}
 \caption{Structure of the network}
 \label{structure}
 \end{center}
@@ -128,13 +128,13 @@ Our end model is a U-Net that has 3 downsampling groups of convolutional layers 
 \section{Dataset and Features}
 
 \subsection{Datasets}
-To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images -- as a reference for comparison, \cite{zhang2016colorful} train their model on 1.5M+ images. Our validation set is made up of 2,889 images. A sample of the training data is shown in Figure \ref{sampletrain}.
+To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images -- as a reference for comparison, \cite{zhang2016colorful} train their model on 1.5M+ images. Our validation set is made up of 2,889 images. A sample of the validation data is shown in Figure \ref{sampletrain}.
 We also tried training the model on the full SUN dataset (for only one epoch), to compare performance and gain insight on the importance for the model to go over the same examples several times to learn well.
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=200px]{img/sampletrain.png}
-\caption{TODO}
+\includegraphics[width=200px]{sampletrain.png}
+\caption{Sample images from our dataset (here, the validation set). We included categories such as \texttt{coast}, \texttt{beach} and \texttt{gazebo\_exterior} from SUN, and categories like \texttt{landscape}, \texttt{field} and \texttt{canyon} from ImageNet.}
 \label{sampletrain}
 \end{center}
 \end{figure}
