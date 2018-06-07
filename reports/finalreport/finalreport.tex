@@ -103,7 +103,13 @@ Given our commitment to developing a lightweight model, we prefered focusing on 
 \section{Methods} \label{methods}
 
 \subsection{Colorization as classification}
-
+\begin{figure}
+\begin{center}
+\includegraphics[width=200px]{cdexample.png}
+\caption{(a) Color map, showing the mean color (\textit{chrominance}) of each of the selected bins (here, we set a threshold of 32 bins to select). (b) Frequency map (log-scale), shows the empirical frequency of the colors within each bin, computed over a dataset beforehand. (c) Inverse-frequency map (log-scale), \ie the inverse of (b). (d) Weight map (log-scale), shows the weights assigned to each bin after rebalancing. Interestingly, we notice that the amplitude in weights is much smaller than the amplitude in frequency (2 orders of magnitude against 4), which means that we partially make up for the underrepresentation bias and therefore encourage the prediction of rare colors.}
+\label{cdex}
+\end{center}
+\end{figure}
 As we discussed in section \ref{relatedwork}, we are taking the angle of \cite{zhang2016colorful}. As a result, we are approaching the colorization as a classification problem, and therefore using a (weighted) cross-entropy loss.
 
 Concretely, we want to discretize our colorspace, and for that we simply split our colormap into equal sized bins. As a first step, in order to reduce the computational toll, we don't want too many bins, and are therefore restricting our discretization to the $n$ most frequent color bins, as learned on a big dataset beforehand. In what follows, if a color from our actual image does not fall within one of our $n$ bins, we will simply assign it to the closest available. This simplification leads to a rather faint degradation of the images.
@@ -114,18 +120,18 @@ Following the approach of \cite{zhang2016colorful}, we want to boost the possibi
 \item Use an \textit{annealed-mean} to output predictions $y$ from the probability distribution $\textbf{Z}$ over our $n$ bins to the full original color space. The idea is to find a compromise between taking the color class with the maximum probability (the mode), which gives a rather colorful result but sometimes lacking spatial consistency, and taking the weighted average over the bins, which gives a rather flat, sepia kind of tone. To achieve this we use a temperature parameter $T \in (0,1]$ in the following softmax-like formula for one pixel $$y = f_T(\textbf{z}) = {\exp(\log(\textbf{z}) / T) \over \sum_i \exp(\log(\textbf{z}_i) / T)}$$ where $\textbf{z}$ is the $n$-dimensional probability vector of a given pixel over the $n$ bins, and the sum in the denominator is over all the bins.
 \end{itemize}
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=200px]{cdexample.png}
-\caption{(a) Color map, showing the mean color (\textit{chrominance}) of each of the selected bins (here, we set a threshold of 32 bins to select). (b) Frequency map (log-scale), shows the empirical frequency of the colors within each bin, computed over a dataset beforehand. (c) Inverse-frequency map (log-scale), \ie the inverse of (b). (d) Weight map (log-scale), shows the weights assigned to each bin after rebalancing. Interestingly, we notice that the amplitude in weights is much smaller than the amplitude in frequency (2 orders of magnitude against 4), which means that we partially make up for the underrepresentation bias and therefore encourage the prediction of rare colors.}
-\label{cdex}
-\end{center}
-\end{figure}
+
 
 Figure \ref{cdex} shows our discretized colorspace, as well as what the weights of the bins look like after rebalancing.
 
 \subsection{Neural architecture: \textit{ColorUNet}}
-
+\begin{figure}
+\begin{center}
+\includegraphics[width=200px]{diagram}
+\caption{Structure of the \textit{ColorUNet}. We use 3 types of cells: DownConv Cells that use 2 stacked convolutional layers to have a large perceptive field and a maxpooling to downsample the image, UpConv cells that use 1 ConvTranspose Layer to upsample the image and then 2 convolutional layers, and an Output cell that is a simplified version of the UpConv cell}
+\label{structure}
+\end{center}
+\end{figure}
 Our task has now become a segmentation problem, for which we have to predict the correct class (representing a color bin) out of 32, for every pixel in the input image. Our end model is a U-Net that has 3 downsampling groups of convolutional layers and 2 connections between hidden layers of the same size (we set aside the last and first layers of the downsampling process).
 
 Figure \ref{structure} summarizes the structure of the final network, that we refer as \textit{ColorUNet}.
@@ -138,22 +144,9 @@ This network gave interesting results, but it was very unstable and slow to trai
 
 Those observations led us to design our final \textit{ColorUNet}, that still has a bottleneck structure but uses connections between layers to improve the gradient flow and help the upsampling. We also added additional batch normalization layers to improve training stability.
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=200px]{diagram}
-\caption{Structure of the \textit{ColorUNet}. We use 3 types of cells: DownConv Cells that use 2 stacked convolutional layers to have a large perceptive field and a maxpooling to downsample the image, UpConv cells that use 1 ConvTranspose Layer to upsample the image and then 2 convolutional layers, and an Output cell that is a simplified version of the UpConv cell}
-\label{structure}
-\end{center}
-\end{figure}
+
 
 \section{Dataset and Features}
-
-\subsection{Datasets}
-To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images -- as a reference for comparison, \cite{zhang2016colorful} train their model on 1.5M+ images. Our validation set is made of 2,889 images. A sample of the training data is shown in Figure \ref{sampletrain}.
-The motivation behing reducing our focus to nature scenes was both conceptual and practical. Conceptual because it seems too optimistic to try to train a rather lightweight model on a very diversified dataset, and practical because it eventually comes down to computing time. We chose to include images representing nature scenes which have pictural elements in common -- such as trees, mountains, clouds, \etc -- as well as color tones -- blue for the sky, sand for beaches, green for grass and forests,  \etc.
-
-We also tried training the model on the full SUN dataset (for only one epoch), to compare performance and gain insight on the importance for the model to go over the same examples several times to learn well.
-
 \begin{figure}
 \begin{center}
 \includegraphics[width=200px]{sampletrain.png}
@@ -161,6 +154,21 @@ We also tried training the model on the full SUN dataset (for only one epoch), t
 \label{sampletrain}
 \end{center}
 \end{figure}
+
+\begin{figure*}
+\begin{center}
+\includegraphics[width=450px]{good}
+\caption{Sample predictions of the ColorUNet on the validation set, for several prediction temperatures. The temperature parameter allows a tradeoff between vivid colors and elimination of artifacts of a wrong color.}
+\label{good}
+\end{center}
+\end{figure*}
+\subsection{Datasets}
+To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images -- as a reference for comparison, \cite{zhang2016colorful} train their model on 1.5M+ images. Our validation set is made of 2,889 images. A sample of the training data is shown in Figure \ref{sampletrain}.
+The motivation behing reducing our focus to nature scenes was both conceptual and practical. Conceptual because it seems too optimistic to try to train a rather lightweight model on a very diversified dataset, and practical because it eventually comes down to computing time. We chose to include images representing nature scenes which have pictural elements in common -- such as trees, mountains, clouds, \etc -- as well as color tones -- blue for the sky, sand for beaches, green for grass and forests,  \etc.
+
+We also tried training the model on the full SUN dataset (for only one epoch), to compare performance and gain insight on the importance for the model to go over the same examples several times to learn well.
+
+
 
 To keep a reasonable size for our tensors and have uniformity in our dataset, the images have all been downsampled to fit in a 256$\times$256px frame (if downsampling was necessary). The downsampling has been performed using Lanczos method (with a $sinc$ kernel), and we used a mask for non-square images to make sure the loss is relevant.
 
@@ -176,6 +184,13 @@ To improve the robustness of the model we train, we augmented our training data 
 We expect an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training. In the case described above, the size of our training set is dilated sevenfold.
 
 \section{Results and discussion}
+\begin{figure*}
+\begin{center}
+\includegraphics[width=450px]{better}
+\caption{Sample predictions of the ColorUNet on the validation set, for bland input images. The ColorUNet's output is more colorful than the ground truth. The bottom example is an old photograph with weared tones.}
+\label{better}
+\end{center}
+\end{figure*}
 \subsection{Evaluation and parameter tuning}
 
 Given the task that we are performing here, there is no relevant metric of the performance of our model. Actually, the classification loss is useful for training but is not very readable in terms of evaluating the actual prediction performance. Likewise, another loss like the $L_2$ is not relevant, as we discussed in section \ref{relatedwork}. Similarly to \cite{zhang2016colorful}, we rely on human evaluation to evaluate the overall performance of the algorithm, as it is both quick and easy to have a look at a random subsample of the validation set and see if the coloring is satisfying.
@@ -198,24 +213,17 @@ Such examples also show that it is difficult to quantatively evaluate the model.
 
 On the other hand, there are examples where our network is obviously wrong and outputs predictions that are not plausible. Some such examples are seen in \ref{worse}.
 
+Overall, our ColorUNet performs well at the limited task that we want to tackle. Not very surprisingly, it does not perform well on new categories, and especially on inside scenes.
+
 \subsubsection{Further analysis}
+
+We propose some visualizations to further analyze the behavior of the model.  
+
+\paragraph{Confidence maps}
+
+
 In order to better understand the behavior of our model, we have designed a \textbf{confidence} map, showed in figure \ref{confidence}. We use the value of the top bin's score and its relative magnitude compared to the second score of each pixel to visualize the confidence of the prediction. This is also a good sanity check. Actually, given that our model is intended to be lightweight, we do not expect it to make outstanding predictions on all the pictures. However, we expect our model to be unsure about the wrong results, and the difficult parts of the images.
 
-\begin{figure*}
-\begin{center}
-\includegraphics[width=450px]{good}
-\caption{Sample predictions of the ColorUNet on the validation set, for several prediction temperatures. The temperature parameter allows a tradeoff between vivid colors and elimination of artifacts of a wrong color.}
-\label{good}
-\end{center}
-\end{figure*}
-
-\begin{figure*}
-\begin{center}
-\includegraphics[width=450px]{better}
-\caption{Sample predictions of the ColorUNet on the validation set, for bland input images. The ColorUNet's output is more colorful than the ground truth. The bottom example is an old photograph with weared tones.}
-\label{better}
-\end{center}
-\end{figure*}
 
 \begin{figure*}
 \begin{center}
@@ -233,7 +241,8 @@ In order to better understand the behavior of our model, we have designed a \tex
 \end{center}
 \end{figure*}
 
-Overall, our ColorUNet performs well at the limited task that we want to tackle. Not very surprisingly, it does not perform well on new categories, and especially on inside scenes.
+\paragraph{Loss analysis}
+
 
 The ability of the model to generalize can also be explored from a quantitative point of view. Figure \ref{lossplot} shows that the performance of our model on the validation set matches that of the training set, in terms of loss. We have avoided overfit, so that this result validates our initial idea of aiming at a lightweight model, which can not be over-parametric. This is also promising since it implies that there is room for progress. The \textit{ColorUNet} can be further trained, and kernel sizes in intermediate layers can be increased, which will yield even better results with more computing power.
 
@@ -246,6 +255,10 @@ The ability of the model to generalize can also be explored from a quantitative 
 \end{figure}
 
 When having a closer look at in-sample examples, we see that overall, the quality of the prediction is slightly better but comparable to what we have in the validation set. This suggests that we have not overfitted the training set. However, given the evolution of the loss, we can even expect our model to be slightly under-fitted, and it may benefit from further training. However, given the limited time we had to complete this project, we preferred focusing on other experiments (such as studying the effect of data augmentation or training on an extended dataset) rather than spending time overfitting a model.
+
+
+\paragraph{Color distribution analysis}
+
 
 In order to understand the impact of our decision to encourage the prediction of "rare" colors by weighting the loss, we produced in figure \ref{histogram} histograms of the frequencies of the 32 color bins. We see that the prediction of the \textit{ColorUNet} does not exactly match the ground truth. By comparing the histograms with the frequencies in the whole dataset, we see that the ground truth had "common" colors. The \textit{ColorUNet} chooses to aim for "rare" colors, thus producing vivid images. Since this choice does not impair the realism of outputs, we believe that our contribution achieved our goal of colorizing with lively colors.
 
@@ -300,8 +313,6 @@ Possible extensions would include training a network with more filters on more c
 
 Using \textit{seed pixels} from our predictions and diffusing them could also be a way to adapt the heuristics of \cite{zhu2017video} to colorization, by enforcing temporal consistence of the seed pixels.
 
-
-\clearpage
 
 \section*{Contributions and acknowledgements}
 
