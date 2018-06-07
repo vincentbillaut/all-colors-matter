@@ -150,9 +150,9 @@ Those observations led us to design our final \textit{ColorUNet}, that still has
 
 \subsection{Datasets}
 To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images -- as a reference for comparison, \cite{zhang2016colorful} train their model on 1.5M+ images. Our validation set is made of 2,889 images. A sample of the training data is shown in Figure \ref{sampletrain}.
-We also tried training the model on the full SUN dataset (for only one epoch), to compare performance and gain insight on the importance for the model to go over the same examples several times to learn well.
+The motivation behing reducing our focus to nature scenes was both conceptual and practical. Conceptual because it seems too optimistic to try to train a rather lightweight model on a very diversified dataset, and practical because it eventually comes down to computing time. We chose to include images representing nature scenes which have pictural elements in common -- such as trees, mountains, clouds, \etc -- as well as color tones -- blue for the sky, sand for beaches, green for grass and forests,  \etc.
 
-TODO: give more details on the chosen categories
+We also tried training the model on the full SUN dataset (for only one epoch), to compare performance and gain insight on the importance for the model to go over the same examples several times to learn well.
 
 \begin{figure}
 \begin{center}
@@ -241,7 +241,7 @@ In order to understand the impact of our decision to encourage the prediction of
 
 \begin{figure}
 \begin{center}
-\includegraphics[width=220px]{color_histogram}
+\includegraphics[width=250px]{color_histogram}
 \caption{Histograms of the frequencies of the 32 selected color bins. Top: frequencies in the pixels of 500 sample images; true color channels (blue); colors predicted by \textit{ColorUNet} \text{(orange)}. \text{Bottom}: frequencies of the color bins in the Color Discretizer (green), representing the whole dataset. The \textit{ColorUNet} differs from the ground truth which has "common" colors (bins 17, 21), it prefers "rare" colors (bins 11, 20, 26). }
 \label{histogram}
 \end{center}
