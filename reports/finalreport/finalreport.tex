@@ -77,7 +77,7 @@ The input to our algorithm is simply an image in grayscale, and the output is th
 
 We formulate the colorization problem as a classification problem to gain flexibility in the prediction process and output more colorful images. We aim at reproducing state of the art results that give vivid, visually appealing results, with a much smaller network.
 
-We focused on designing our own architecture from scratch, rather than using parts from other architecture or pre-trained portions, to ensure modularity, full control of the design and keep the overall complexity reasonable. 
+We focused on designing our own architecture from scratch, rather than using parts from other architecture or pre-trained portions, to ensure modularity, full control of the design and keep the overall complexity reasonable.
 
 \section{Related Work} \label{relatedwork}
 
@@ -186,9 +186,10 @@ We have chosen the size of our network layers (especially the number of filters)
 
 Finally, we have used a validation set to evaluate the model. The split between validation and training  has been done randomly at preprocessing time.
 
-In addition to visualizing our own colorization results, we have visualized the results of the state-of-the-art model, \cite{zhang2016colorful}, that is available online. Not surprisingly, the results are more realistic. However, on a lot of cases from our validation set, the results are similar. More interestingly, we see that errors are \textbf{visually similar} for the two networks, \textit{i.e.} color stains and that the same kinds of objects cause errors (textures of grass that look like waves on the ocean \textit{e.g.}). 
+In addition to visualizing our own colorization results, we have visualized the results of the state-of-the-art model, \cite{zhang2016colorful}, that is available online. Not surprisingly, the results are more realistic. However, on a lot of cases from our validation set, the results are similar. More interestingly, we see that errors are \textbf{visually similar} for the two networks, \textit{i.e.} color stains and that the same kinds of objects cause errors (textures of grass that look like waves on the ocean \textit{e.g.}).
 
 \subsection{Colorizing images}
+\subsubsection{Overview of the results}
 
 Figure \ref{good} gives some examples of correct colorizations made by the ColorUNet. We can see that the network is able to correctly colorize the main entities of interest (The sky, trees, grass, water, clouds, etc...) with vivid colors. The influence of the temperature parameter is very easy to see here, as we have less consistency but more vivid colors for low temperatures (closer to taking the argmax) and smoother, but desaturated for higher temperatures, as expected in section \ref{methods}.
 
@@ -197,6 +198,7 @@ Such examples also show that it is difficult to quantatively evaluate the model.
 
 On the other hand, there are examples where our network is obviously wrong and outputs predictions that are not plausible. Some such examples are seen in \ref{worse}.
 
+\subsubsection{Further analysis}
 In order to better understand the behavior of our model, we have designed a \textbf{confidence} map, showed in figure \ref{confidence}. We use the value of the top bin's score and its relative magnitude compared to the second score of each pixel to visualize the confidence of the prediction. This is also a good sanity check. Actually, given that our model is intended to be lightweight, we do not expect it to make outstanding predictions on all the pictures. However, we expect our model to be unsure about the wrong results, and the difficult parts of the images.
 
 \begin{figure*}
@@ -233,7 +235,15 @@ In order to better understand the behavior of our model, we have designed a \tex
 
 Overall, our ColorUNet performs well at the limited task that we want to tackle. Not very surprisingly, it does not perform well on new categories, and especially on inside scenes.
 
-TODO: add a loss plot with val, etc...
+The ability of the model to generalize can also be explored from a quantitative point of view. Figure \ref{lossplot} shows that the performance of our model on the validation set matches that of the training set, in terms of loss. We have avoided overfit, so that this result validates our initial idea of aiming at a lightweight model, which can not be over-parametric. This is also promising since it implies that there is room for progress. The \textit{ColorUNet} can be further trained, and kernel sizes in intermediate layers can be increased, which will yield even better results with more computing power.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{lossplot}
+\caption{Evolution of the loss of \textit{ColorUNet} accross the learning iterations. The validation (red) loss matched the train (blue) loss, so that we have not overfitted our training set.}
+\label{lossplot}
+\end{center}
+\end{figure}
 
 When having a closer look at in-sample examples, we see that overall, the quality of the prediction is slightly better but comparable to what we have in the validation set. This suggests that we have not overfitted the training set. However, given the evolution of the loss, we can even expect our model to be slightly under-fitted, and it may benefit from further training. However, given the limited time we had to complete this project, we preferred focusing on other experiments (such as studying the effect of data augmentation or training on an extended dataset) rather than spending time overfitting a model.
 
@@ -282,22 +292,22 @@ An interesting next step to take would be to do a full benchmark of the model pe
 
 \section{Conclusion and perspectives}
 
-In this work, we formulated the colorization problem as a classifiaction problem to get colorful results. The ColorUNet we have designed is a lightweight version of the state-of-the-art architecture that allows to quickly get satisfying results on a reduced dataset, with limited computational power. 
+In this work, we formulated the colorization problem as a classifiaction problem to get colorful results. The ColorUNet we have designed is a lightweight version of the state-of-the-art architecture that allows to quickly get satisfying results on a reduced dataset, with limited computational power.
 
-Our predictions have the same limitations as the reference model. Extending the task to more categories would need more parmeters, but our experiments has shown that a U-Net inspired architecture enhances and accelerates the learning process for the colorization problem. We propose a lightweight extension to colorize video sequences. 
+Our predictions have the same limitations as the reference model. Extending the task to more categories would need more parmeters, but our experiments has shown that a U-Net inspired architecture enhances and accelerates the learning process for the colorization problem. We propose a lightweight extension to colorize video sequences.
 
-Possible extensions would include training a network with more filters on more classes, but it would most likely yield similar results to \cite{zhang2016colorful}, and still have consistence problems. Using the confidence maps we designed to automatically select seed pixels and apply the heuristics described in \cite{levin2004colorization} to \textit{diffuse} diffuse those seeds would be an elegant way to post-process our images and have realistic, consistent but yet colorful results. 
+Possible extensions would include training a network with more filters on more classes, but it would most likely yield similar results to \cite{zhang2016colorful}, and still have consistence problems. Using the confidence maps we designed to automatically select seed pixels and apply the heuristics described in \cite{levin2004colorization} to \textit{diffuse} diffuse those seeds would be an elegant way to post-process our images and have realistic, consistent but yet colorful results.
 
-Using \textit{seed pixels} from our predictions and diffusing them could also be a way to adapt the heuristics of \cite{zhu2017video} to colorization, by enforcing temporal consistence of the seed pixels. 
+Using \textit{seed pixels} from our predictions and diffusing them could also be a way to adapt the heuristics of \cite{zhu2017video} to colorization, by enforcing temporal consistence of the seed pixels.
 
 
-\clearpage 
+\clearpage
 
 \section*{Contributions and acknowledgements}
 
-We would like to thank the CS231n teaching staff for giving us access to the Google Cloud Compute platform and for the teaching material. 
+We would like to thank the CS231n teaching staff for giving us access to the Google Cloud Compute platform and for the teaching material.
 
-All authors contributed equally to this work. 
+All authors contributed equally to this work.
 
 {\small
 \bibliographystyle{ieee}
