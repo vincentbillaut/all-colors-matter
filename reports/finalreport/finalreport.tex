@@ -77,6 +77,8 @@ The input to our algorithm is simply an image in grayscale, and the output is th
 
 We formulate the colorization problem as a classification problem to gain flexibility in the prediction process and output more colorful images. We aim at reproducing state of the art results that give vivid, visually appealing results, with a much smaller network.
 
+TODO: add some stuff here
+
 \section{Related Work} \label{relatedwork}
 
 Historically, older approaches of the colorization problem use an additional input, a \textit{seed scribble} from the user to propagate colors, as does \cite{levin2004colorization}. It may also be seen as a corollary of color style transfer algorithms using a similar image as a "seed" as in \cite{he2017neuralct}. Here, we are interested in fully automatic recolorization.
@@ -150,6 +152,8 @@ Those observations led us to design our final \textit{ColorUNet}, that still has
 To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images -- as a reference for comparison, \cite{zhang2016colorful} train their model on 1.5M+ images. Our validation set is made up of 2,889 images. A sample of the training data is shown in Figure \ref{sampletrain}.
 We also tried training the model on the full SUN dataset (for only one epoch), to compare performance and gain insight on the importance for the model to go over the same examples several times to learn well.
 
+TODO: give more details on the chosen categories
+
 \begin{figure}
 \begin{center}
 \includegraphics[width=200px]{sampletrain.png}
@@ -170,6 +174,8 @@ To improve the robustness of the model we train, we have implemented data augmen
 \end{itemize}
 
 We noticed an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training (so the actual size of the training set is the same). In the case described above, the size of our training set is dilated sevenfold.
+
+TODO: Add an example where data augmentation enhances the prediction
 
 \section{Results and discussion}
 \subsection{Evaluation and parameter tuning}
@@ -226,8 +232,16 @@ To better understand the behavior of our model, we can have a look at a \textbf{
 
 Overall, our ColorUNet performs well at the limited task that we want to tackle. Not very surprisingly, it does not perform well on new categories, and especially on inside scenes.
 
+TODO: add a loss plot with val, etc... 
 
-\subsection{Colorizing videos}
+When having a closer look at in-sample examples, we see that overall, the quality of the prediction is slightly better but comparable to what we have in the validation set. This suggests that we have not overfitted the training set. However, given the evolution of the loss, we can even expect our model to be slightly under-fitted, and it may benefit from further training. However, given the limited time we had to complete this project, we preferred focusing on other experiments (such as studying the effect of data augmentation or training on an extended dataset) rather than spending time overfitting a model. 
+
+
+TODO: add color histograms for the input and output? 
+
+% potential comments on the loss scaled by a mask, etc
+
+\subsection{Application to video colorization}
 
 The last task we tried to tackle is colorizing greyscale videos. The natural to tackle this problem is to extract individual frames that constitute the video, then a colorization can be produced for every frame with the previous ColorUNet. Converting this series of colorized images back into a video produces a colorized video. The results of this work can be seen on our \href{https://github.com/vincentbillaut/all-colors-matter}{Github repo's homepage}.
 
@@ -238,6 +252,8 @@ Consequently, the method we will use should know what was predicted before and t
 \subsection{Extending the training set}
 
 As a sanity check, we have also trained a model using the full SUN dataset (100k+ images). For time constraints reason, we have trained it on fewer epochs. The training loss was similar. However, we note that the result were very poor, and that the network tended to output very desaturated images. Actually, our network structure has few filters in its deepest layers compared to the baseline model, \cite{zhang2016colorful}. It is therefore unable to capture as many features as needed to be able to recognize the variety of scenes that are in the full dataset. This confirms that our architecture is a lightweight version, that is adapted to a reduced variety of scenes, and that trains rapidly. However, we could expect that applying the same structure with a similar number of filters could allow to have a much quicker training on a full dataset. 
+
+An interesting next step to take would be to do a full benchmark of the model performance over different ranges of variety in the training set. Actually, we expect a too simple training set to give a bad result, and our lightweight model does not perform well on many classes. Learning beaches can be done with bimodal predictions (blue or yellow), so it is also not interesting to look only at too few classes. An extensive quantitative benchmark of this effect could be interesting but very time and resource-consuming. 
 \section{Conclusion and perspectives}
 \section*{Contributions and acknowledgements}
 
