@@ -239,8 +239,15 @@ TODO: add a loss plot with val, etc...
 
 When having a closer look at in-sample examples, we see that overall, the quality of the prediction is slightly better but comparable to what we have in the validation set. This suggests that we have not overfitted the training set. However, given the evolution of the loss, we can even expect our model to be slightly under-fitted, and it may benefit from further training. However, given the limited time we had to complete this project, we preferred focusing on other experiments (such as studying the effect of data augmentation or training on an extended dataset) rather than spending time overfitting a model.
 
+In order to understand the impact of our decision to encourage the prediction of "rare" colors by weighting the loss, we produced in figure \ref{histogram} histograms of the frequencies of the 32 color bins. We see that the prediction of the \textit{ColorUNet} does not exactly match the ground truth. By comparing the histograms with the frequencies in the whole dataset, we see that the ground truth had "common" colors. The \textit{ColorUNet} chooses to aim for "rare" colors, thus producing vivid images. Since this choice does not impair the realism of outputs, we believe that our contribution achieved our goal of colorizing with lively colors.
 
-TODO: add color histograms for the input and output?
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{color_histogram}
+\caption{Histograms of the frequencies of the 32 selected color bins. Top: frequencies in the pixels of 500 sample images; true color channels (blue); colors predicted by \textit{ColorUNet} \text{(orange)}. \text{Bottom}: frequencies of the color bins in the Color Discretizer (green), representing the whole dataset. The \textit{ColorUNet} differs from the ground truth which has "common" colors (bins 17, 21), it prefers "rare" colors (bins 11, 20, 26). }
+\label{histogram}
+\end{center}
+\end{figure}
 
 % potential comments on the loss scaled by a mask, etc
 
@@ -261,6 +268,7 @@ Consequently, the method we will use should know what was predicted before and t
 As a sanity check, we have also trained a model using the full SUN dataset (100k+ images). For time constraints reason, we have trained it on fewer epochs. The training loss was similar. However, we note that the result were very poor, and that the network tended to output very desaturated images. Actually, our network structure has few filters in its deepest layers compared to the baseline model, \cite{zhang2016colorful}. It is therefore unable to capture as many features as needed to be able to recognize the variety of scenes that are in the full dataset. This confirms that our architecture is a lightweight version, that is adapted to a reduced variety of scenes, and that trains rapidly. However, we could expect that applying the same structure with a similar number of filters could allow to have a much quicker training on a full dataset.
 
 An interesting next step to take would be to do a full benchmark of the model performance over different ranges of variety in the training set. Actually, we expect a too simple training set to give a bad result, and our lightweight model does not perform well on many classes. Learning beaches can be done with bimodal predictions (blue or yellow), so it is also not interesting to look only at too few classes. An extensive quantitative benchmark of this effect could be interesting but very time and resource-consuming.
+
 \section{Conclusion and perspectives}
 
 In this work, we formulated the colorization problem as a classifiaction problem to get colorful results. The ColorUNet we have designed is a lightweight version of the state-of-the-art architecture that allows to quickly get satisfying results on a reduced dataset, with limited computational power. 
