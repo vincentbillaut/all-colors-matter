@@ -183,12 +183,14 @@ Figure \ref{good} gives some examples of correct colorizations made by the Color
 Interestingly enough, the ColorUNet sometimes gives results that are not similar to the input image, but look better. Those examples are interesting, because they reveal how the coloring model works. Some of them are reported in figure \ref{better}. This happens with images that have very recognizable inputs, but an limited color palette. The ColorUNet output is more realistic in those cases.
 Such eamples also show that it is difficult to evaluate the model. Actually, any reasonable computational metric would suggest that this output is wrong, while this is clearly the kind of results we are epecially intereseted in.
 
-On the other hand, there are examples where our network is obviouly wrong and outputs predictions that are not plausible.
+On the other hand, there are examples where our network is obviously wrong and outputs predictions that are not plausible. Some such examples are seen in \ref{worse}.
+
+To better understand the behavior of our model, we can have a look at a \textbf{confidence} map, as in figure \ref{confidence}. We use the value of the top scores and its relative magnitude compared to the second score of each pixel to visualize the confidence of the prediction. This is also a good sanity check. Actually, given that our model is intended to be lightweight, we do not expect it to make outstanding predictions on all the pictures. However, we expect our model to be unsure about the wrong results, and the difficult parts of the images.  
 
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{good}
-\caption{Sample predictions of the ColorUNet on the validation set, for several prediction temperatures. The temperature parameter allows a tradeoff between vivid colors and elimation of artifacts of a wrong color}
+\caption{Sample predictions of the ColorUNet on the validation set, for several prediction temperatures. The temperature parameter allows a tradeoff between vivid colors and elimination of artifacts of a wrong color.}
 \label{good}
 \end{center}
 \end{figure*}
@@ -196,7 +198,7 @@ On the other hand, there are examples where our network is obviouly wrong and ou
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{better}
-\caption{Sample predictions of the ColorUNet on the validation set, for bland input images. Output is more colorful than input. The bottom example is an old photograph with weared tones}
+\caption{Sample predictions of the ColorUNet on the validation set, for bland input images. Output is more colorful than input. The bottom example is an old photograph with weared tones.}
 \label{better}
 \end{center}
 \end{figure*}
@@ -204,7 +206,7 @@ On the other hand, there are examples where our network is obviouly wrong and ou
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{worse}
-\caption{Sample bad predictions of the ColorUNet}
+\caption{Sample bad predictions of the ColorUNet. On the top picture, the network is fooled by the texture of the grass, that has small wavelets similar to sea landscapes, that constitute a vast portion of the training set. On the bottom picture, the network predicts the canyon as vegetation. It has not learned the color to canyons, because there are too few in the training set, and because the color palette for those landscapes is very specific.}
 \label{worse}
 \end{center}
 \end{figure*}
@@ -212,18 +214,13 @@ On the other hand, there are examples where our network is obviouly wrong and ou
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{confidence}
-\caption{Confidence map for bad predictions of the ColorUNet}
+\caption{Confidence map for bad predictions of the ColorUNet. We plot the original image, the prediction with a chosen level of temperature, the value of the top class score, and the ratio between the first class score and the second one toeach pixel to get a confidence map. Dark/red pixels correspond to unsure predictions, whereas yellow/light are associated with a high confidence score. The network is fooled by the texture of the sand and sea, that it predicts as grass. On the other hand, the sky is correctly predicted. The confidence maps show that the ColorUNet is sure of its prediction on the sky, but is unsure of the prediction for the ground. It is also interesting to note that the regions close to the edges are often more uncertain, although the network performs very well in segmenting parts of the image that should have different colors.}
 \label{confidence}
 \end{center}
 \end{figure*}
 
+Overall, our ColorUNet performs well at the limited task that we want to tackle. Not very surprisingly, it does not perform well on new categories, and especially on inside scenes.
 
-We also have cases where the colorizer gives wrong results, because of very specific input images. For example, a snowy ground is guessed to be grass by the classifier, which outputs very interesting results. 
-
-We can also see that in some casesm, our colorizer is completely wrong, and we can quite easily understand why. 
-
-
-To better understand the bahavior of our model, we can have a look at a \textbf{certainty} map, as in figure \ref{•}.
 
 \subsection{Colorizing videos}
 
