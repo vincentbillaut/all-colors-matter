@@ -5,7 +5,7 @@ Vincent Billaut
 Matthieu de Rochemonteix  
 Marc Thibault  
 
-## Overview (Project Proposal)
+## Project overview
 
 ![churchill](img/churchill.png)  
 Example taken [here](https://dribbble.com/shots/2122311-Photo-Colorization-Winston-Churchill).
