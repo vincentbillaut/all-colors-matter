@@ -65,12 +65,12 @@ Insert abstract here
 %%%%%%%%% BODY TEXT
 \section*{Introduction}
 
-The problem of colorization is one that comes quickly to mind when thinking about interesting challenges involving pictural data. Namely, the goal is to build a model that takes the greyscale version of an image (or even an actual ``black and white'' picture) and outputs its colorized version, as close to the original as possible (or at least realistic, if the original is not in colors). This problem is complex and interesting for several reasons, as the final output needs to be an image of the same dimension as the input image. We want to train a model that is able to recognize shapes that are typical of a category of items and apply the appropriate colorization. 
+The problem of colorization is one that comes quickly to mind when thinking about interesting challenges involving pictural data. Namely, the goal is to build a model that takes the greyscale version of an image (or even an actual ``black and white'' picture) and outputs its colorized version, as close to the original as possible (or at least realistic, if the original is not in colors). This problem is complex and interesting for several reasons, as the final output needs to be an image of the same dimension as the input image. We want to train a model that is able to recognize shapes that are typical of a category of items and apply the appropriate colorization.
 
 One clear upside to this challenge is that any computer vision dataset, and even any image bank really, is a proper dataset for the colorization problem (the image itself is the model's expected output, and its greyscale version is the input to the model).
-The input to our algorithm is simply an image in grayscale, and the output is the same image, colorized. A conversion of the images to the YUV format allows an easy formulation of the problem in terms of a reconstitution of the U and V channels. 
+The input to our algorithm is simply an image in grayscale, and the output is the same image, colorized. A conversion of the images to the YUV format allows an easy formulation of the problem in terms of a reconstitution of the U and V channels.
 
-We formulate the colorization problem as a classification problem to gain flexibility in the prediction process and output more colorful images. We aim at reproducing state of the art results that give vivid, visually appealing results, with a much smaller network.  
+We formulate the colorization problem as a classification problem to gain flexibility in the prediction process and output more colorful images. We aim at reproducing state of the art results that give vivid, visually appealing results, with a much smaller network.
 
 \section{Related Work} \label{relatedwork}
 
@@ -78,19 +78,19 @@ Historically, older approaches of the colorization problem use an idditional inp
 
 Classical approaches to this task, \eg \cite{cheng2015deep} and \cite{dahl2016tinyclouds}, aim at predicting an image as close as possible to the ground truth, and notably make use of a simple $L_2$ loss, which penalizes predictions that fall overall too far from the ground truth. As a consequence, the models trained following such methods usually tend to be very conservative, and to give desaturated, pale results. Usually, the images need some postprocessing adjustments as in \cite{deshpande2015learning} to have a realistic aspect.
 
-On the contrary, authors of \cite{zhang2016colorful} take another angle and set their objective to be ``\textit{plausible} colorization'' (and not necessarily \textit{accurate}), which they validate with a large-scale human trial. To achieve such results, they formulate the colorization task as a classification task using color bins, as suggested already in \cite{charpiat2008automatic}. 
+On the contrary, authors of \cite{zhang2016colorful} take another angle and set their objective to be ``\textit{plausible} colorization'' (and not necessarily \textit{accurate}), which they validate with a large-scale human trial. To achieve such results, they formulate the colorization task as a classification task using color bins, as suggested already in \cite{charpiat2008automatic}.
 
 Their approach is the most appealing as they have colorful results and we found the classification formulation to be interesting. However, the network architecture they use is very heavy (taking more than 20 GB of memory), and the scale of their training set (several millions of images). The reason behind this is that to encode meaningful fetures that help to colorize the image, one needs to have a large spatial receptive field. THe approach of the article is to downsample the image a lot in the layers in the middle and then upsample using Convolutional Transpose layers. To keep a lot of information in the intermediate layers, the number of filters in the model of \cite{zhang2016colorful} is very large, resulting in a model that is large and expensive to train.
 
-Authors of \cite{ronneberger2015unet} have shown that connections between hidden layers of a bottleneck neural network could enhance the performance greatly, by helping the upsampling process and improving the gradient flow. 
+Authors of \cite{ronneberger2015unet} have shown that connections between hidden layers of a bottleneck neural network could enhance the performance greatly, by helping the upsampling process and improving the gradient flow.
 
-We hope that applying this method will allow us to train a colorizing model more quickly and more efficently, with less parameters. 
+We hope that applying this method will allow us to train a colorizing model more quickly and more efficently, with less parameters.
 
-Part of the challenges that are interesting but not yet tackled in the literature involve videos. General information propagation frameworks in a video involving bilateral netwoks as discussed in \cite{jampani2017video} could be seen as a a potential way to implement cosistent colorization of video sequences. The work realized in \cite{zhu2017video} is also interesting since it tackles video stylization by grouping the frames, choose a representative frame for each group and use the output of the network on this frame as a guideline, which enhances temporal consistency. However, the adaptation of such an algorithm to the much more complex task of image colorization is far beyond the scope of this project. 
+Part of the challenges that are interesting but not yet tackled in the literature involve videos. General information propagation frameworks in a video involving bilateral netwoks as discussed in \cite{jampani2017video} could be seen as a a potential way to implement cosistent colorization of video sequences. The work realized in \cite{zhu2017video} is also interesting since it tackles video stylization by grouping the frames, choose a representative frame for each group and use the output of the network on this frame as a guideline, which enhances temporal consistency. However, the adaptation of such an algorithm to the much more complex task of image colorization is far beyond the scope of this project.
 
-Actually, one promising way to perform image colorization is to be able to learn meaningful color-related representations for the images (which often involves using very deep and heavy or pretrained architecture as in \cite{larsson2016repres}) and then ensure the temporal consistency of them. 
+Actually, one promising way to perform image colorization is to be able to learn meaningful color-related representations for the images (which often involves using very deep and heavy or pretrained architecture as in \cite{larsson2016repres}) and then ensure the temporal consistency of them.
 
-Given our commitment to developing a lightweight model, we prefered focusing on an efficient colorization for images and then add alayer of temporal convolution for videos. 
+Given our commitment to developing a lightweight model, we prefered focusing on an efficient colorization for images and then add alayer of temporal convolution for videos.
 
 
 \section{Methods}
@@ -115,7 +115,7 @@ Following the approach of \cite{zhang2016colorful}, we want to boost the possibi
 
 Figure \ref{cdex} shows our discretized colorspace, as well as what the weights of the bins look like after rebalancing.
 
-Our end model is a U-Net that has 3 downsampling groups of convolutional layers and 2 connections between hidden layers of the same size (we set aside the last and first layers of the downsampling process). 
+Our end model is a U-Net that has 3 downsampling groups of convolutional layers and 2 connections between hidden layers of the same size (we set aside the last and first layers of the downsampling process).
 
 \begin{figure}
 \begin{center}
@@ -139,11 +139,11 @@ We also tried training the model on the full SUN dataset (for only one epoch), t
 \end{center}
 \end{figure}
 
-To keep a reasonable size for our tensors and have uniformity in our dataset, the images have all been downsampled to fit in a 256x256px frame (if downsampling was necessary). The downsampling has been performed using Lanczos method (with a $\text{sinc}$ kernel), and we used a mask for non-square images to make sure the loss is relevant. 
+To keep a reasonable size for our tensors and have uniformity in our dataset, the images have all been downsampled to fit in a 256x256px frame (if downsampling was necessary). The downsampling has been performed using Lanczos method (with a $\text{sinc}$ kernel), and we used a mask for non-square images to make sure the loss is relevant.
 
 \subsection{Data Augmentation}
 
-To improve the robustness of the model we train, we have implemented data augmentation. For each original image of the training set, we generate several training images by 
+To improve the robustness of the model we train, we have implemented data augmentation. For each original image of the training set, we generate several training images by
 \begin{itemize}
 \item Flipping the image along the horizontal axis
 \item Adding uniform noise to the image (varying the intensity)
@@ -153,6 +153,17 @@ To improve the robustness of the model we train, we have implemented data augmen
 We noticed an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training (so the actual size of the training set is the same). In our case, the size of our training set is dilated sevenfold: the original image, one horizontal flip, three different intensities of uniform noise, and two different crops.
 
 \section{Results and discussion}
+\subsection{Colorizing images}
+
+\subsection{Colorizing videos}
+
+The last task we tried to tackle is colorizing greyscale videos. The natural to tackle this problem is to extract individual frames that constitute the video, then a colorization can be produced for every frame with the previous ColorUNet. Converting this series of colorized images back into a video produces a colorized video. The results of this work can be seen on our \href{https://github.com/vincentbillaut/all-colors-matter}{Github repo's homepage}.
+
+One understands here that we did not incorporate the structure of the video in this work. However, this information might be crucial for two reasons. First, as the movie evolves over a progressively moving scene, we want some stability over the set of colors that are predicted. From one frame to the next, the model should colorize in a similar way the corresponding items. Second, an algorithm having an extra temporal information on top of the single-frame prediction might even perform better. Indeed, including past information enables understanding better the context of the image, and maybe content that is now hidden behind from the frame.
+
+Consequently, the method we will use should know what was predicted before and take this knowledge into account when deciding for the next frame's color. The choice we made, both to stabilize predictions and to incorporate past information, is smoothing the predictions by applying an temporal kernel, which weights the past predictions' probabilities with an exponential decay $\hat p_t = \sum_{i = 0}^T p_{t-i} e^{-\alpha i}$. We chose $T=20$ frames and a decay coefficient of $\alpha=0.2$. The results are smoother and somehow more natural.
+
+
 \section{Conclusion and perspectives}
 \section*{Contributions and acknowledgements}
 
