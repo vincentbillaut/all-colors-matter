@@ -132,12 +132,12 @@ if __name__ == "__main__":
     #     for i, subinet in enumerate(os.listdir("imagenet")):
     #         prepare_dataset(os.path.join("imagenet", subinet), "sun_inet_big", resize_params=resize_params, overwrite_dir=False)
 
-    if os.path.isdir("SUN397"):
-        prepare_dataset("SUN397", "sun_inet_full", begin_filter=None,resize_params=resize_params,splits_props=[.9, .05, .05])
-
-    if os.path.isdir("imagenet"):
-        for i, subinet in enumerate(os.listdir("imagenet")):
-            prepare_dataset(os.path.join("imagenet", subinet), "sun_inet_full", resize_params=resize_params, overwrite_dir=False)
+    # if os.path.isdir("SUN397"):
+    #     prepare_dataset("SUN397", "sun_inet_full", begin_filter=None,resize_params=resize_params,splits_props=[.9, .05, .05],splits_names = ["train", "val", "test"])
+    #
+    # if os.path.isdir("imagenet"):
+    #     for i, subinet in enumerate(os.listdir("imagenet")):
+    #         prepare_dataset(os.path.join("imagenet", subinet), "sun_inet_full", resize_params=resize_params, overwrite_dir=False)
 
     if args.inpath is not None:
         if args.outprefix is not None:
