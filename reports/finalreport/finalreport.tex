@@ -23,7 +23,7 @@
 \def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
 
 % Pages are numbered in submission mode, and unnumbered in camera-ready
-\ifcvprfinal\pagestyle{empty}\fi
+\pagestyle{empty}
 %\setcounter{page}{4321}
 \begin{document}
 
@@ -146,11 +146,11 @@ To keep a reasonable size for our tensors and have uniformity in our dataset, th
 To improve the robustness of the model we train, we have implemented data augmentation. For each original image of the training set, we generate several training images by 
 \begin{itemize}
 \item Flipping the image along the horizontal axis
-\item Adding noise to the image (with different intensities)
+\item Adding uniform noise to the image (varying the intensity)
 \item Selecting random crops of the image
 \end{itemize}
 
-We noticed an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training (so the actual size of the training set is the same). In the case described above, the size of our training set is dilated sevenfold.
+We noticed an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training (so the actual size of the training set is the same). In our case, the size of our training set is dilated sevenfold: the original image, one horizontal flip, three different intensities of uniform noise, and two different crops.
 
 \section{Results and discussion}
 \section{Conclusion and perspectives}
