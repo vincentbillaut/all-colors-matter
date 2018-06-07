@@ -173,9 +173,7 @@ To improve the robustness of the model we train, we augmented our training data 
 \item Selecting random crops of the image.
 \end{itemize}
 
-We noticed an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training (so the number of iterations are on an equal foot in both cases). In the case described above, the size of our training set is dilated sevenfold.
-
-TODO: Add an example where data augmentation enhances the prediction
+We expect an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training. In the case described above, the size of our training set is dilated sevenfold.
 
 \section{Results and discussion}
 \subsection{Evaluation and parameter tuning}
@@ -250,6 +248,19 @@ In order to understand the impact of our decision to encourage the prediction of
 \end{figure}
 
 % potential comments on the loss scaled by a mask, etc
+
+\paragraph{Influence of data augmentation}
+
+To evaluate the influence of the data augmentation, we have run 2 models on the same training set, with and without data augmentation, with seven times more epochs without data augmentation, so that both training have the same number of iteration. As expected, this brings more stability to the predictions, especially for the low temperatures. 
+
+Figure \ref{dacomp} compares the results of those two experiments. 
+\begin{figure}
+\begin{center}
+\includegraphics[width=250px]{da_comp}
+\caption{Influence of data augmentation. Top: prediction for 2 levels of temperature, with data augmentation. Bottom:  prediction for 2 levels of temperature, without data augmentation. The data augmentation tends to predict finer and smaller color sains that are closer to the actual coloring, which is easy to see on the low temperature prediction on the left. This results in an overall enhancement of the final prediction (on the left), where the sky tones are more realistic  }
+\label{dacomp}
+\end{center}
+\end{figure}
 
 \subsection{Application to video colorization}
 
