@@ -11,17 +11,17 @@ Marc Thibault
 Example taken [here](https://dribbble.com/shots/2122311-Photo-Colorization-Winston-Churchill).
 
 Our goal is to tackle the problem of **colorization**, that
- is taking a gray scale photograph and translating it to its colorized
+ is taking a gray-scale photograph and translating it to its colorized
 version. This problem is particularly appealing to us, because it
-involves some kind of generative, creative work which is easily
-visualizable and even fun. Our implementation will feature GANs.  Several articles tackle this problem. One of them is Zhang et al. 2016 ([[1]](https://arxiv.org/abs/1603.08511)).  
+involves a generative, creative work which is easily
+visualizable and even fun. Our implementation features UNets.  Several articles tackle this problem, and one of them is Zhang et al. 2016 ([[1]](https://arxiv.org/abs/1603.08511)), and we focused on trying to reproduce part of their work and use their insight.  
 
-One of the advantages of this project is that any dataset of colored images that is available can be used, since  we only have to generate the corresponding grayscale dataset. We will begin by using the [SUN  dataset](https://groups.csail.mit.edu/vision/SUN/), restricted to scenes of ocean, coasts, beaches and lagoons. Depending on the first results, we will increase the variety of scenes included in the database and include human beings and faces to the dataset, and potentially  include other datasets if more variety is needed.
+One of the advantages of colorization is that any dataset of colored images that is available can be used, since  we only have to generate the corresponding gray-scale dataset. We used parts of both the [SUN  dataset](https://groups.csail.mit.edu/vision/SUN/) and [ImageNet](http://www.image-net.org/), restricted mostly to scenes of landscapes, coasts, beaches and forests. The goal of this simplification is to show that a simple, not too deep model can learn meaningful colorization patterns on rather small datasets, if the task is focused on certain types of images. In contrast with [1] who trained their (very) deep model on 1.5M+ images, and showcased impressive results on a very wide variety of scenes -- including cities, cars, humans, landscapes, and so on --, we show that it is possible to train a (much simpler) model on only about 13k images and still obtain reasonably good results on scenes representing nature.
 
-We will begin by simply evaluating our results with the $\mathbb{L}^2$ norm on the RGB encoding of the image, but will keep in mind that this may not be the most relevant, and will investigate other color encodings such as *CIELAB* coordinates.
+We evaluate our model with a custom loss that takes into account the rarity of certain color tones and tries not to penalize too much rare colors, the goal being to achieve very colorful images.
 
-One of the main advantages of this project is that the results will be very easy to validate manually, the overall coherence of the color being easily perceptible by the human eye.
+One of the main advantages of this project is that the results are very easy to validate manually, the overall coherence of the color being easily perceptible with the human eye.
 
-If our first models perform well, we will try to extend the results to a wider variety of scenes and photographs and potentially to video sequence (the ideal end goal being to colorize a grayscale video, which would need to introduce the notion of coherence between frames in a sequence).
+After training our ColorUNet model on about 13k data-augmented (which induces an additional 7x dilution) set, and obtaining satisfactory results, we tried colorizing videos. We began with a frame-by-frame approach, and then tried smoothing the predictions with an exponential kernel on the time dimension.
 
 [1] Zhang, Richard, Phillip Isola, and Alexei A. Efros. "Colorful image colorization." European Conference on Computer Vision. Springer, Cham, 2016.
