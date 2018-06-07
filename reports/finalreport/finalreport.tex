@@ -73,11 +73,11 @@ We show an application of our model, extending the task to video colorization. W
 The problem of colorization is one that comes quickly to mind when thinking about interesting challenges involving pictural data. Namely, the goal is to build a model that takes as an input the greyscale version of an image (or even an actual ``black and white'' picture) and outputs its colorized version, as close to the original as possible (or at least realistic, if the original is not in colors). This problem is complex and interesting for several reasons, as the final output needs to be an image of the same dimension as the input image. We want to train a model that is able to recognize shapes that are typical of a category of items and apply the appropriate colorization.
 
 One clear upside to this challenge is that any computer vision dataset, and even any image bank really, is a proper dataset for the colorization problem (the image itself is the model's expected output, and its greyscale version is the input to the model).
-The input to our algorithm is simply an image in grayscale, and the output is the same image, colorized. A conversion of the images to the YUV format allows an easy formulation of the problem in terms of a reconstitution of the U and V channels.
+The input to our algorithm is simply an image in grayscale, and the output is the same image, colorized. A conversion of the images to the YUV format \footnote{The transformation between RGB and YUV color encodings is a linear transformation. In the YUV system, Y is the luminance and U,V encode the colors.} allows an easy formulation of the problem in terms of a reconstitution of the U and V channels.
 
 We formulate the colorization problem as a classification problem to gain flexibility in the prediction process and output more colorful images. We aim at reproducing state of the art results that give vivid, visually appealing results, with a much smaller network.
 
-TODO: add some stuff here
+We focused on designing our own architecture from scratch, rather than using parts from other architecture or pre-trained portions, to ensure modularity, full control of the design and keep the overall complexity reasonable. 
 
 \section{Related Work} \label{relatedwork}
 
@@ -188,7 +188,7 @@ We have chosen the size of our network layers (especially the number of filters)
 
 Finally, we have used a validation set to evaluate the model. The split between validation and training  has been done randomly at preprocessing time.
 
-TODO: compare to Zhang \cite{zhang2016colorful}
+In addition to visualizing our own colorization results, we have visualized the results of the state-of-the-art model, \cite{zhang2016colorful}, that is available online. Not surprisingly, the results are more realistic. However, on a lot of cases from our validation set, the results are similar. More interestingly, we see that errors are \textbf{visually similar} for the two networks, \textit{i.e.} color stains and that the same kinds of objects cause errors (textures of grass that look like waves on the ocean \textit{e.g.}). 
 
 \subsection{Colorizing images}
 
@@ -262,8 +262,23 @@ As a sanity check, we have also trained a model using the full SUN dataset (100k
 
 An interesting next step to take would be to do a full benchmark of the model performance over different ranges of variety in the training set. Actually, we expect a too simple training set to give a bad result, and our lightweight model does not perform well on many classes. Learning beaches can be done with bimodal predictions (blue or yellow), so it is also not interesting to look only at too few classes. An extensive quantitative benchmark of this effect could be interesting but very time and resource-consuming.
 \section{Conclusion and perspectives}
+
+In this work, we formulated the colorization problem as a classifiaction problem to get colorful results. The ColorUNet we have designed is a lightweight version of the state-of-the-art architecture that allows to quickly get satisfying results on a reduced dataset, with limited computational power. 
+
+Our predictions have the same limitations as the reference model. Extending the task to more categories would need more parmeters, but our experiments has shown that a U-Net inspired architecture enhances and accelerates the learning process for the colorization problem. We propose a lightweight extension to colorize video sequences. 
+
+Possible extensions would include training a network with more filters on more classes, but it would most likely yield similar results to \cite{zhang2016colorful}, and still have consistence problems. Using the confidence maps we designed to automatically select seed pixels and apply the heuristics described in \cite{levin2004colorization} to \textit{diffuse} diffuse those seeds would be an elegant way to post-process our images and have realistic, consistent but yet colorful results. 
+
+Using \textit{seed pixels} from our predictions and diffusing them could also be a way to adapt the heuristics of \cite{zhu2017video} to colorization, by enforcing temporal consistence of the seed pixels. 
+
+
+\clearpage 
+
 \section*{Contributions and acknowledgements}
 
+We would like to thank the CS231n teaching staff for giving us access to the Google Cloud Compute platform and for the teaching material. 
+
+All authors contributed equally to this work. 
 
 {\small
 \bibliographystyle{ieee}
