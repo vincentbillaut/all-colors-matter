@@ -23,7 +23,7 @@
 \def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
 
 % Pages are numbered in submission mode, and unnumbered in camera-ready
-\ifcvprfinal\pagestyle{empty}\fi
+%\ifcvprfinal\pagestyle{empty}\fi
 %\setcounter{page}{4321}
 \begin{document}
 
@@ -163,7 +163,25 @@ To improve the robustness of the model we train, we have implemented data augmen
 We noticed an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training (so the actual size of the training set is the same). In the case described above, the size of our training set is dilated sevenfold.
 
 \section{Results and discussion}
+\subsection{Evaluation and parameter tuning}
+
+Given the task that we are performing here, there is no relevant metric of the performance of our model. Actually, the classification loss is useful for training but is not very readable in terms of evaluating the actual prediction performance. Likewise, another loss like the $L_2$ is not relevant, as we discussed in section \ref{relatedwork}. Similarly to \cite{zhang2016colorful}, we rely on human evaluation to evaluate the overall performance of the algorithm, as it is both quick and easy to have a look at a random subsample of the validation set and see if the coloring is satisfying. 
+
+The final number of classes chosen for the \texttt{ColorDiscretizer} is 33, as we want this to be as small as possible (it conditions the size of the output tensor) but 30 color bins is enough to get a very good visual fidelity. 
+ 
+We have chosen the size of our network layers (especially the number of filters) to be of a reasonable order of magnitude, \textit{i.e.} around 32, as our focus was to have a computationally reasonable model. To select the learning rate, we have observed the evolution of the loss on reduced epochs and kept a learning rate that showed a satisfying behavior for the loss. We used an Adam optimizer. Our best model has been trained in 2 steps, with a learning rate decay between the 2 steps. Finally, we have chosen a batch size of 64 as it was the largest to fit on the GPUs we had (as the output tensor has dimensions 256x256x33x\texttt{batch\_size}).
+ 
+Finally, we have used a validation set to evaluate the model. The split between validation and training  has been done randomly at preprocessing. 
 \subsection{Colorizing images}
+
+Figure \ref{•} gives some examples of correct colorizations made by the ColoringUNet. We see that in some cases, the colorization is more appealing than the original image. 
+
+We also have cases where the colorizer gives wrong results, because of very specific input images. For example, a snowy ground is guessed to be grass by the classifier, which outputs very interesting results. 
+
+We can also see that in some casesm, our colorizer is completely wrong, and we can quite easily understand why. 
+
+
+To better understand the bahavior of our model, we can have a look at a \textbf{certainty} map, as in figure \ref{•}.
 
 \subsection{Colorizing videos}
 
@@ -173,7 +191,9 @@ One understands here that we did not incorporate the structure of the video in t
 
 Consequently, the method we will use should know what was predicted before and take this knowledge into account when deciding for the next frame's color. The choice we made, both to stabilize predictions and to incorporate past information, is smoothing the predictions by applying an temporal kernel, which weights the past predictions' probabilities with an exponential decay $\hat p_t = \sum_{i = 0}^T p_{t-i} e^{-\alpha i}$. We chose $T=20$ frames and a decay coefficient of $\alpha=0.2$. The results are smoother and somehow more natural.
 
+\subsection{Extending the training set}
 
+As a sanity check, we have also trained a model using the full SUN dataset (100k+ images). For time constraints reason, we have trained it on fewer epochs. The training loss was similar. However, we note that the result were very poor, and that the network tended to output very desaturated images. Actually, our network structure has few filters in its deepest layers compared to the baseline model, \cite{zhang2016colorful}. It is therefore unable to capture as many features as needed to be able to recognize the variety of scenes that are in the full dataset. This confirms that our architecture is a lightweight version, that is adapted to a reduced variety of scenes, and that trains rapidly. However, we could expect that applying the same structure with a similar number of filters could allow to have a much quicker training on a full dataset. 
 \section{Conclusion and perspectives}
 \section*{Contributions and acknowledgements}
 
