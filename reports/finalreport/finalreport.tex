@@ -187,6 +187,9 @@ The final number of classes chosen for the \texttt{ColorDiscretizer} is 33, as w
 We have chosen the size of our network layers (especially the number of filters) to be of a reasonable order of magnitude, \textit{i.e.} around 32, as our focus was to have a computationally reasonable model. To select the learning rate, we have observed the evolution of the loss on reduced epochs and kept a learning rate that showed a satisfying behavior for the loss. We used an Adam optimizer. Our best model has been trained in 2 steps, with a learning rate decay between the 2 steps. Finally, we have chosen a batch size of 64 as it was the largest to fit on the GPUs we had (as the output tensor has dimensions 256x256x33x\texttt{batch\_size}).
  
 Finally, we have used a validation set to evaluate the model. The split between validation and training  has been done randomly at preprocessing. 
+
+TODO: compare to Zhang \cite{zhang2016colorful}
+
 \subsection{Colorizing images}
 
 Figure \ref{good} gives some examples of correct colorizations made by the ColoringUNet. We can see that the network is able to correctly colorize the main entities of interest (The sky, trees, grass, water, clouds, etc...) with vivid colors. The influence of the temperature parameter is very easy to see here, as we have less consistency but more vivid colors for low temperatures (closer to taking the argmax) and smoother, but desaturated for higher temperatures, as expected in section \ref{methods}.
