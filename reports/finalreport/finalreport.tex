@@ -73,7 +73,7 @@ We show an application of our model, extending the task to video colorization. W
 The problem of colorization is one that comes quickly to mind when thinking about interesting challenges involving pictural data. Namely, the goal is to build a model that takes as an input the greyscale version of an image (or even an actual ``black and white'' picture) and outputs its colorized version, as close to the original as possible (or at least realistic, if the original is not in colors). This problem is complex and interesting for several reasons, as the final output needs to be an image of the same dimension as the input image. We want to train a model that is able to recognize shapes that are typical of a category of items and apply the appropriate colorization.
 
 One clear upside to this challenge is that any computer vision dataset, and even any image bank really, is a proper dataset for the colorization problem (the image itself is the model's expected output, and its greyscale version is the input to the model).
-The input to our algorithm is simply an image in grayscale, and the output is the same image, colorized. A conversion of the images to the YUV format \footnote{The transformation between RGB and YUV color encodings is a linear transformation. In the YUV system, Y is the luminance and U,V encode the colors.} allows an easy formulation of the problem in terms of a reconstitution of the U and V channels.
+The input to our algorithm is simply an image in grayscale, and the output is the same image, colorized. A conversion of the images to the YUV format allows an easy formulation of the problem in terms of a reconstitution of the U and V channels\footnote{The transformation between RGB and YUV color encodings is a linear transformation. In the YUV system, Y is the luminance and U,V encode the colors.}.
 
 We formulate the colorization problem as a classification problem to gain flexibility in the prediction process and output more colorful images. We aim at reproducing state of the art results that give vivid, visually appealing results, with a much smaller network.
 
@@ -190,7 +190,7 @@ In addition to visualizing our own colorization results, we have visualized the 
 
 \subsection{Colorizing images}
 
-Figure \ref{good} gives some examples of correct colorizations made by the ColoringUNet. We can see that the network is able to correctly colorize the main entities of interest (The sky, trees, grass, water, clouds, etc...) with vivid colors. The influence of the temperature parameter is very easy to see here, as we have less consistency but more vivid colors for low temperatures (closer to taking the argmax) and smoother, but desaturated for higher temperatures, as expected in section \ref{methods}.
+Figure \ref{good} gives some examples of correct colorizations made by the ColorUNet. We can see that the network is able to correctly colorize the main entities of interest (The sky, trees, grass, water, clouds, etc...) with vivid colors. The influence of the temperature parameter is very easy to see here, as we have less consistency but more vivid colors for low temperatures (closer to taking the argmax) and smoother, but desaturated for higher temperatures, as expected in section \ref{methods}.
 
 Interestingly enough, the ColorUNet sometimes gives results that are not similar to the input image, but look better. Those examples are interesting, because they reveal how the coloring model works. Some of them are reported in figure \ref{better}. This happens with images that have very recognizable inputs, but an limited color palette. The ColorUNet output is more realistic in those cases.
 Such examples also show that it is difficult to quantatively evaluate the model. Indeed, any reasonable computational metric would suggest that these outputs are wrong, while this is clearly the kind of results we are especially interested in.
@@ -256,7 +256,7 @@ To evaluate the influence of the data augmentation, we have run 2 models on the 
 Figure \ref{dacomp} compares the results of those two experiments. 
 \begin{figure}
 \begin{center}
-\includegraphics[width=250px]{da_comp}
+\includegraphics[width=220px]{da_comp}
 \caption{Influence of data augmentation. Top: prediction for 2 levels of temperature, with data augmentation. Bottom:  prediction for 2 levels of temperature, without data augmentation. The data augmentation tends to predict finer and smaller color sains that are closer to the actual coloring, which is easy to see on the low temperature prediction on the left. This results in an overall enhancement of the final prediction (on the left), where the sky tones are more realistic  }
 \label{dacomp}
 \end{center}
