@@ -59,7 +59,12 @@ Stanford University\\
 % TODO for final report
 
 \begin{abstract}
-Insert abstract here
+This paper tackles the challenge of colorizing grayscale images. We take a deep convolutional neural network approach, and choose to take the angle of classification, working on a finite set of possible colors. Similarly to a recent paper, we implement a loss and a prediction function that favor realistic, colorful images rather than ``true'' ones.
+
+We show that a rather lightweight architecture inspired by the U-Net, and trained on a reasonable amount of pictures of landscapes, achieves satisfactory results on this specific subset of pictures. We show that data augmentation significantly improves the performance and robustness of the model.
+
+We show an application of our model, extending the task to video colorization. We suggest a way to smooth color predictions across frames, without the need to train a recurrent network designed for sequential inputs.
+
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
@@ -71,6 +76,8 @@ One clear upside to this challenge is that any computer vision dataset, and even
 The input to our algorithm is simply an image in grayscale, and the output is the same image, colorized. A conversion of the images to the YUV format allows an easy formulation of the problem in terms of a reconstitution of the U and V channels.
 
 We formulate the colorization problem as a classification problem to gain flexibility in the prediction process and output more colorful images. We aim at reproducing state of the art results that give vivid, visually appealing results, with a much smaller network.
+
+TODO: add some stuff here
 
 \section{Related Work} \label{relatedwork}
 
@@ -145,6 +152,8 @@ Those observations led us to design our final \textit{ColorUNet}, that still has
 To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images -- as a reference for comparison, \cite{zhang2016colorful} train their model on 1.5M+ images. Our validation set is made up of 2,889 images. A sample of the training data is shown in Figure \ref{sampletrain}.
 We also tried training the model on the full SUN dataset (for only one epoch), to compare performance and gain insight on the importance for the model to go over the same examples several times to learn well.
 
+TODO: give more details on the chosen categories
+
 \begin{figure}
 \begin{center}
 \includegraphics[width=200px]{sampletrain.png}
@@ -166,6 +175,8 @@ To improve the robustness of the model we train, we have implemented data augmen
 
 We noticed an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training (so the actual size of the training set is the same). In the case described above, the size of our training set is dilated sevenfold.
 
+TODO: Add an example where data augmentation enhances the prediction
+
 \section{Results and discussion}
 \subsection{Evaluation and parameter tuning}
 
@@ -176,6 +187,9 @@ The final number of classes chosen for the \texttt{ColorDiscretizer} is 33, as w
 We have chosen the size of our network layers (especially the number of filters) to be of a reasonable order of magnitude, \textit{i.e.} around 32, as our focus was to have a computationally reasonable model. To select the learning rate, we have observed the evolution of the loss on reduced epochs and kept a learning rate that showed a satisfying behavior for the loss. We used an Adam optimizer. Our best model has been trained in 2 steps, with a learning rate decay between the 2 steps. Finally, we have chosen a batch size of 64 as it was the largest to fit on the GPUs we had (as the output tensor has dimensions 256x256x33x\texttt{batch\_size}).
 
 Finally, we have used a validation set to evaluate the model. The split between validation and training  has been done randomly at preprocessing.
+
+TODO: compare to Zhang \cite{zhang2016colorful}
+
 \subsection{Colorizing images}
 
 Figure \ref{good} gives some examples of correct colorizations made by the ColoringUNet. We can see that the network is able to correctly colorize the main entities of interest (The sky, trees, grass, water, clouds, etc...) with vivid colors. The influence of the temperature parameter is very easy to see here, as we have less consistency but more vivid colors for low temperatures (closer to taking the argmax) and smoother, but desaturated for higher temperatures, as expected in section \ref{methods}.
@@ -183,12 +197,14 @@ Figure \ref{good} gives some examples of correct colorizations made by the Color
 Interestingly enough, the ColorUNet sometimes gives results that are not similar to the input image, but look better. Those examples are interesting, because they reveal how the coloring model works. Some of them are reported in figure \ref{better}. This happens with images that have very recognizable inputs, but an limited color palette. The ColorUNet output is more realistic in those cases.
 Such eamples also show that it is difficult to evaluate the model. Actually, any reasonable computational metric would suggest that this output is wrong, while this is clearly the kind of results we are epecially intereseted in.
 
-On the other hand, there are examples where our network is obviouly wrong and outputs predictions that are not plausible.
+On the other hand, there are examples where our network is obviously wrong and outputs predictions that are not plausible. Some such examples are seen in \ref{worse}.
+
+To better understand the behavior of our model, we can have a look at a \textbf{confidence} map, as in figure \ref{confidence}. We use the value of the top scores and its relative magnitude compared to the second score of each pixel to visualize the confidence of the prediction. This is also a good sanity check. Actually, given that our model is intended to be lightweight, we do not expect it to make outstanding predictions on all the pictures. However, we expect our model to be unsure about the wrong results, and the difficult parts of the images.
 
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{good}
-\caption{Sample predictions of the ColorUNet on the validation set, for several prediction temperatures. The temperature parameter allows a tradeoff between vivid colors and elimation of artifacts of a wrong color}
+\caption{Sample predictions of the ColorUNet on the validation set, for several prediction temperatures. The temperature parameter allows a tradeoff between vivid colors and elimination of artifacts of a wrong color.}
 \label{good}
 \end{center}
 \end{figure*}
@@ -196,7 +212,7 @@ On the other hand, there are examples where our network is obviouly wrong and ou
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{better}
-\caption{Sample predictions of the ColorUNet on the validation set, for bland input images. Output is more colorful than input. The bottom example is an old photograph with weared tones}
+\caption{Sample predictions of the ColorUNet on the validation set, for bland input images. Output is more colorful than input. The bottom example is an old photograph with weared tones.}
 \label{better}
 \end{center}
 \end{figure*}
@@ -204,7 +220,7 @@ On the other hand, there are examples where our network is obviouly wrong and ou
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{worse}
-\caption{Sample bad predictions of the ColorUNet}
+\caption{Sample bad predictions of the ColorUNet. On the top picture, the network is fooled by the texture of the grass, that has small wavelets similar to sea landscapes, that constitute a vast portion of the training set. On the bottom picture, the network predicts the canyon as vegetation. It has not learned the color to canyons, because there are too few in the training set, and because the color palette for those landscapes is very specific.}
 \label{worse}
 \end{center}
 \end{figure*}
@@ -212,20 +228,23 @@ On the other hand, there are examples where our network is obviouly wrong and ou
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{confidence}
-\caption{Confidence map for bad predictions of the ColorUNet}
+\caption{Confidence map for bad predictions of the ColorUNet. We plot the original image, the prediction with a chosen level of temperature, the value of the top class score, and the ratio between the first class score and the second one toeach pixel to get a confidence map. Dark/red pixels correspond to unsure predictions, whereas yellow/light are associated with a high confidence score. The network is fooled by the texture of the sand and sea, that it predicts as grass. On the other hand, the sky is correctly predicted. The confidence maps show that the ColorUNet is sure of its prediction on the sky, but is unsure of the prediction for the ground. It is also interesting to note that the regions close to the edges are often more uncertain, although the network performs very well in segmenting parts of the image that should have different colors.}
 \label{confidence}
 \end{center}
 \end{figure*}
 
+Overall, our ColorUNet performs well at the limited task that we want to tackle. Not very surprisingly, it does not perform well on new categories, and especially on inside scenes.
 
-We also have cases where the colorizer gives wrong results, because of very specific input images. For example, a snowy ground is guessed to be grass by the classifier, which outputs very interesting results.
+TODO: add a loss plot with val, etc...
 
-We can also see that in some casesm, our colorizer is completely wrong, and we can quite easily understand why.
+When having a closer look at in-sample examples, we see that overall, the quality of the prediction is slightly better but comparable to what we have in the validation set. This suggests that we have not overfitted the training set. However, given the evolution of the loss, we can even expect our model to be slightly under-fitted, and it may benefit from further training. However, given the limited time we had to complete this project, we preferred focusing on other experiments (such as studying the effect of data augmentation or training on an extended dataset) rather than spending time overfitting a model.
 
 
-To better understand the bahavior of our model, we can have a look at a \textbf{certainty} map, as in figure \ref{•}.
+TODO: add color histograms for the input and output?
 
-\subsection{Colorizing videos}
+% potential comments on the loss scaled by a mask, etc
+
+\subsection{Application to video colorization}
 
 The last task we tried to tackle is colorizing greyscale videos. The natural to tackle this problem is to extract individual frames that constitute the video, then a colorization can be produced for every frame with the previous ColorUNet. Converting this series of colorized images back into a video produces a colorized video. The results of this work can be seen on our \href{https://github.com/vincentbillaut/all-colors-matter}{Github repo's homepage}.
 
@@ -236,6 +255,8 @@ Consequently, the method we will use should know what was predicted before and t
 \subsection{Extending the training set}
 
 As a sanity check, we have also trained a model using the full SUN dataset (100k+ images). For time constraints reason, we have trained it on fewer epochs. The training loss was similar. However, we note that the result were very poor, and that the network tended to output very desaturated images. Actually, our network structure has few filters in its deepest layers compared to the baseline model, \cite{zhang2016colorful}. It is therefore unable to capture as many features as needed to be able to recognize the variety of scenes that are in the full dataset. This confirms that our architecture is a lightweight version, that is adapted to a reduced variety of scenes, and that trains rapidly. However, we could expect that applying the same structure with a similar number of filters could allow to have a much quicker training on a full dataset.
+
+An interesting next step to take would be to do a full benchmark of the model performance over different ranges of variety in the training set. Actually, we expect a too simple training set to give a bad result, and our lightweight model does not perform well on many classes. Learning beaches can be done with bimodal predictions (blue or yellow), so it is also not interesting to look only at too few classes. An extensive quantitative benchmark of this effect could be interesting but very time and resource-consuming.
 \section{Conclusion and perspectives}
 \section*{Contributions and acknowledgements}
 
