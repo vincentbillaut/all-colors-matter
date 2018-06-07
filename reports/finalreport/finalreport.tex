@@ -174,7 +174,25 @@ We have chosen the size of our network layers (especially the number of filters)
 Finally, we have used a validation set to evaluate the model. The split between validation and training  has been done randomly at preprocessing. 
 \subsection{Colorizing images}
 
-Figure \ref{•} gives some examples of correct colorizations made by the ColoringUNet. We see that in some cases, the colorization is more appealing than the original image. 
+Figure \ref{good} gives some examples of correct colorizations made by the ColoringUNet. We can see that the network is able to correctly colorize the main entities of interest (The sky, trees, grass, water, clouds, etc...) with vivid colors. The influence of the temperature parameter is very easy to see here, as we have less consistency but more vivid colors for low temperatures (closer to taking the argmax) and smoother, but desaturated for higher temperatures, as expected in section \ref{methods}. 
+
+Interestingly enough, the ColorUNet sometimes gives results that are not similar to the input image, but look better. Those examples are interesting, because they reveal how the coloring model works. Some of them are reported in figure \ref{better}
+
+\begin{figure*}
+\begin{center}
+\includegraphics[width=450px]{good}
+\caption{Sample predictions of the ColorUNet on the validation set, for several prediction temperatures. The temperature parameter allows a tradeoff between vivid colors and elimation of artifacts of a wrong color}
+\label{good}
+\end{center}
+\end{figure*}
+
+\begin{figure*}
+\begin{center}
+\includegraphics[width=450px]{better}
+\caption{Sample predictions of the ColorUNet on the validation set, for several prediction temperatures. The temperature parameter allows a tradeoff between vivid colors and elimation of artifacts of a wrong color}
+\label{better}
+\end{center}
+\end{figure*}
 
 We also have cases where the colorizer gives wrong results, because of very specific input images. For example, a snowy ground is guessed to be grass by the classifier, which outputs very interesting results. 
 
