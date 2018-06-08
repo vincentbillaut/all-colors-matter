@@ -28,7 +28,7 @@
 \begin{document}
 \hyphenation{ColorUNet}
 %%%%%%%%% TITLE
-\title{A convolutional classification approach to colorization}
+\title{\textit{ColorUNet}: A convolutional classification approach to colorization \\[.2in] \normalsize CS231n Final Project, Stanford University}
 
 \author{Vincent Billaut\\
 Department of Statistics\\
@@ -61,7 +61,7 @@ Stanford University\\
 \begin{abstract}
 This paper tackles the challenge of colorizing grayscale images. We take a deep convolutional neural network approach, and choose to take the angle of classification, working on a finite set of possible colors. Similarly to a recent paper, we implement a loss and a prediction function that favor realistic, colorful images rather than ``true'' ones.
 
-We show that a rather lightweight architecture inspired by the U-Net, and trained on a reasonable amount of pictures of landscapes, achieves satisfactory results on this specific subset of pictures. We show that data augmentation significantly improves the performance and robustness of the model.
+We show that a rather lightweight architecture inspired by the U-Net, and trained on a reasonable amount of pictures of landscapes, achieves satisfactory results on this specific subset of pictures. We show that data augmentation significantly improves the performance and robustness of the model, and provide visual analysis of the prediction confidence. 
 
 We show an application of our model, extending the task to video colorization. We suggest a way to smooth color predictions across frames, without the need to train a recurrent network designed for sequential inputs.
 
@@ -73,27 +73,27 @@ We show an application of our model, extending the task to video colorization. W
 The problem of colorization is one that comes quickly to mind when thinking about interesting challenges involving pictural data. Namely, the goal is to build a model that takes as an input the greyscale version of an image (or even an actual ``black and white'' picture) and outputs its colorized version, as close to the original as possible (or at least realistic, if the original is not in colors). This problem is complex and interesting for several reasons, as the final output needs to be an image of the same dimension as the input image. We want to train a model that is able to recognize shapes that are typical of a category of items and apply the appropriate colorization.
 
 One clear upside to this challenge is that any computer vision dataset, and even any image bank really, is a proper dataset for the colorization problem (the image itself is the model's expected output, and its greyscale version is the input to the model).
-The input to our algorithm is simply an image in grayscale, and the output is the same image, colorized. A conversion of the images to the YUV format allows an easy formulation of the problem in terms of a reconstitution of the U and V channels\footnote{The transformation between RGB and YUV color encodings is a linear transformation. In the YUV system, Y is the luminance and U,V encode the colors.}.
+The input to our algorithm is simply an image in grayscale, and the output is the same image, colorized. A conversion of the images to the YUV format allows an easy formulation of the problem in terms of a reconstitution of the U and V channels\footnote{The transformation between RGB and YUV color encodings is a linear transformation. In the YUV system, Y is the luminance (grayscale) and U,V encode the colors.}.
 
 We formulate the colorization problem as a classification problem to gain flexibility in the prediction process and output more colorful images. We aim at reproducing state of the art results that give vivid, visually appealing results, with a much smaller network.
 
-We focused on designing our own architecture from scratch, rather than using parts from other architecture or pre-trained portions, to ensure modularity, full control of the design and keep the overall complexity reasonable.
+One of our main requirements is designing our own architecture from scratch, rather than using parts from other architecture or pre-trained portions, to ensure modularity, full control of the design and keep the overall complexity reasonable.
 
 \section{Related Work} \label{relatedwork}
 
-Historically, older approaches of the colorization problem use an additional input, a \textit{seed scribble} from the user to propagate colors, as does \cite{levin2004colorization}. It may also be seen as a corollary of color style transfer algorithms using a similar image as a "seed" as in \cite{he2017neuralct}. Here, we are interested in fully automatic recolorization.
+Historically, older approaches of the colorization problem use an additional input, a \textit{seed scribble} from the user to propagate colors, as does \cite{levin2004colorization}. It may also be seen as a corollary of color style transfer algorithms using a similar image as a "seed" as in \cite{he2017neuralct}. Both approaches yield very good results but need supervision from the user for each image. In this project, we are interested in fully automatic recolorization.
 
 Classical approaches to this task, \eg \cite{cheng2015deep} and \cite{dahl2016tinyclouds}, aim at predicting an image as close as possible to the ground truth, and notably make use of a simple $L_2$ loss in the YUV space, which penalizes predictions that fall overall too far from the ground truth. As a consequence, the models trained following such methods usually tend to be very conservative, and to give desaturated, pale results. Usually, the images need some postprocessing adjustments as in \cite{deshpande2015learning} to have a realistic aspect.
 
 On the contrary, authors of \cite{zhang2016colorful} take another angle and set their objective to be ``\textit{plausible} colorization'' (and not necessarily \textit{accurate}), which they validate with a large-scale human trial. To achieve such results, they formulate the colorization task as a classification task using color bins, as suggested already in \cite{charpiat2008automatic}.
 
-Their approach is the most appealing as they have colorful results and we found the classification formulation to be interesting. However, the network architecture they use is very heavy (taking more than 20 GB of memory), and the scale of their training set (several millions of images) is prohibitive. The reason behind this complexity is that in order to encode meaningful features that help to colorize the image, the receptive field has to be large. The approach of the article is to downsample the image a lot in the intermediate layers and then upsample it using Transpose Convolution layers. To keep a lot of information in the intermediate layers, the number of filters in the model of \cite{zhang2016colorful} has to be significant, resulting in a large and expensive training.
+Their approach is the most appealing as they have colorful results and we found the classification formulation to be interesting. However, the network architecture they use is heavy (constraining to small batch sizes to fir into a single GPU), and the scale of their training set (several millions of images) is prohibitive. The reason behind this complexity is that in order to encode meaningful features that help to colorize the image, the receptive field has to be large. The approach of the article is to downsample the image a lot in the intermediate layers and then upsample it using Transpose Convolution layers. To keep a lot of information in the intermediate layers, the number of filters in the model of \cite{zhang2016colorful} has to be significant, resulting in a large, slow and expensive training.
 
 Authors of \cite{ronneberger2015unet} have shown that connections between hidden layers of a bottleneck neural network could enhance the performance greatly, by injecting locational information in the upsampling process, and improving the gradient flow.
 
-We hope that applying this method will allow us to train a colorizing model more quickly and more efficently, with less parameters.
+We hope that applying this method will allow us to train a colorizing model more quickly and more efficiently, with less parameters, and on a smaller dataset.
 
-Part of the challenges that are interesting but not yet tackled in the literature involve videos. General information propagation frameworks in a video involving bilateral networks as discussed in \cite{jampani2017video} could be seen as a potential way to implement consistent colorization of video sequences. The work realized in \cite{zhu2017video} is also interesting since it tackles video stylization by grouping the frames, choosing a representative frame for each group and using the output of the network on this frame as a guideline, which enhances temporal consistency. However, the adaptation of such an algorithm to the much more complex task of image colorization is far beyond the scope of this project.
+Part of the challenges that are interesting but not yet tackled in the literature involve videos. General information propagation frameworks in a video involving bilateral networks as discussed in \cite{jampani2017video} could be seen as a good starting point to implement consistent colorization of video sequences, if we manage to embed the colorizing information and then propagate it as any other information. The work realized in \cite{zhu2017video} is also interesting since it tackles video stylization by grouping the frames, choosing a representative frame for each group and using the output of the network on this frame as a guideline, which enhances temporal consistency. However, the adaptation of such an algorithm to the much more complex task of image colorization is far beyond the scope of this project.
 
 Actually, one promising way to perform image colorization is to be able to learn meaningful color-related representations for the images (which often involves using very deep and heavy or pretrained architecture as in \cite{larsson2016repres}) and then ensure the temporal consistency of them.
 
@@ -110,6 +110,13 @@ Given our commitment to developing a lightweight model, we prefered focusing on 
 \label{cdex}
 \end{center}
 \end{figure}
+\begin{figure}
+\begin{center}
+\includegraphics[width=200px]{diagram}
+\caption{Structure of the \textit{ColorUNet}. We use 3 types of cells: DownConv Cells that use 2 stacked convolutional layers to have a large perceptive field and a maxpooling to downsample the image, UpConv cells that use 1 ConvTranspose Layer to upsample the image and then 2 convolutional layers, and an Output cell that is a simplified version of the UpConv cell. All the convolutional layers have kernel size 3$\times$3  with stride 1 and padding 1. The ConvTranspose layers have kernel size 3$\times$3 with stride 2 and padding 1. The maxpooling layers have size 2$\times$2 and stride 2, with no padding. }
+\label{structure}
+\end{center}
+\end{figure}
 As we discussed in section \ref{relatedwork}, we are taking the angle of \cite{zhang2016colorful}. As a result, we are approaching the colorization as a classification problem, and therefore using a (weighted) cross-entropy loss.
 
 Concretely, we want to discretize our colorspace, and for that we simply split our colormap into equal sized bins. As a first step, in order to reduce the computational toll, we don't want too many bins, and are therefore restricting our discretization to the $n$ most frequent color bins, as learned on a big dataset beforehand. In what follows, if a color from our actual image does not fall within one of our $n$ bins, we will simply assign it to the closest available. This simplification leads to a rather faint degradation of the images.
@@ -123,30 +130,6 @@ Following the approach of \cite{zhang2016colorful}, we want to boost the possibi
 
 
 Figure \ref{cdex} shows our discretized colorspace, as well as what the weights of the bins look like after rebalancing.
-
-\subsection{Neural architecture: \textit{ColorUNet}}
-\begin{figure}
-\begin{center}
-\includegraphics[width=200px]{diagram}
-\caption{Structure of the \textit{ColorUNet}. We use 3 types of cells: DownConv Cells that use 2 stacked convolutional layers to have a large perceptive field and a maxpooling to downsample the image, UpConv cells that use 1 ConvTranspose Layer to upsample the image and then 2 convolutional layers, and an Output cell that is a simplified version of the UpConv cell}
-\label{structure}
-\end{center}
-\end{figure}
-Our task has now become a segmentation problem, for which we have to predict the correct class (representing a color bin) out of 32, for every pixel in the input image. Our end model is a U-Net that has 3 downsampling groups of convolutional layers and 2 connections between hidden layers of the same size (we set aside the last and first layers of the downsampling process).
-
-Figure \ref{structure} summarizes the structure of the final network, that we refer as \textit{ColorUNet}.
-
-To find this final model, we have tried several architectures. We have begun by trying a simple "flat" convolutional network with 3 layers. However, this model gave very poor performance. Intuitively, what happens is that the spatial receptive field was not large enough to capture meaningful general shapes.
-
-Starting from this idea, we then implemented a second model, that is deeper, with 6 groups of convolutional layers. The structure is a \textit{bottleneck}, where 3 groups of layers downsample the image using a max pooling, and 3 groups of layers upsample the image. Using groups of 3$\times$3 convolutional layers rather than bigger filters allows to have a large receptive field with fewer parameters.
-
-This network gave interesting results, but it was very unstable and slow to train, since it is quite deep. Furthemore, the quality of the output we get was not satisfying, even for a reduced task, because of this underfitting. Furthermore, the upsampling process needs more filters in the hidden layers, as we need to encode more information to correctly upsample the image.
-
-Those observations led us to design our final \textit{ColorUNet}, that still has a bottleneck structure but uses connections between layers to improve the gradient flow and help the upsampling. We also added additional batch normalization layers to improve training stability.
-
-
-
-\section{Dataset and Features}
 \begin{figure}
 \begin{center}
 \includegraphics[width=200px]{sampletrain.png}
@@ -155,6 +138,12 @@ Those observations led us to design our final \textit{ColorUNet}, that still has
 \end{center}
 \end{figure}
 
+
+Our task has now become a segmentation problem, for which we have to predict the correct class (representing a color bin) out of 32, for every pixel in the input image. Our end model is a U-Net that has 3 downsampling groups of convolutional layers and 2 connections between hidden layers of the same size (we set aside the last and first layers of the downsampling process).
+
+Figure \ref{structure} summarizes the structure of the final network, that we refer as \textit{ColorUNet}.
+
+To find this final model, we have tried several architectures. We have begun by trying a simple "flat" convolutional network with 3 layers. However, this model gave very poor performance. Intuitively, what happens is that the spatial receptive field was not large enough to capture meaningful general shapes.
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{good}
@@ -162,28 +151,15 @@ Those observations led us to design our final \textit{ColorUNet}, that still has
 \label{good}
 \end{center}
 \end{figure*}
+Starting from this idea, we then implemented a second model, that is deeper, with 6 groups of convolutional layers. The structure is a \textit{bottleneck}, where 3 groups of layers downsample the image using a max pooling, and 3 groups of layers upsample the image. Using groups of 3$\times$3 convolutional layers rather than bigger filters allows to have a large receptive field with fewer parameters.The \textit{bottleneck} structure is a way to constrain the model to embed recognizible object shapes and the associated color. 
+
+This network gave interesting results, but it was very unstable and slow to train. This is easily explained by the depth of the architecture. Furthemore, the quality of the output we get was not satisfying, even for a reduced task, because of this underfitting. Furthermore, it would have nedded more filters in the hidden layers to tackle the upsampling part of the flow, as we need to encode more information in the smaller layers to correctly upsample the image afterwards.
+
+Those observations led us to design our final \textit{ColorUNet}, that still has a bottleneck structure but uses connections between layers to improve the gradient flow and help the upsampling. We also added additional batch normalization layers to improve training stability.
+\subsection{Neural architecture: \textit{ColorUNet}}
+
+
 \subsection{Datasets}
-To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images -- as a reference for comparison, \cite{zhang2016colorful} train their model on 1.5M+ images. Our validation set is made of 2,889 images. A sample of the training data is shown in Figure \ref{sampletrain}.
-The motivation behing reducing our focus to nature scenes was both conceptual and practical. Conceptual because it seems too optimistic to try to train a rather lightweight model on a very diversified dataset, and practical because it eventually comes down to computing time. We chose to include images representing nature scenes which have pictural elements in common -- such as trees, mountains, clouds, \etc -- as well as color tones -- blue for the sky, sand for beaches, green for grass and forests,  \etc.
-
-We also tried training the model on the full SUN dataset (for only one epoch), to compare performance and gain insight on the importance for the model to go over the same examples several times to learn well.
-
-
-
-To keep a reasonable size for our tensors and have uniformity in our dataset, the images have all been downsampled to fit in a 256$\times$256px frame (if downsampling was necessary). The downsampling has been performed using Lanczos method (with a $sinc$ kernel), and we used a mask for non-square images to make sure the loss is relevant.
-
-\subsection{Data Augmentation}
-
-To improve the robustness of the model we train, we augmented our training data with a number of deformations. For each original image of the training set, we generate several training images by combining:
-\begin{itemize}
-\item Flipping the image along the horizontal axis;
-\item Adding noise to the image (with different intensities);
-\item Selecting random crops of the image.
-\end{itemize}
-
-We expect an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training. In the case described above, the size of our training set is dilated sevenfold.
-
-\section{Results and discussion}
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{better}
@@ -191,40 +167,40 @@ We expect an improvement of training stability and of the quality of our predict
 \label{better}
 \end{center}
 \end{figure*}
+\section{Dataset and Features}
+
+To train our model, we used subsets of the SUN \cite{xiao2010sun} and ImageNet \cite{russakovsky2015imagenet} datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images -- as a reference for comparison, \cite{zhang2016colorful} train their model on 1.5M+ images. Our validation set is made of 2,889 images. A sample of the training data is shown in Figure \ref{sampletrain}.
+The motivation behing reducing our focus to nature scenes was both conceptual and practical. Conceptual because it seems too optimistic to try to train a rather lightweight model on a very diversified dataset, and practical because it eventually comes down to computing time. We chose to include images representing nature scenes which have pictural elements in common -- such as trees, mountains, clouds, \etc -- as well as color tones -- blue for the sky, sand for beaches, green for grass and forests,  \etc.
+
+We also tried training the model on the full SUN dataset -- roughly 100k images --(for only one epoch), to compare performance and gain insight on the importance for the model to go over the same examples several times to learn well.
+
+
+To keep a reasonable size for our tensors and have uniformity in our dataset, the images have all been downsampled to fit in a 256$\times$256px frame (if downsampling was necessary). The downsampling has been performed using Lanczos method (with a $sinc$ kernel), and we used a mask for non-square images to make sure the loss is relevant.
+
+\subsection{Data Augmentation}
+
+To improve the robustness of the model, we augmented our training data with a number of deformations. For each original image of the training set, we generate several training images by combining:
+\begin{itemize}
+\item Flipping the image along the horizontal axis;
+\item Adding noise to the image (with different intensities);
+\item Selecting random crops of the image.
+\end{itemize}
+
+We expect an improvement of training stability and of the quality of our predictions when including the data augmentation in the pipeline, compared to when simply using more images for training. In the case described above, the size of our training set is dilated sevenfold. We discuss the effect of data augmentation in section \ref{results}.
+
+\section{Results and discussion}\label{results}
+
 \subsection{Evaluation and parameter tuning}
 
 Given the task that we are performing here, there is no relevant metric of the performance of our model. Actually, the classification loss is useful for training but is not very readable in terms of evaluating the actual prediction performance. Likewise, another loss like the $L_2$ is not relevant, as we discussed in section \ref{relatedwork}. Similarly to \cite{zhang2016colorful}, we rely on human evaluation to evaluate the overall performance of the algorithm, as it is both quick and easy to have a look at a random subsample of the validation set and see if the coloring is satisfying.
 
 The final number of classes chosen for the \texttt{ColorDiscretizer} is $n=32$, as we want this to be as small as possible (it conditions the size of the output tensor) but 30 color bins is enough to get a very good visual fidelity.
 
-We have chosen the size of our network layers (especially the number of filters) to be of a reasonable order of magnitude, \textit{i.e.} around 32, as our focus was to have a computationally reasonable model. To select the learning rate, we have observed the evolution of the loss on reduced epochs and kept a learning rate that showed a satisfying behavior for the loss. We used an Adam optimizer. Our best model has been trained in 2 steps, with a learning rate decay between the 2 steps. Finally, we have chosen a batch size of 64 as it was the largest to fit on the GPUs we had (as the output tensor has dimensions 256$\times$256$\times$32$\times$\texttt{batch\_size}).
+We have chosen the size of our network layers (especially the number of filters) to be of a reasonable order of magnitude, \textit{i.e.} around 32, as our focus was to have a computationally reasonable model. To select the learning rate, we have observed the evolution of the loss on reduced epochs and kept a learning rate that showed a satisfying behavior for the loss. We used an Adam optimizer. Our best model has been trained in 2 steps, with a learning rate decay between the 2 steps. Finally, we have chosen a batch size of 64 as it was the largest to fit on the GPUs we had, as the output tensor has dimensions 256$\times$256$\times$32$\times$\texttt{batch\_size} (We used a single NVIDIA Tesla K80 GPU).
 
 Finally, we have used a validation set to evaluate the model. The split between validation and training  has been done randomly at preprocessing time.
 
-In addition to visualizing our own colorization results, we have visualized the results of the state-of-the-art model, \cite{zhang2016colorful}, that is available online. Not surprisingly, the results are more realistic. However, on a lot of cases from our validation set, the results are similar. More interestingly, we see that errors are \textbf{visually similar} for the two networks, \textit{i.e.} color stains and that the same kinds of objects cause errors (textures of grass that look like waves on the ocean \textit{e.g.}).
-
-\subsection{Colorizing images}
-\subsubsection{Overview of the results}
-
-Figure \ref{good} gives some examples of correct colorizations made by the ColorUNet. We can see that the network is able to correctly colorize the main entities of interest (The sky, trees, grass, water, clouds, etc...) with vivid colors. The influence of the temperature parameter is very easy to see here, as we have less consistency but more vivid colors for low temperatures (closer to taking the argmax) and smoother, but desaturated for higher temperatures, as expected in section \ref{methods}.
-
-Interestingly enough, the ColorUNet sometimes gives results that are not similar to the input image, but look better. Those examples are interesting, because they reveal how the coloring model works. Some of them are reported in figure \ref{better}. This happens with images that have very recognizable inputs, but an limited color palette. The ColorUNet output is more realistic in those cases.
-Such examples also show that it is difficult to quantatively evaluate the model. Indeed, any reasonable computational metric would suggest that these outputs are wrong, while this is clearly the kind of results we are especially interested in.
-
-On the other hand, there are examples where our network is obviously wrong and outputs predictions that are not plausible. Some such examples are seen in \ref{worse}.
-
-Overall, our ColorUNet performs well at the limited task that we want to tackle. Not very surprisingly, it does not perform well on new categories, and especially on inside scenes.
-
-\subsubsection{Further analysis}
-
-We propose some visualizations to further analyze the behavior of the model.  
-
-\paragraph{Confidence maps}
-
-
-In order to better understand the behavior of our model, we have designed a \textbf{confidence} map, showed in figure \ref{confidence}. We use the value of the top bin's score and its relative magnitude compared to the second score of each pixel to visualize the confidence of the prediction. This is also a good sanity check. Actually, given that our model is intended to be lightweight, we do not expect it to make outstanding predictions on all the pictures. However, we expect our model to be unsure about the wrong results, and the difficult parts of the images.
-
-
+In addition to visualizing our own colorization results, we have visualized the results of the state-of-the-art model, \cite{zhang2016colorful}, that is available online. Not surprisingly, the results are more realistic. However, on a lot of cases from our validation set, the results are similar. More interestingly, we see that errors are \textbf{visually similar} for the two networks, \textit{i.e.} color stains and that the same kinds of objects cause errors (textures of grass that look like waves on the ocean \textit{e.g.}). This provided a general sanity check for the beahvior of our model. 
 \begin{figure*}
 \begin{center}
 \includegraphics[width=450px]{worse}
@@ -240,6 +216,29 @@ In order to better understand the behavior of our model, we have designed a \tex
 \label{confidence}
 \end{center}
 \end{figure*}
+\subsection{Colorizing images}
+\subsubsection{Overview of the results}
+
+Figure \ref{good} gives some examples of correct colorizations made by the ColorUNet. We can see that the network is able to correctly colorize the main entities of interest (The sky, trees, grass, water, clouds, etc...) with vivid colors. The influence of the temperature parameter is very easy to see here, as we have less consistency but more vivid colors for low temperatures (closer to taking the argmax) and smoother, but desaturated for higher temperatures, as expected in section \ref{methods}.
+
+Interestingly enough, the ColorUNet sometimes gives results that are not similar to the input image, but look better. Those examples are interesting, because they reveal how the coloring model works. Some of them are reported in Figure \ref{better}. This happens with images that have very recognizable inputs, but an limited color palette. The ColorUNet output is more realistic in those cases.
+Such examples also show that it is difficult to quantatively evaluate the model. Indeed, any reasonable computational metric would suggest that these outputs are wrong, while this is clearly the kind of results we are especially interested in.
+
+On the other hand, there are examples where our network is obviously wrong and outputs predictions that are not plausible. Some such examples are seen in \ref{worse}.
+
+Overall, our ColorUNet performs well at the limited task that we want to tackle. Not very surprisingly, it does not perform well on new categories, and especially on inside scenes.
+
+\subsubsection{Further analysis}
+
+We propose some visualizations to further analyze the behavior of the model.  
+
+\paragraph{Confidence maps}
+
+
+In order to better understand the behavior of our model, we have designed a \textbf{confidence} map, showed in Figure \ref{confidence}. We use the value of the top bin's score and its relative magnitude compared to the second score of each pixel to visualize the confidence of the prediction. This is also a good sanity check. Actually, given that our model is intended to be lightweight, we do not expect it to make outstanding predictions on all the pictures. However, we expect our model to be unsure about the wrong results, and the difficult parts of the images.
+
+
+
 
 \paragraph{Loss analysis}
 
@@ -260,7 +259,7 @@ When having a closer look at in-sample examples, we see that overall, the qualit
 \paragraph{Color distribution analysis}
 
 
-In order to understand the impact of our decision to encourage the prediction of "rare" colors by weighting the loss, we produced in figure \ref{histogram} histograms of the frequencies of the 32 color bins. We see that the prediction of the \textit{ColorUNet} does not exactly match the ground truth. By comparing the histograms with the frequencies in the whole dataset, we see that the ground truth had "common" colors. The \textit{ColorUNet} chooses to aim for "rare" colors, thus producing vivid images. Since this choice does not impair the realism of outputs, we believe that our contribution achieved our goal of colorizing with lively colors.
+In order to understand the impact of our decision to encourage the prediction of "rare" colors by weighting the loss, we produced in Figure \ref{histogram} histograms of the frequencies of the 32 color bins. We see that the prediction of the \textit{ColorUNet} does not exactly match the ground truth. By comparing the histograms with the frequencies in the whole dataset, we see that the ground truth had "common" colors. The \textit{ColorUNet} chooses to aim for "rare" colors, thus producing vivid images. Since this choice does not impair the realism of outputs, we believe that our contribution achieved our goal of colorizing with lively colors.
 
 \begin{figure}
 \begin{center}
@@ -277,13 +276,6 @@ In order to understand the impact of our decision to encourage the prediction of
 To evaluate the influence of the data augmentation, we have run 2 models on the same training set, with and without data augmentation, with seven times more epochs without data augmentation, so that both training have the same number of iteration. As expected, this brings more stability to the predictions, especially for the low temperatures. 
 
 Figure \ref{dacomp} compares the results of those two experiments. 
-\begin{figure}
-\begin{center}
-\includegraphics[width=220px]{da_comp}
-\caption{Influence of data augmentation. Top: prediction for 2 levels of temperature, with data augmentation. Bottom:  prediction for 2 levels of temperature, without data augmentation. The data augmentation tends to predict finer and smaller color sains that are closer to the actual coloring, which is easy to see on the low temperature prediction on the left. This results in an overall enhancement of the final prediction (on the left), where the sky tones are more realistic  }
-\label{dacomp}
-\end{center}
-\end{figure}
 
 \subsection{Application to video colorization}
 
@@ -299,19 +291,25 @@ Consequently, the method we will use should know what was predicted before and t
 
 \subsection{Extending the training set}
 
-As a sanity check, we have also trained a model using the full SUN dataset (100k+ images). For time constraints reason, we have trained it on fewer epochs. The training loss was similar. However, we note that the result were very poor, and that the network tended to output very desaturated images. Actually, our network structure has few filters in its deepest layers compared to the baseline model, \cite{zhang2016colorful}. It is therefore unable to capture as many features as needed to be able to recognize the variety of scenes that are in the full dataset. This confirms that our architecture is a lightweight version, that is adapted to a reduced variety of scenes, and that trains rapidly. However, we could expect that applying the same structure with a similar number of filters could allow to have a much quicker training on a full dataset.
+As a sanity check, we have also trained a model using the full SUN dataset, that is 10 times bigget than our actual training set, with data augmentation. For time constraints reason, we have trained it on fewer epochs. The training loss was similar. However, we note that the result were very poor, and that the network tended to output very desaturated images. Actually, our network structure has few filters in its deepest layers compared to the baseline model, \cite{zhang2016colorful}. It is therefore unable to capture as many features as needed to be able to recognize the variety of scenes that are in the full dataset. This confirms that our architecture is a lightweight version, that is adapted to a reduced variety of scenes, and that trains rapidly. However, we could expect that applying the same structure with more filters, to have a complexity closer to \cite{zhang2016colorful} could allow to have a much quicker training on a full dataset.
 
-An interesting next step to take would be to do a full benchmark of the model performance over different ranges of variety in the training set. Actually, we expect a too simple training set to give a bad result, and our lightweight model does not perform well on many classes. Learning beaches can be done with bimodal predictions (blue or yellow), so it is also not interesting to look only at too few classes. An extensive quantitative benchmark of this effect could be interesting but very time and resource-consuming.
-
+An interesting next step to take would be to do a full benchmark of the model performance over different ranges of variety in the training set. Actually, our lightweight model does not perform well on many classes becaus it is not complex enough.However, too few classes does not allow to state an interesting problem. For example. learning on beaches can be done with bimodal predictions (blue or yellow). An extensive quantitative benchmark of this effect could be interesting but very time and resource-consuming, and beyond the scope of this project.
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{da_comp}
+\caption{Influence of data augmentation. Top: prediction for 2 levels of temperature, with data augmentation. Bottom:  prediction for 2 levels of temperature, without data augmentation. The data augmentation tends to predict finer and smaller color sains that are closer to the actual coloring, which is easy to see on the low temperature prediction on the left. This results in an overall enhancement of the final prediction (on the left), where the sky tones are more realistic  }
+\label{dacomp}
+\end{center}
+\end{figure}
 \section{Conclusion and perspectives}
 
 In this work, we formulated the colorization problem as a classifiaction problem to get colorful results. The ColorUNet we have designed is a lightweight version of the state-of-the-art architecture that allows to quickly get satisfying results on a reduced dataset, with limited computational power.
 
-Our predictions have the same limitations as the reference model. Extending the task to more categories would need more parmeters, but our experiments has shown that a U-Net inspired architecture enhances and accelerates the learning process for the colorization problem. We propose a lightweight extension to colorize video sequences.
+Our predictions have similar limitations as the reference model. Extending the task to more categories would need more parameters, but our experiments has shown that a U-Net inspired architecture enhances and accelerates the learning process for the colorization problem. We propose a lightweight extension to colorize video sequences.
 
-Possible extensions would include training a network with more filters on more classes, but it would most likely yield similar results to \cite{zhang2016colorful}, and still have consistence problems. Using the confidence maps we designed to automatically select seed pixels and apply the heuristics described in \cite{levin2004colorization} to \textit{diffuse} diffuse those seeds would be an elegant way to post-process our images and have realistic, consistent but yet colorful results.
+Possible extensions would include training a network with more filters on more classes, but it would most likely yield similar results to \cite{zhang2016colorful}, and still have consistence problems. Using the confidence maps we designed to automatically select seed pixels and apply the heuristics described in \cite{levin2004colorization} to \textit{diffuse} diffuse those seeds would be an elegant way to post-process our images and have realistic, consistent but yet colorful results, taking the best of "traditional" and "convolutional" approaches to colorization.
 
-Using \textit{seed pixels} from our predictions and diffusing them could also be a way to adapt the heuristics of \cite{zhu2017video} to colorization, by enforcing temporal consistence of the seed pixels.
+Using \textit{seed pixels} from our predictions and diffusing them could also be a way to adapt the heuristics of \cite{zhu2017video} to colorization, by enforcing temporal consistence of the seed pixels as a proxy to enforce temporal consistency for the colorization.
 
 
 \section*{Contributions and acknowledgements}
