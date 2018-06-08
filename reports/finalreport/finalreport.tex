@@ -61,7 +61,7 @@ Stanford University\\
 \begin{abstract}
 This paper tackles the challenge of colorizing grayscale images. We take a deep convolutional neural network approach, and choose to take the angle of classification, working on a finite set of possible colors. Similarly to a recent paper, we implement a loss and a prediction function that favor realistic, colorful images rather than ``true'' ones.
 
-We show that a rather lightweight architecture inspired by the U-Net, and trained on a reasonable amount of pictures of landscapes, achieves satisfactory results on this specific subset of pictures. We show that data augmentation significantly improves the performance and robustness of the model, and provide visual analysis of the prediction confidence. 
+We show that a rather lightweight architecture inspired by the U-Net, and trained on a reasonable amount of pictures of landscapes, achieves satisfactory results on this specific subset of pictures. We show that data augmentation significantly improves the performance and robustness of the model, and provide visual analysis of the prediction confidence.
 
 We show an application of our model, extending the task to video colorization. We suggest a way to smooth color predictions across frames, without the need to train a recurrent network designed for sequential inputs.
 
@@ -112,7 +112,7 @@ Given our commitment to developing a lightweight model, we prefered focusing on 
 \begin{figure}
 \begin{center}
 \includegraphics[width=200px]{diagram}
-\caption{Structure of the \textit{ColorUNet}. We use 3 types of cells: DownConv Cells that use 2 stacked convolutional layers to have a large perceptive field and a maxpooling to downsample the image, UpConv cells that use 1 ConvTranspose Layer to upsample the image and then 2 convolutional layers, and an Output cell that is a simplified version of the UpConv cell. All the convolutional layers have kernel size 3$\times$3  with stride 1 and padding 1. The ConvTranspose layers have kernel size 3$\times$3 with stride 2 and padding 1. The maxpooling layers have size 2$\times$2 and stride 2, with no padding. }
+\caption{Structure of the ColorUNet. We use 3 types of cells: DownConv Cells that use 2 stacked convolutional layers to have a large perceptive field and a maxpooling to downsample the image, UpConv cells that use 1 ConvTranspose Layer to upsample the image and then 2 convolutional layers, and an Output cell that is a simplified version of the UpConv cell. All the convolutional layers have kernel size 3$\times$3  with stride 1 and padding 1. The ConvTranspose layers have kernel size 3$\times$3 with stride 2 and padding 1. The maxpooling layers have size 2$\times$2 and stride 2, with no padding. }
 \label{structure}
 \end{center}
 \end{figure}
@@ -137,11 +137,11 @@ Figure \ref{cdex} shows our discretized colorspace, as well as what the weights 
 \end{center}
 \end{figure}
 
-\subsection{Neural architecture: \textit{ColorUNet}}
+\subsection{Neural architecture: ColorUNet}
 
 Our task has now become a segmentation problem, for which we have to predict the correct class (representing a color bin) out of 32, for every pixel in the input image. Our final model is a U-Net that has 3 downsampling groups of convolutional layers and 2 connections between hidden layers of the same size (we set aside the last and first layers of the downsampling process).
 
-Figure \ref{structure} summarizes the structure of the final network, that we refer to as \textit{ColorUNet}.
+Figure \ref{structure} summarizes the structure of the final network, that we refer to as ColorUNet.
 
 To end up with this final model, we have tried several architectures. We started by trying a simple ``flat'' convolutional network with 3 layers. However, this model gave very poor performance. Intuitively, what happens is that the spatial receptive field was not large enough to capture meaningful general shapes.
 \begin{figure*}
@@ -151,11 +151,11 @@ To end up with this final model, we have tried several architectures. We started
 \label{good}
 \end{center}
 \end{figure*}
-Building upon this idea, we then implemented a second model, that is deeper, with 6 groups of convolutional layers. The structure is a \textit{bottleneck}, where 3 groups of layers downsample the image using a max pooling, and 3 groups of layers upsample the image. Using groups of 3$\times$3 convolutional layers rather than bigger filters allows to have a large receptive field with fewer parameters.The \textit{bottleneck} structure is a way to constrain the model to embed recognizible object shapes and the associated color. 
+Building upon this idea, we then implemented a second model, that is deeper, with 6 groups of convolutional layers. The structure is a \textit{bottleneck}, where 3 groups of layers downsample the image using a max pooling, and 3 groups of layers upsample the image. Using groups of 3$\times$3 convolutional layers rather than bigger filters allows to have a large receptive field with fewer parameters.The \textit{bottleneck} structure is a way to constrain the model to embed recognizible object shapes and the associated color.
 
 This network gave interesting results but it was very unstable and slow to train, which is easily explained by the depth of the architecture. The quality of the output we obtained was not satisfying -- even for a reduced task --, because of this underfitting. Furthermore, it would have needed more filters in the hidden layers to tackle the upsampling part of the flow, as we need to encode more information in the smaller layers to correctly upsample the image afterwards.
 
-Those observations led us to design our final \textit{ColorUNet}, that still has a bottleneck structure but uses connections across layers to improve the gradient flow and help the upsampling. We also added additional batch normalization layers to improve training stability.
+Those observations led us to design our final ColorUNet, that still has a bottleneck structure but uses connections across layers to improve the gradient flow and help the upsampling. We also added additional batch normalization layers to improve training stability.
 
 \begin{figure*}
 \begin{center}
@@ -196,7 +196,7 @@ Given the task that we are performing here, there is no relevant metric for the 
 
 The final number of classes chosen for the \texttt{ColorDiscretizer} is $n=32$, as we want this to be as small as possible (it conditions the size of the output tensor) but 30 color bins are enough to get a very good visual fidelity.
 
-We have chosen the size of our network layers (especially the number of filters) to be of a reasonable order of magnitude, \textit{i.e.} around 32, as our focus was to have a computationally reasonable model. To select the learning rate, we have observed the evolution of the loss on reduced epochs and kept a learning rate that showed a satisfying behavior for the loss. We used an Adam optimizer. Our best model has been trained in 2 steps, with a learning rate decay between the 2 steps. Finally, we have chosen a batch size of 64 as it was the largest to fit on the GPUs\footnote{We used a single NVIDIA Tesla K80 GPU} we had: the output tensor has dimensions 256$\times$256$\times$32$\times$\texttt{batch\_size}.
+We have chosen the size of our network layers (especially the number of filters) to be of a reasonable order of magnitude, \textit{i.e.} around 32, as our focus was to have a computationally reasonable model. To select the learning rate, we have observed the evolution of the loss on reduced epochs and kept a learning rate that showed a satisfying behavior for the loss. We used an Adam optimizer. Our best model has been trained in 2 steps, with a learning rate decay between the two. Finally, we have chosen a batch size of 64 as it was the largest to fit on the GPUs\footnote{We used a single NVIDIA Tesla K80 GPU} we had: the output tensor has dimensions 256$\times$256$\times$32$\times$\texttt{batch\_size}.
 
 Finally, we used a validation set to evaluate the model. The split between validation and training  was done randomly at preprocessing time.
 
@@ -230,7 +230,7 @@ Overall, our ColorUNet performs well at the limited task that we want to tackle.
 
 \subsubsection{Further analysis}
 
-We propose some visualizations to further analyze the behavior of the model.  
+We propose some visualizations to further analyze the behavior of the model.
 
 \paragraph{Confidence maps}
 
@@ -243,12 +243,12 @@ In order to better understand the behavior of our model, we have designed a \tex
 \paragraph{Loss analysis}
 
 
-The ability of the model to generalize can also be explored from a quantitative point of view. Figure \ref{lossplot} shows that the performance of our model on the validation set matches that of the training set, in terms of loss. We avoid overfitting and this result validates our initial idea of aiming for a lightweight model, which cannot be over-parametric. This is also promising since it implies that there is room for progress. The \textit{ColorUNet} can be further trained, and kernel sizes in intermediate layers can be increased, which will likely yield even better results with more computing power.
+The ability of the model to generalize can also be explored from a quantitative point of view. Figure \ref{lossplot} shows that the performance of our model on the validation set matches that of the training set, in terms of loss. We avoid overfitting and this result validates our initial idea of aiming for a lightweight model, which cannot be over-parametric. This is also promising since it implies that there is room for progress. The ColorUNet can be further trained, and kernel sizes in intermediate layers can be increased, which will likely yield even better results with more computing power.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=220px]{lossplot}
-\caption{Evolution of the loss of \textit{ColorUNet} accross the learning iterations. The validation (red) loss matches the train (blue) loss, which shows that we have not overfitted the model to the training set.}
+\caption{Evolution of the loss of ColorUNet accross the learning iterations. The validation (red) loss matches the train (blue) loss, which shows that we have not overfitted the model to the training set.}
 \label{lossplot}
 \end{center}
 \end{figure}
@@ -259,12 +259,12 @@ When taking a closer look at in-sample examples, we see that overall the quality
 \paragraph{Color distribution analysis}
 
 
-In order to understand the impact of our decision to encourage the prediction of ``rare'' colors by weighting the loss, we produced histograms of the frequencies of the 32 color bins (see Figure \ref{histogram}). We see that the prediction of the \textit{ColorUNet} does not exactly match the ground truth. By comparing the histograms with the frequencies in the whole dataset, we see that the ground truth contained ``common'' colors. The \textit{ColorUNet} chooses to aim for ``rare'' colors, thus producing vivid images. Since this choice does not impair the realism of outputs, we believe that our contribution achieved our goal of colorizing with lively colors.
+In order to understand the impact of our decision to encourage the prediction of ``rare'' colors by weighting the loss, we produced histograms of the frequencies of the 32 color bins (see Figure \ref{histogram}). We see that the prediction of the ColorUNet does not exactly match the ground truth. By comparing the histograms with the frequencies in the whole dataset, we see that the ground truth contained ``common'' colors. The ColorUNet chooses to aim for ``rare'' colors, thus producing vivid images. Since this choice does not impair the realism of outputs, we believe that our contribution achieved our goal of colorizing with lively colors.
 
 \begin{figure}
 \begin{center}
 \includegraphics[width=250px]{color_histogram}
-\caption{Histograms of the frequencies of the 32 selected color bins. Top: frequencies in the pixels of 500 sample images; true color channels (blue); colors predicted by \textit{ColorUNet} \text{(orange)}. \text{Bottom}: frequencies of the color bins in the Color Discretizer (green), representing the whole dataset. The \textit{ColorUNet} differs from the ground truth which has ``common'' colors (bins 17, 21), it prefers ``rare'' colors (bins 11, 20, 26). }
+\caption{Histograms of the frequencies of the 32 selected color bins. Top: frequencies in the pixels of 500 sample images; true color channels (blue); colors predicted by ColorUNet \text{(orange)}. \text{Bottom}: frequencies of the color bins in the Color Discretizer (green), representing the whole dataset. The ColorUNet differs from the ground truth which has ``common'' colors (bins 17, 21), it prefers ``rare'' colors (bins 11, 20, 26). }
 \label{histogram}
 \end{center}
 \end{figure}
@@ -273,9 +273,9 @@ In order to understand the impact of our decision to encourage the prediction of
 
 \paragraph{Influence of data augmentation}
 
-To evaluate the influence of data augmentation, we have run 2 models on the same training set, with and without data augmentation -- increasing the number of epochs sevenfold for the latter, so that both models train over the same number of iterations. As expected, data augmentation brings more stability to the predictions, especially for the low temperatures. 
+To evaluate the influence of data augmentation, we have run 2 models on the same training set, with and without data augmentation -- increasing the number of epochs sevenfold for the latter, so that both models train over the same number of iterations. As expected, data augmentation brings more stability to the predictions, especially for the low temperatures.
 
-Figure \ref{dacomp} illustrate the result of this experiment. 
+Figure \ref{dacomp} illustrate the result of this experiment.
 
 \subsection{Application to video colorization}
 
@@ -303,7 +303,7 @@ An interesting next step to take would be to do a full benchmark of the model pe
 \end{figure}
 \section{Conclusion and perspectives}
 
-In this work, we formulated the colorization problem as a classifiaction problem to get colorful results. The ColorUNet we have designed is a lightweight version of the state-of-the-art architecture that allows to quickly get satisfying results on a reduced dataset, with limited computational power.
+In this work, we formulated the colorization problem as a classification problem to get colorful results. The ColorUNet we have designed is a lightweight version of the state-of-the-art architecture that allows to quickly get satisfying results on a reduced dataset, with limited computational power.
 
 Our predictions have similar limitations as the reference model. Extending the task to more categories would require more parameters, and our experiments have shown that a U-Net inspired architecture enhances and accelerates the learning process for the colorization problem. We propose a lightweight extension to colorize video sequences.
 
