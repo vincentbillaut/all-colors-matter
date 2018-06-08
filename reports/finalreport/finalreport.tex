@@ -194,7 +194,7 @@ We expect an improvement of training stability and of the quality of our predict
 
 Given the task that we are performing here, there is no relevant metric for the performance of our model. Indeed, the classification loss is useful for training but is not very readable in terms of evaluating the actual prediction performance. Likewise, another loss like the $L_2$ is not relevant, as we discussed in section \ref{relatedwork}. Similarly to \cite{zhang2016colorful}, we rely on human evaluation to evaluate the overall performance of the algorithm, as it is both quick and easy to have a look at a random subsample of the validation set and see if the colorization is satisfying.
 
-The final number of classes chosen for the \texttt{ColorDiscretizer} is $n=32$, as we want this to be as small as possible (it conditions the size of the output tensor) but 30 color bins are enough to get a very good visual fidelity.
+The final number of classes chosen for the Color Discretizer is $n=32$, as we want this to be as small as possible (it conditions the size of the output tensor) but 30 color bins are enough to get a very good visual fidelity.
 
 We have chosen the size of our network layers (especially the number of filters) to be of a reasonable order of magnitude, \textit{i.e.} around 32, as our focus was to have a computationally reasonable model. To select the learning rate, we have observed the evolution of the loss on reduced epochs and kept a learning rate that showed a satisfying behavior for the loss. We used an Adam optimizer. Our best model has been trained in 2 steps, with a learning rate decay between the two. Finally, we have chosen a batch size of 64 as it was the largest to fit on the GPUs\footnote{We used a single NVIDIA Tesla K80 GPU} we had: the output tensor has dimensions 256$\times$256$\times$32$\times$\texttt{batch\_size}.
 
@@ -243,7 +243,7 @@ In order to better understand the behavior of our model, we have designed a \tex
 \paragraph{Loss analysis}
 
 
-The ability of the model to generalize can also be explored from a quantitative point of view. Figure \ref{lossplot} shows that the performance of our model on the validation set matches that of the training set, in terms of loss. We avoid overfitting and this result validates our initial idea of aiming for a lightweight model, which cannot be over-parametric. This is also promising since it implies that there is room for progress. The ColorUNet can be further trained, and kernel sizes in intermediate layers can be increased, which will likely yield even better results with more computing power.
+The ability of the model to generalize can be explored from a quantitative point of view. Figure \ref{lossplot} shows that the performance of our model on the validation set matches that obtained on the training set, in terms of loss. This result proves that we avoid overfitting and validates our initial idea of aiming for a lightweight model, which cannot be over-parametric. This is also promising since it implies that there is room for progress. The ColorUNet can be further trained, and kernel sizes in intermediate layers can be increased, which will likely yield even better results with more computing power.
 
 \begin{figure}
 \begin{center}
@@ -253,7 +253,7 @@ The ability of the model to generalize can also be explored from a quantitative 
 \end{center}
 \end{figure}
 
-When taking a closer look at in-sample examples, we see that overall the quality of the prediction is slightly better but comparable to what we have in the validation set. This suggests that we have not overfitted to the training set. However, given the evolution of the loss, we can even expect our model to be slightly underfitted, and it may benefit from further training. However, given the limited time we had to complete this project, we preferred focusing on other experiments (such as studying the effect of data augmentation or training on an extended dataset) rather than spending time overfitting the model.
+When taking a closer look at in-sample examples, we see that overall the quality of the prediction is slightly better but comparable to what we have in the validation set. This is extra evidence that we have not overfitted to the training set. However, given the evolution of the loss, we can even expect our model to be slightly underfitted, and it may benefit from further training. However, given the limited time we had to complete this project, we preferred focusing on other experiments (such as studying the effect of data augmentation or training on an extended dataset) rather than spending time overfitting the model.
 
 
 \paragraph{Color distribution analysis}
