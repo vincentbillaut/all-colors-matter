@@ -56,18 +56,17 @@
 %-----------------------------------------------------------
 
 \usepackage{graphicx}  % Required for including images
-
+\graphicspath{ {./img/} }
 \usepackage{booktabs} % Top and bottom rules for tables
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
+\title{\textit{ColorUNet}: A convolutional classification approach to colorization} % Poster title
 
-\title{Exploring neural architectures for NER} % Poster title
+\author{Vincent Billaut, Matthieu de Rochemonteix, Marc Thibault} % Author(s)
 
-\author{Vincent Billaut, Marc Thibault} % Author(s)
-
-\institute{CS224n, Stanford University, 03/21/2018} % Institution(s)
+\institute{CS231n Final Project, 03/12/2018} % Institution(s)
 
 %----------------------------------------------------------------------------------------
 
@@ -198,13 +197,8 @@ English \=seaside \=resort \=of \=Brighton. `` \\
 
 \begin{block}{Comparing different architectures}
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=600px]{figs/config_compar.png}
-\caption{We have tried many different configurations for various types of architectures, and quickly concluded that the best performing architecture for our problem's specificity and scale was going to be a \textbf{Bi-directional LSTM} ; amongst them we chose the simplest one to give top results, namely one with a size-50 hidden layer}
-\label{config_compar}
-\end{center}
-\end{figure}
+hi
+
 
 \end{block}
 
@@ -282,15 +276,7 @@ English \=seaside \=resort \=of \=Brighton. `` \\
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Dropout rate selection}
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=600px]{figs/dr_graph.png}
-\caption{We see that the dropout rate has a significant effect on the model's performance, and we therefore kept a value of \textbf{0.2} moving forward. }
-\label{dr_graph}
-\end{center}
-\end{figure}
-
+hi
 \end{block}
 
 %----------------------------------------------------------------------------------------
@@ -305,13 +291,7 @@ English \=seaside \=resort \=of \=Brighton. `` \\
 
 \begin{block}{L2 regularization study}
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=600px]{figs/l2_graph.png}
-\caption{Surprisingly, no regularized model significantly beats the baseline in terms of F1 score on the dev set. Still, we consider that introducing some regularization is safer for robustness, and therefore keep an L2 regularization parameter $\beta=3~10^{-5}$. }
-\label{l2}
-\end{center}
-\end{figure}
+placeholder
 
 \end{block}
 
@@ -333,13 +313,7 @@ English \=seaside \=resort \=of \=Brighton. `` \\
 
 \begin{block}{CRF performance}
 
-  \begin{figure}
-  \begin{center}
-  \includegraphics[width=600px]{figs/BiLSTM-CRF-vs-alpha.png}
-  \caption{Train and Dev set performance of a BiLSTM model, incorporating a CRF on the prediction step, versus the importance $\alpha$ given to the CRF. No positive level of importance yields superior performance. The best decision is not to use the extra information from the CRF. }
-  \label{lstm-crf-results}
-  \end{center}
-  \end{figure}
+placeh
 
 \end{block}
 
@@ -390,7 +364,7 @@ In the simple way we incorporated CRF in the neural architecture, we could not g
 
 
 \begin{center}
-    \includegraphics[scale=0.5]{figs/Stanford_logo}
+    \includegraphics[scale=0.5]{Stanford_logo}
 \end{center}
 \end{block}
 
