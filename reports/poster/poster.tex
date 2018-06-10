@@ -132,36 +132,49 @@ Stuff on archi
 
 \begin{column}{\twocolwid} % Begin a column which is two columns wide (column 2)
 
-  \begin{block}{Comparing different architectures}
+  \begin{block}{ColorUNet outputs: influence of temperature}
 
   \begin{figure}
   \begin{center}
   \includegraphics[width=.8\twocolwid]{img/good_cropped.png}
-  \caption{We have tried many different configurations for various types of architectures, and quickly concluded that the best performing architecture}
+  \caption{Examples of images colorized by ColorUNet. Temperature enables a trade-off between vivid colors and conservative colorizing.}
   \label{good}
   \end{center}
   \end{figure}
 
-
-
   \begin{figure}
   \begin{center}
-  \includegraphics[width=.8\twocolwid]{img/confidence}
-  \caption{We have tried many different configurations for various types of architectures, and quickly concluded that the best performing architecture}
-  \label{good}
-  \end{center}
-  \end{figure}
-
-
-  \begin{figure}
-  \begin{center}
-  \includegraphics[width=.8\twocolwid]{img/better}
-  \caption{We have tried many different configurations for various types of architectures, and quickly concluded that the best performing architecture}
+  \includegraphics[width=.8\twocolwid]{img/better_cropped}
+  \caption{Sample predictions of the ColorUNet on the validation set, for bland input images. The ColorUNet’s output is more colorful than the ground truth. The bottom example is an old photograph with weared tones.}
   \label{good}
   \end{center}
   \end{figure}
 
   \end{block}
+
+  \begin{columns}[t,totalwidth=.7\twocolwid] % Split up the two columns wide column again
+    \begin{column}{.075\twocolwid}\end{column}
+    \begin{column}{.85\twocolwid}
+
+    \begin{alertblock}{Understand ColorUNet: Confidence maps}
+
+    \begin{figure}
+    \begin{center}
+    \includegraphics[width=.6\twocolwid]{img/confidence}
+    \caption{Confidence maps for the colorization of an image.}
+    \label{confidence}
+    \end{center}
+    \end{figure}
+
+    The model outputs a probability distribution for each pixel, $(p_i)_{i=1...32}$
+
+    Confidence maps are defined, for each pixel, as
+    $C_1 = p(1)\ \ \ \ \ \ \ \  C_2 = \frac{p(1)}{p(2)}$
+    \end{alertblock}
+
+    \end{column}
+    \begin{column}{.075\twocolwid}\end{column}
+  \end{columns}
 
 
 % %----------------------------------------------------------------------------------------
