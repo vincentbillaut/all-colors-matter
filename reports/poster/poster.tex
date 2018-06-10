@@ -90,91 +90,35 @@
 %	OBJECTIVES
 %----------------------------------------------------------------------------------------
 
-% \begin{alertblock}{Objectives}
+\begin{alertblock}{Objectives}
 
-% Lorem ipsum dolor sit amet, consectetur, nunc tellus pulvinar tortor, commodo eleifend risus arcu sed odio:
-% \begin{itemize}
-% \item Mollis dignissim, magna augue tincidunt dolor, interdum vestibulum urna
-% \item Sed aliquet luctus lectus, eget aliquet leo ullamcorper consequat. Vivamus eros sem, iaculis ut euismod non, sollicitudin vel orci.
-% \item Nascetur ridiculus mus.
-% \item Euismod non erat. Nam ultricies pellentesque nunc, ultrices volutpat nisl ultrices a.
-% \end{itemize}
+\begin{itemize}
+\item Implementation of a lightweight version of \cite{zhang2016colorful}
+\item Implementation of an architecture from scratch
+\item Extension to videos. 
+\end{itemize}
 
-% \end{alertblock}
+\end{alertblock}
 
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Motivation}
-    \begin{itemize}
-      \item NER with many classes is a complex task
-      \item NER requires a fine understanding of context information
-      \item We need to incorporate past and future dependencies
-      \item A CRF implements a memory flow on labels
-    \end{itemize}
+\begin{block}{Colorization as classification}
+Stuff on CD
 
 \end{block}
 
 %------------------------------------------------
-\begin{block}{Dataset: CoNLL-2002}
-
-Labeled new articles:
-
-\vspace{5mm}
-
-\begin{tabbing}
-``\=The \=protest \=comes \=on \=the \=eve \=of \=the \=annual \=conference \\
-\>\texttt{0} \>\texttt{0} \>\texttt{0} \>\texttt{0} \>\texttt{0} \>\texttt{0} \>\texttt{0} \>\texttt{0} \>\texttt{0} \>\texttt{0}
-\end{tabbing}
-
-\vspace{5mm}
-
-\begin{tabbing}
-of \=Britain\='s \=ruling \=Labor \=Party \= \ \=in \=the \=southern \\
-
-\texttt{0} \>\texttt{B-geo} \>\texttt{0} \>\texttt{0} \>\texttt{B-org} \>\texttt{I-org} \> \>\texttt{0} \>\texttt{0} \>\texttt{0}
-\end{tabbing}
-
-\vspace{5mm}
-
-\begin{tabbing}
-English \=seaside \=resort \=of \=Brighton. `` \\
-
-\texttt{B-gpe} \>\texttt{0} \>\texttt{0} \>\texttt{0} \>\texttt{B-geo}
-\end{tabbing}
-
-\vspace{10mm}
+\begin{block}{Dataset}
 
 
-\begin{itemize}
-  \item $40,000$ train sentences,
-
-  \item $4,000$ test sentences,
-
-  \item $17$ label classes,
-
-  \item Training takes $\sim$ 1h on multi-CPU.
-\end{itemize}
+Stuff on dataset
 \end{block}
 
 %------------------------------------------------
-\begin{block}{Base Models}
-
-\begin{itemize}
-  \item Words embedded with GloVe
-
-  \item Model
-\begin{itemize}
-\item LSTM w/ or w/o extra top layer(s)
-\item Bi-LSTM w/ or w/o extra top layer
-\item Stacked LSTMs
-\end{itemize}
-
-  \item Cross-Entropy loss on labels
-
-  \item Evaluation with $F_1$ score
-\end{itemize}
+\begin{block}{Model architecture}
+Stuff on archi
 
 \end{block}
 
