@@ -185,75 +185,16 @@ English \=seaside \=resort \=of \=Brighton. `` \\
 
 \begin{column}{\sepwid}\end{column} % Empty spacer column
 
+
 \begin{column}{\twocolwid} % Begin a column which is two columns wide (column 2)
 
-\begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column
+  \begin{block}{Comparing different architectures}
 
-\begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
-
-%----------------------------------------------------------------------------------------
-%	MATERIALS
-%----------------------------------------------------------------------------------------
-
-\begin{block}{Comparing different architectures}
-
-hi
+  hi
 
 
-\end{block}
+  \end{block}
 
-%----------------------------------------------------------------------------------------
-
-\end{column} % End of column 2.1
-
-\begin{column}{\onecolwid}\vspace{-.6in} % The second column within column 2 (column 2.2)
-
-%----------------------------------------------------------------------------------------
-%	METHODS
-%----------------------------------------------------------------------------------------
-
-\begin{block}{Conditional Random Field}
-
-\begin{itemize}
-  \item Encodes a Markov Chain: probability of transitioning from a label to another:
-
-  \vspace{5mm}
-
-  \[
-  P[i, j] = Pr(y_{t+1} = y_j | y_{t} =y_i) \textit{ in training set}
-  \]
-
-  \vspace{5mm}
-
-  $P$ stochastic matrix of size $(k,k)$.
-
-  \vspace{10mm}
-
-  \item Adds information to the prediction:
-
-  \vspace{5mm}
-
-  \begin{align*}
-  z_0 &= argmax_j(\hat{y}_0[j])
-  \\
-  \text{and}&
-  \\
-  z_t &= argmax_j(\hat{y}_t[j] + \alpha.P[z_{t-1},  j]) \ \ \forall t \in [1, T]
-  \end{align*}
-
-  \vspace{5mm}
-
-  $\alpha$ hyper-parameter which has to be fitted.
-
-  \end{itemize}
-
-\end{block}
-
-%----------------------------------------------------------------------------------------
-
-\end{column} % End of column 2.2
-
-\end{columns} % End of the split of column 2 - any content after this will now take up 2 columns width
 
 % %----------------------------------------------------------------------------------------
 % %	IMPORTANT RESULT
