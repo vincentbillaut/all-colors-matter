@@ -72,6 +72,7 @@
 
 \begin{document}
 
+\small
 \addtobeamertemplate{block end}{}{\vspace*{2ex}} % White space under blocks
 \addtobeamertemplate{block alerted end}{}{\vspace*{2ex}} % White space under highlighted (alert) blocks
 
@@ -105,22 +106,44 @@
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Colorization as classification}
-Stuff on CD
+
+  \begin{figure}
+  \begin{center}
+  \includegraphics[width=.5\linewidth]{cdexample}\label{good}
+  \caption{ (a) Color map, showing the mean color (\textit{chrominance}) of each of the selected bins (32 bins to select). (b) Frequency map (log-scale), shows the empirical frequency of the colors within each bin. (c) Inverse-frequency map. (d) Weight map (log-scale), shows the weights assigned to each bin after rebalancing.}
+  \end{center}
+  \end{figure}
+
+We approach the colorization problem as a \textbf{classification problem}. The main purpose is to boost the possibility of a rare color being predicted, and therefore we use the following tricks:
+\begin{itemize}
+\item Use \textit{rebalancing} to give larger weights to rare colors in our loss function.
+\item Use an \textit{annealed-mean} to output predictions $y$ from the probability distribution $\textbf{Z}$ over our $n$ bins to the full original color space. To achieve this we use a temperature parameter $T > 0$ in the following softmax-like formula for one pixel $$y = f_T(\textbf{z}) = {\exp(\log(\textbf{z}) / T) \over \sum_i \exp(\log(\textbf{z}_i) / T)}$$ where $\textbf{z}$ is the $n$-dimensional probability vector of a given pixel over the $n$ bins, and the sum in the denominator is over all the bins.
+\end{itemize}
+  
+
+
 
 \end{block}
 
 %------------------------------------------------
 \begin{block}{Dataset}
 
+To train our model, we used subsets of the SUN and ImageNet datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images.
 
-Stuff on dataset
+We used data augmentation to increase the robustness of training, namely : 
+\begin{itemize}
+\item Flipping the image along the horizontal axis;
+\item Adding noise to the image (with different intensities);
+\item Selecting random crops of the image.
+\end{itemize}
+This procedure increases the size of the dataset sevenfold
 \end{block}
 
 %------------------------------------------------
-\begin{block}{Model architecture}
-Stuff on archi
+%\begin{block}{Model architecture}
+%Stuff on archi
 
-\end{block}
+%\end{block}
 
 \end{column} % End of the first column
 
@@ -233,9 +256,15 @@ placeholder
 %	CONCLUSION
 %----------------------------------------------------------------------------------------
 
-\begin{block}{CRF performance}
+\begin{block}{Model architecture}
 
-placeh
+  \begin{figure}
+  \begin{center}
+  \includegraphics[width=.5\linewidth]{diagram}
+  \caption{Structure of the ColorUNet.}
+  \label{good}
+  \end{center}
+  \end{figure}
 
 \end{block}
 
@@ -326,11 +355,15 @@ In the simple way we incorporated CRF in the neural architecture, we could not g
 % \end{center}
 
 %----------------------------------------------------------------------------------------
-
+{\small
+\bibliographystyle{ieee}
+\bibliography{references}
+}
 \end{column} % End of the third column
 
 \end{columns} % End of all the columns in the poster
 
 \end{frame} % End of the enclosing frame
+
 
 \end{document}
