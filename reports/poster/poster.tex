@@ -128,7 +128,7 @@ We approach the colorization problem as a \textbf{classification problem}. The m
 %------------------------------------------------
 \begin{block}{Dataset}
 
-To train our model, we used subsets of the SUN and ImageNet datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images.
+To train our model, we used subsets of the SUN and ImageNet datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images, downscaled to a $256\times 256$ resolution.
 
 We used data augmentation to increase the robustness of training, namely : 
 \begin{itemize}
@@ -252,6 +252,8 @@ placeholder
   \label{good}
   \end{center}
   \end{figure}
+  
+After trying a simple convolutional architecture and a deep bottleneck architecture, we implemented an architecture based on the approach of \cite{ronneberger2015unet}, to improve both the gradient flow and the upscaling process. 
 
 \end{block}
 
@@ -274,35 +276,13 @@ placeholder
 %	REFERENCES
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Results summary}
+\begin{block}{Perspectives}
 
 In the simple way we incorporated CRF in the neural architecture, we could not get it to help a model perform significantly better than our well-tuned bi-LSTM.
 
-\vspace{10px}
 
 \begin{center}
-   \begin{tabular}{||c | c||}
-   \hline
-   \textbf{Model}  & \textbf{Dev $F_1$} \\
-   \hline\hline
-   Naive word-by-word & $0.691$ \\
-   \hline
-   LSTM & $0.597$ \\
-   \hline
-   LSTM + CRF & $0.475$ \\
-   \hline
-   LSTM + extra layer & $0.770$ \\
-   \hline
-   LSTM + extra layer + CRF & $0.751$ \\
-   \hline
-   Bi-LSTM & $0.796$ \\ [1ex]
-   \hline
-  \end{tabular}
-\end{center}
-
-
-\begin{center}
-    \includegraphics[scale=0.5]{Stanford_logo}
+    \includegraphics[scale=0.3]{Stanford_logo}
 \end{center}
 \end{block}
 
@@ -342,7 +322,7 @@ In the simple way we incorporated CRF in the neural architecture, we could not g
 % \end{center}
 
 %----------------------------------------------------------------------------------------
-{\small
+{\footnotesize
 \bibliographystyle{ieee}
 \bibliography{references}
 }
