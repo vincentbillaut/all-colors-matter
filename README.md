@@ -25,3 +25,23 @@ One of the main advantages of this project is that the results are very easy to 
 After training our ColorUNet model on about 13k data-augmented (which induces an additional 7x dilution) set, and obtaining satisfactory results, we tried colorizing videos. We began with a frame-by-frame approach, and then tried smoothing the predictions with an exponential kernel on the time dimension.
 
 [1] Zhang, Richard, Phillip Isola, and Alexei A. Efros. "Colorful image colorization." European Conference on Computer Vision. Springer, Cham, 2016.
+
+
+
+![Predicted Video](img/predicted.gif)
+
+Predicted video
+
+![Predicted Video](img/predicted_smooth.gif)
+
+Predicted video with smoothing
+
+![Predicted Video](img/greyscale.gif)
+
+Input video
+
+![Predicted Video](img/true.gif)
+
+Ground truth video
+
+
