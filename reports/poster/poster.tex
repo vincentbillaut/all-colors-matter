@@ -108,7 +108,7 @@
   \end{center}
   \end{figure}
 
-We approach the colorization problem as a \textbf{classification problem}. The main purpose is to boost the possibility of a rare color being predicted, and therefore we use the following tricks:
+We approach the colorization problem as a \textbf{classification problem} \cite{zhang2016colorful}. The main purpose is to boost the possibility of a rare color being predicted, and therefore we use the following tricks:
 \begin{itemize}
 \item Use \textit{rebalancing} to give larger weights to rare colors in our loss function.
 \item Use an \textit{annealed-mean} to output predictions $y$ from the probability distribution $\textbf{Z}$ over our $n$ bins to the full original color space. To achieve this we use a temperature parameter $T > 0$ in the following softmax-like formula for one pixel $$y = f_T(\textbf{z}) = {\exp(\log(\textbf{z}) / T) \over \sum_i \exp(\log(\textbf{z}_i) / T)}$$ where $\textbf{z}$ is the $n$-dimensional probability vector of a given pixel over the $n$ bins, and the sum in the denominator is over all the bins.
