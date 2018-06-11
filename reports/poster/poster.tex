@@ -57,11 +57,13 @@
 
 \usepackage{graphicx}  % Required for including images
 \graphicspath{ {./img/} }
-\usepackage{booktabs} % Top and bottom rules for tables
+\usepackage{booktabs,multicol} % Top and bottom rules for tables
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
+
+
 \title{\textit{ColorUNet}: A convolutional classification approach to colorization} % Poster title
 
 \author{Vincent Billaut, Matthieu de Rochemonteix, Marc Thibault} % Author(s)
@@ -128,7 +130,7 @@ We approach the colorization problem as a \textbf{classification problem}. The m
 %------------------------------------------------
 \begin{block}{Dataset}
 
-To train our model, we used subsets of the SUN and ImageNet datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images.
+To train our model, we used subsets of the SUN and ImageNet datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images, downscaled to a $256\times 256$ resolution.
 
 We used data augmentation to increase the robustness of training, namely :
 \begin{itemize}
@@ -188,7 +190,7 @@ This procedure increases the size of the dataset sevenfold
     The model outputs a probability distribution for each pixel, $(p_i)_{i=1...32}$
 
     Confidence maps are defined, for each pixel, as
-    $C_1 = p(1)\ \ \ \ \ \ \ \  C_2 = \frac{p(1)}{p(2)}$
+    $C_1 = p_{(1)}\ \ \ \ \ \ \ \  C_2 = \frac{p_{(1)}}{p_{(2)}}$
     \end{alertblock}
 
     \end{column}
@@ -215,6 +217,8 @@ This procedure increases the size of the dataset sevenfold
 %----------------------------------------------------------------------------------------
 %	MATHEMATICAL SECTION
 %----------------------------------------------------------------------------------------
+\begin{block}{}
+These results have been obtained using NVIDIA K80 GPUs. Total training time was roughly 10 hours. Batch size used is 64.
 
 \begin{block}{Dropout rate selection}
 hi
@@ -229,16 +233,18 @@ hi
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
-
-\begin{block}{L2 regularization study}
-
-placeholder
-
+\begin{block}{}
+{\footnotesize
+\bibliographystyle{ieee}
+\bibliography{references}
+}
 \end{block}
+
 
 %----------------------------------------------------------------------------------------
 
 \end{column} % End of column 2.2
+
 
 \end{columns} % End of the split of column 2
 
@@ -262,6 +268,8 @@ placeholder
   \end{center}
   \end{figure}
 
+After trying a simple convolutional architecture and a deep bottleneck architecture, we implemented an architecture based on the approach of \cite{ronneberger2015unet}, to improve both the gradient flow and the upscaling process.
+
 \end{block}
 
 %----------------------------------------------------------------------------------------
@@ -283,31 +291,7 @@ placeholder
 %	REFERENCES
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Results summary}
-
-In the simple way we incorporated CRF in the neural architecture, we could not get it to help a model perform significantly better than our well-tuned bi-LSTM.
-
-\vspace{10px}
-
-\begin{center}
-   \begin{tabular}{||c | c||}
-   \hline
-   \textbf{Model}  & \textbf{Dev $F_1$} \\
-   \hline\hline
-   Naive word-by-word & $0.691$ \\
-   \hline
-   LSTM & $0.597$ \\
-   \hline
-   LSTM + CRF & $0.475$ \\
-   \hline
-   LSTM + extra layer & $0.770$ \\
-   \hline
-   LSTM + extra layer + CRF & $0.751$ \\
-   \hline
-   Bi-LSTM & $0.796$ \\ [1ex]
-   \hline
-  \end{tabular}
-\end{center}
+\begin{block}{Results analysis}
 
 
 \begin{figure}
@@ -317,6 +301,15 @@ In the simple way we incorporated CRF in the neural architecture, we could not g
 \label{histogram}
 \end{center}
 \end{figure}
+\end{block}
+
+
+\end{block}
+
+\begin{block}{Comparison to baseline}
+
+Insert output + zhang here
+
 \end{block}
 
 %----------------------------------------------------------------------------------------
@@ -355,10 +348,7 @@ In the simple way we incorporated CRF in the neural architecture, we could not g
 % \end{center}
 
 %----------------------------------------------------------------------------------------
-{\small
-\bibliographystyle{ieee}
-\bibliography{references}
-}
+
 \end{column} % End of the third column
 
 \end{columns} % End of all the columns in the poster
