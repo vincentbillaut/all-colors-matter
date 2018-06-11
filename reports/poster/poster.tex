@@ -109,7 +109,7 @@
 
   \begin{figure}
   \begin{center}
-  \includegraphics[width=.5\linewidth]{cdexample}\label{good}
+  \includegraphics[width=.5\linewidth]{cdexample}\label{colormap}
   \caption{ (a) Color map, showing the mean color (\textit{chrominance}) of each of the selected bins (32 bins to select). (b) Frequency map (log-scale), shows the empirical frequency of the colors within each bin. (c) Inverse-frequency map. (d) Weight map (log-scale), shows the weights assigned to each bin after rebalancing.}
   \end{center}
   \end{figure}
@@ -140,6 +140,7 @@ This procedure increases the size of the dataset sevenfold
 \end{block}
 
 
+
 \end{column} % End of the first column
 
 
@@ -164,7 +165,7 @@ This procedure increases the size of the dataset sevenfold
   \begin{center}
   \includegraphics[width=.8\twocolwid]{img/better_cropped}
   \caption{Sample predictions of the ColorUNet on the validation set, for bland input images. The ColorUNet’s output is more colorful than the ground truth. The bottom example is an old photograph with weared tones.}
-  \label{good}
+  \label{better}
   \end{center}
   \end{figure}
 
@@ -257,7 +258,7 @@ placeholder
   \begin{center}
   \includegraphics[width=.5\linewidth]{diagram}
   \caption{Structure of the ColorUNet.}
-  \label{good}
+  \label{structure}
   \end{center}
   \end{figure}
 
@@ -309,9 +310,13 @@ In the simple way we incorporated CRF in the neural architecture, we could not g
 \end{center}
 
 
+\begin{figure}
 \begin{center}
-    \includegraphics[scale=0.5]{Stanford_logo}
+\includegraphics[width=\linewidth]{histogram_compact}
+\caption{Histograms of the frequencies of the 32 selected color bins.}
+\label{histogram}
 \end{center}
+\end{figure}
 \end{block}
 
 %----------------------------------------------------------------------------------------
