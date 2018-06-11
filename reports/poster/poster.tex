@@ -57,7 +57,7 @@
 
 \usepackage{graphicx}  % Required for including images
 \graphicspath{ {./img/} }
-\usepackage{booktabs} % Top and bottom rules for tables
+\usepackage{booktabs,multicol} % Top and bottom rules for tables
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
@@ -189,7 +189,7 @@ This procedure increases the size of the dataset sevenfold
     The model outputs a probability distribution for each pixel, $(p_i)_{i=1...32}$
 
     Confidence maps are defined, for each pixel, as
-    $C_1 = p(1)\ \ \ \ \ \ \ \  C_2 = \frac{p(1)}{p(2)}$
+    $C_1 = p_{(1)}\ \ \ \ \ \ \ \  C_2 = \frac{p_{(1)}}{p_{(2)}}$
     \end{alertblock}
 
     \end{column}
@@ -209,6 +209,9 @@ This procedure increases the size of the dataset sevenfold
 
 %----------------------------------------------------------------------------------------
 
+
+
+
 \begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column again
 
 \begin{column}{\onecolwid} % The first column within column 2 (column 2.1)
@@ -216,11 +219,10 @@ This procedure increases the size of the dataset sevenfold
 %----------------------------------------------------------------------------------------
 %	MATHEMATICAL SECTION
 %----------------------------------------------------------------------------------------
+\begin{block}{}
+These results have been obtained using NVIDIA K80 GPUs. Total training time was roughly 10 hours. Batch size used is 64. 
 
-\begin{block}{Dropout rate selection}
-hi
 \end{block}
-
 %----------------------------------------------------------------------------------------
 
 \end{column} % End of column 2.1
@@ -230,16 +232,18 @@ hi
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
-
-\begin{block}{L2 regularization study}
-
-placeholder
-
+\begin{block}{}
+{\footnotesize
+\bibliographystyle{ieee}
+\bibliography{references}
+}
 \end{block}
+
 
 %----------------------------------------------------------------------------------------
 
 \end{column} % End of column 2.2
+
 
 \end{columns} % End of the split of column 2
 
@@ -286,11 +290,16 @@ After trying a simple convolutional architecture and a deep bottleneck architect
 %	REFERENCES
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Perspectives}
+\begin{block}{Result analysis}
 
-In the simple way we incorporated CRF in the neural architecture, we could not get it to help a model perform significantly better than our well-tuned bi-LSTM.
+Insert histo here
 
 
+\end{block}
+
+\begin{block}{Comparison to baseline}
+
+Insert output + zhang here
 
 \end{block}
 
@@ -330,10 +339,7 @@ In the simple way we incorporated CRF in the neural architecture, we could not g
 % \end{center}
 
 %----------------------------------------------------------------------------------------
-{\footnotesize
-\bibliographystyle{ieee}
-\bibliography{references}
-}
+
 \end{column} % End of the third column
 
 \end{columns} % End of all the columns in the poster
