@@ -28,7 +28,7 @@
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
 
-\setbeamercolor{block title}{fg=ngreen,bg=white} % Colors of the block titles
+\setbeamercolor{block title}{fg=dblue,bg=white} % Colors of the block titles
 \setbeamercolor{block body}{fg=black,bg=white} % Colors of the body of blocks
 \setbeamercolor{block alerted title}{fg=white,bg=dblue!70} % Colors of the highlighted block titles
 \setbeamercolor{block alerted body}{fg=black,bg=dblue!10} % Colors of the body of highlighted blocks
@@ -89,17 +89,11 @@
 
 \begin{column}{\onecolwid} % The first column
 
+%----------------------------------------------------------------------------------------
+%	OBJECTIVES
+%----------------------------------------------------------------------------------------
 
 
-\begin{alertblock}{Objectives}
-
-\begin{itemize}
-\item Implementation of a lightweight version of \cite{zhang2016colorful}
-\item Implementation of an architecture from scratch
-\item Extension to videos.
-\end{itemize}
-
-\end{alertblock}
 
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
@@ -109,7 +103,7 @@
 
   \begin{figure}
   \begin{center}
-  \includegraphics[width=.5\linewidth]{cdexample}\label{colormap}
+  \includegraphics[width=\linewidth]{cdexample}\label{colormap}
   \caption{ (a) Color map, showing the mean color (\textit{chrominance}) of each of the selected bins (32 bins to select). (b) Frequency map (log-scale), shows the empirical frequency of the colors within each bin. (c) Inverse-frequency map. (d) Weight map (log-scale), shows the weights assigned to each bin after rebalancing.}
   \end{center}
   \end{figure}
@@ -196,6 +190,17 @@ This procedure increases the size of the dataset sevenfold
   \end{columns}
 
 
+% %----------------------------------------------------------------------------------------
+% %	IMPORTANT RESULT
+% %----------------------------------------------------------------------------------------
+
+%\begin{alertblock}{Important Result}
+%
+%Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed commodo molestie porta. Sed ultrices scelerisque sapien ac commodo. Donec ut volutpat elit.
+%
+%\end{alertblock}
+
+%----------------------------------------------------------------------------------------
 
 \begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column again
 
@@ -257,6 +262,24 @@ After trying a simple convolutional architecture and a deep bottleneck architect
 
 \end{block}
 
+%----------------------------------------------------------------------------------------
+%	ADDITIONAL INFORMATION
+%----------------------------------------------------------------------------------------
+
+% \begin{block}{Additional Information}
+
+% Maecenas ultricies feugiat velit non mattis. Fusce tempus arcu id ligula varius dictum.
+% \begin{itemize}
+% \item Curabitur pellentesque dignissim
+% \item Eu facilisis est tempus quis
+% \item Duis porta consequat lorem
+% \end{itemize}
+
+% \end{block}
+
+%----------------------------------------------------------------------------------------
+%	REFERENCES
+%----------------------------------------------------------------------------------------
 
 \begin{block}{Results analysis}
 
@@ -284,6 +307,41 @@ After trying a simple convolutional architecture and a deep bottleneck architect
 
 
 \end{block}
+
+%----------------------------------------------------------------------------------------
+%	ACKNOWLEDGEMENTS
+%----------------------------------------------------------------------------------------
+
+% \setbeamercolor{block title}{fg=red,bg=white} % Change the block title color
+
+% \begin{block}{Acknowledgements}
+
+% \small{\rmfamily{Nam mollis tristique neque eu luctus. Suspendisse rutrum congue nisi sed convallis. Aenean id neque dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.}} \\
+
+% \end{block}
+
+%----------------------------------------------------------------------------------------
+%	CONTACT INFORMATION
+%----------------------------------------------------------------------------------------
+
+% \setbeamercolor{block alerted title}{fg=black,bg=norange} % Change the alert block title colors
+% \setbeamercolor{block alerted body}{fg=black,bg=white} % Change the alert block body colors
+
+% \begin{alertblock}{Contact Information}
+
+% \begin{itemize}
+% \item Web: \href{http://www.university.edu/smithlab}{http://www.university.edu/smithlab}
+% \item Email: \href{mailto:john@smith.com}{john@smith.com}
+% \item Phone: +1 (000) 111 1111
+% \end{itemize}
+
+% \end{alertblock}
+
+% \begin{center}
+% \begin{tabular}{ccc}
+% \includegraphics[width=0.4\linewidth]{logo.png} & \hfill & \includegraphics[width=0.4\linewidth]{logo.png}
+% \end{tabular}
+% \end{center}
 
 %----------------------------------------------------------------------------------------
 
