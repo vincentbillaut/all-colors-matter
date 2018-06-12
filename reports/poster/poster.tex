@@ -122,15 +122,15 @@ We approach the colorization problem as a \textbf{classification problem} \cite{
 %------------------------------------------------
 \begin{block}{Dataset}
 
-To train our model, we used subsets of the SUN and ImageNet datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to nature landscapes. Our final training set is composed of 13,469 images, downscaled to a $256\times 256$ resolution.
+To train our model, we used subsets of the SUN and ImageNet datasets. We selected 8 categories from ImageNet and 14 categories from SUN, that correspond mainly to \textbf{nature landscapes}. Our final training set is composed of 13,469 images, downscaled to a $256\times 256$ resolution.
 
-We used data augmentation to increase the robustness of training, namely :
+We used data augmentation to increase the robustness of training, namely:
 \begin{itemize}
 \item Flipping the image along the horizontal axis;
 \item Adding noise to the image (with different intensities);
 \item Selecting random crops of the image.
 \end{itemize}
-This procedure increases the size of the dataset sevenfold
+In our case, the procedure increases the size of the dataset sevenfold.
 \end{block}
 
 
@@ -158,7 +158,7 @@ This procedure increases the size of the dataset sevenfold
   \begin{figure}
   \begin{center}
   \includegraphics[width=.8\twocolwid]{img/better_cropped}
-  \caption{Sample predictions of the ColorUNet on the validation set, for bland input images. The ColorUNet’s output is more colorful than the ground truth. The bottom example is an old photograph with weared tones.}
+  \caption{Sample predictions of the ColorUNet on the validation set, for bland input images. The ColorUNet's output is more colorful than the ground truth. The bottom example is an old photograph with weared tones.}
   \label{better}
   \end{center}
   \end{figure}
@@ -179,10 +179,10 @@ This procedure increases the size of the dataset sevenfold
     \end{center}
     \end{figure}
 
-    The model outputs a probability distribution for each pixel, $(p_i)_{i=1...32}$
+    The model outputs a probability distribution for each pixel, $(p_i)_{i=1...32}$, which we can sort: $p_{(1)} \geq p_{(2)} \geq ... \geq p_{(32)}$.
 
-    Confidence maps are defined, for each pixel, as
-    $C_1 = p_{(1)}\ \ \ \ \ \ \ \  C_2 = \frac{p_{(1)}}{p_{(2)}}$
+    Confidence maps are defined for each pixel, as \hspace{5px}
+    $C_1 = p_{(1)}~~~~C_2 = \frac{p_{(1)}}{p_{(2)}}$.
     \end{alertblock}
 
     \end{column}
